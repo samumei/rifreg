@@ -1,129 +1,180 @@
-#################################################################################
-################# Recentered Influence Function Regression ######################
-#################################################################################
+est_rifreg <- function(formula,
+                       data,
+                       functional,
+                       custom_functional = NULL,
+                       quantiles = NULL,
+                       weights = NULL,
+                       bootstrap = FALSE,
+                       bootstrap_iterations = 100,
+                       cores = 1,
+                       model = TRUE,
+                       ...){
 
-# Author: David Gallusser & Samuel Meier
-# Date:   10.08.2021
+  # Use match.call function to call data.vectors
+  function_call = match.call()
+  data_arguments_index = match(c("formula", "data", "weights", "na.action"), names(function_call), 0)
+  data_arguments = function_call[c(1, data_arguments_index)]
+  data_arguments$drop.unused.levels = TRUE
+  data_arguments[[1]] = as.name("model.frame")
+  data_used = eval.parent(data_arguments)
+  function_terms = attr(data_used, "terms")
 
-# Introduction ------------------------------
+  # Extract variables
+  dep_var = model.response(data_used, "numeric")
+  intercept_and_covariates = model.matrix(function_terms, data_used)
+  covariate_names <- colnames(intercept_and_covariates)[-1]
+  covariates_numeric = as.matrix(intercept_and_covariates[, -1])
 
-# This script provides and describes functions to calculate recentered influence
-# function regressions.
+  # Extract and check weights
+  weights = model.weights(data_used)
+  weights <- check_weights(dep_var = dep_var,
+                           weights = weights)
 
-
-# Data -------------------------------------
-
-# The following data is stored in the /data-directory
-
-# data('skala44_2015', envir = environment()) ### WHICH DATA DO YOU FINALLY WANT HERE?
-# data('skala44_2019', envir = environment())
-# data('skala44_2021', envir = environment())
-
-
-# Recentered Influence Functions -----------------------------
-
-#' Estimate RIF of Mean
-#'
-#' Function to estimate the recentered influence function (RIF) of the mean
-#' of a weighted distribution of a dependent variable.
-#'
-#' @param dep_var dependent variable of distributional function. Discrete or continous numeric vector.
-#' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#' The default NULL is equivalent to weights = rep(1/nx, nx) where nx is the length of (the finite entries of) dep_var[].
-#'
-#' @return A data frame with a single column containing the RIF values of the mean.
-#' @export
-#'
-est_rif_of_mean <- function(dep_var, weights) {
-  rif <- as.data.frame(dep_var)
-  names(rif) <- "rif_of_mean"
-  return(rif)
-} ##### ---> WHY NOT WEIGHTED????
-
-
-#' Estimate RIF of Quantiles
-#'
-#' Function to estimate the recentered influence function (RIF) of one or several specified quantiles
-#' of a weighted distribution of a dependent variable.
-#'
-#' @param quantiles quantile position to calculate the RIF. Vector of length 1 or more containing positive doubles with value < 1.
-#' @inheritParams est_rif_of_mean
-#' @param ... further arguments passed on to \code{stats::density()} function.
-#'
-#' @return A data frame with the number of columns equaling the length of quantities[]. Each column contains the RIF values at the quantiles.
-#' @export
-#'
-#' @examples
-#' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-#' quantiles <- seq(1:9)/10
-#' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-#' est_rif_of_quantiles(quantiles, dep_var, weights)
-#'
-est_rif_of_quantiles <- function(quantiles, dep_var, weights = NULL, ...){
-  weights <- check_weights(dep_var, weights)
-  density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
-  rif <- sapply(X = quantiles, FUN = est_rif_of_quantile, dep_var = dep_var, weights = weights, density = density)
-  rif <- as.data.frame(rif)
-  names(rif) <- paste0("rif_of_quantile_", quantiles)
-  return(rif)
-}
+  # RIF
+  rifreg_detail <- est_rifreg_detail(formula = formula,
+                                     data_used = data_used,
+                                     functional = functional,
+                                     dep_var = dep_var,
+                                     weights = weights,
+                                     quantiles = quantiles,
+                                     custom_functional = custom_functional,
+                                     ...)
+  rif_lm <- rifreg_detail[-length(rifreg_detail)]
+  rif <- rifreg_detail$rif
 
 
-#' @describeIn est_rif_of_quantiles helper function to estimate the RIF values of a specific quantile.
-#'
-#' @param quantile specific quantile at which to estimate the RIF values. Positive double with value < 1.
-#' @param density kernel density approximation of \code{dep_var} calculated using stats::density().
-#'
-est_rif_of_quantile <- function(quantile, dep_var, weights, density) {
-  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = quantile)
-  density_at_quantile <- stats::approx(x = density$x, y = density$y, xout = weighted_quantile)$y
-  rif <- weighted_quantile + (quantile - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
-  return(rif)
-}
+  # Calculate Bootstrap standard errors
+  if(bootstrap){
+    cat("Bootstrapping Standard Errors...\n")
+    if(cores == 1) {
+      bootstrap_estimates <- pbapply::pblapply(1:bootstrap_iterations,
+                                               function(x) est_rifreg_bootstrap(formula = formula,
+                                                                                data_used = data_used,
+                                                                                functional = functional,
+                                                                                dep_var = dep_var,
+                                                                                weights = weights,
+                                                                                quantiles = quantiles,
+                                                                                custom_functional = custom_functional,
+                                                                                bootstrap_iterations = bootstrap_iterations,
+                                                                                ...))
+    }
+    else {
+      cores <- min(cores, parallel::detectCores() - 1)
+      cluster <- parallel::makeCluster(cores)
+      parallel::clusterSetRNGStream(cluster, round(runif(1,0,100000)))
+      parallel::clusterEvalQ(cl, {
+        library("Hmisc")
+        #library("rwdeco")                  # needs to be activated
+      })
+      # foos <- names(as.list(.GlobalEnv))     # needs to be deleted
+      parallel::clusterExport(cl = cluster,
+                              #varlist=c(foos,ls()),   # needs to be deleted
+                              varlist=ls(),          # needs to be activated
+                              envir=environment())
+      bootstrap_estimates <- pbapply::pblapply(1:bootstrap_iterations,
+                                               function(x) est_rifreg_bootstrap(formula = formula,
+                                                                                data_used = data_used,
+                                                                                functional = functional,
+                                                                                dep_var = dep_var,
+                                                                                weights = weights,
+                                                                                quantiles = quantiles,
+                                                                                custom_functional = custom_functional,
+                                                                                bootstrap_iterations = bootstrap_iterations,
+                                                                                ...),
+                                               cl = cluster)
+      parallel::stopCluster(cluster)
+    }
 
-
-#' Estimate RIF of Variance
-#'
-#' Function to estimate the recentered influence function (RIF) of the variance
-#' of a weighted distribution of a dependent variable.
-#'
-#' @inheritParams est_rif_of_mean
-#'
-#' @return A data frame with a single column containing the RIF values of the variance.
-#' @export
-#'
-#' @examples
-est_rif_of_variance <- function(dep_var, weights) {
-  weights <- check_weights(dep_var, weights)
-  weighted_mean <- Hmisc::wtd.mean(dep_var, weights = weights)
-  rif <- (dep_var - weighted_mean)^2
-  rif <- as.data.frame(rif)
-  names(rif) <- "rif_of_variance"
-  return(rif)
-}
-
-
-###########################
-# INSERT HERE: rif_of_gini
-##########################
-
-
-# Helper function to check the weights (MAYBE ADD SOME MORE COMMENTS)
-check_weights <- function(dep_var, weights) {
-  if (is.null(weights)){
-    weights <- rep(1, length(dep_var))
+    bootstrap_estimates <- as.data.frame(do.call("cbind", bootstrap_estimates))
+    modelnames <- unique(colnames(bootstrap_estimates))
+    bootstrap_se <- matrix(rep(NA, length(modelnames) * nrow(bootstrap_estimates)), ncol = length(modelnames))
+    rownames(bootstrap_se) <- rownames(bootstrap_estimates)
+    colnames(bootstrap_se) <- modelnames
+    bootstrap_vcov <- list()
+    for(i in 1:length(modelnames)){
+      sel <- which(names(bootstrap_estimates) %in% modelnames[i])
+      bootstrap_vcov[[i]] <- var(t(bootstrap_estimates[,sel]))
+      bootstrap_se[,i] <- sqrt(diag(bootstrap_vcov[[i]]))
+    }
   }
-  weights[is.na(weights)] <- 0
-  assertthat::assert_that(length(dep_var) == length(weights), msg = "The vector weights must be of equal length as the vector dep_var")
-  assertthat::assert_that(all(weights >= 0), msg = "Weights cannot contain negative values!")
-  assertthat::assert_that(!all(weights == 0), msg = "Not all weights can be set to zero or NA!")
-  return(weights)
+  else {
+    bootstrap_vcov <- bootstrap_se <- NULL
+  }
+
+  estimates <- do.call("cbind", lapply(rif_lm, coef))
+
+  if(!model) {
+    rif_lm <- NULL
+  }
+
+  results <- list(estimates = estimates,
+                  bootstrap_se = bootstrap_se,
+                  bootstrap_vcov = bootstrap_vcov,
+                  rif_lm = rif_lm,
+                  rif = rif,
+                  functional = functional,
+                  custom_functional = custom_functional,
+                  quantiles = quantiles)
+
+  class(results) <- c("rifreg", "lm")
+
+  # Return result
+  return(results)
 }
 
 
-# TODO:
+# specific rifreg function (maybe change name, do not export!)
+est_rifreg_detail <- function(formula,
+                              data_used,
+                              functional,
+                              dep_var,
+                              weights,
+                              quantiles,
+                              custom_functional,
+                              ...) {
 
-# Examples for mean and variance
-# BETTER DOCUMENT THE WEIGHTS AS DEFINED IN FFL 2007 p.19 or else, why not at the mean??
+  # Get RIF for functional
+  rif <- est_rif(functional = functional,
+                 dep_var = dep_var,
+                 weights = weights,
+                 quantiles = quantiles,
+                 custom_functional = custom_functional,
+                 ...)
+
+  # estimate RIF regression
+  data_and_rif <- cbind(rif, data_used, weights)
+  n_rif <- ncol(rif)
+  rif_lm <- list()
+  for(i in 1:n_rif){
+    rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(rif)[i]," ~ .")))
+    rif_lm[[i]] <- lm(rif_formula, data = data_and_rif, weights = weights)
+    names(rif_lm)[[i]] <- names(rif)[i]
+  }
+
+  rif_lm$rif <- rif
+
+  return(rif_lm)
+}
 
 
+# Bootstrap iteration (helper function)
+est_rifreg_bootstrap <- function(data_used,
+                                 functional,
+                                 dep_var,
+                                 weights,
+                                 quantiles,
+                                 custom_functional,
+                                 bootstrap_iterations,
+                                 ...) {
+
+  sample <- sample(1:nrow(data_used), nrow(data_used), replace=TRUE)
+  rif_lm <- est_rifreg_detail(data_used = data_used[sample,],
+                              functional = functional,
+                              dep_var = dep_var[sample],
+                              weights = (weights[sample]/sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
+                              quantiles = quantiles,
+                              custom_functional = custom_functional,
+                              ...)
+  coefs <- do.call("cbind",lapply(rif_lm, coef))
+  return(coefs)
+}
