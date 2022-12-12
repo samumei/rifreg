@@ -1,5 +1,29 @@
+#' summary method for class "rifreg"
+#'
+#' @param x an object of class "rifreg", usually , a result of a call to [rifreg()].
+#'
+#' @return the function \code{summary.rifreg()} returns a list of summary statistics derived from
+#'  the fitted linear model given in object \code{x}. For further details see [stats::summary.lm()].
+#' @export
+#'
+#' @examples
+#'
+#' data <- CPSmen8305[1:300,]
+#' rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+#'                      data = data,
+#'                      functional = "quantiles",
+#'                      custom_functional = NULL,
+#'                      quantiles = 0.5,
+#'                      weights = weights,
+#'                      bootstrap = FALSE,
+#'                      bootstrap_iterations = 100,
+#'                      cores = 1,
+#'                      model = TRUE)
+#'
+#' summary(rifreg)
+#'
 summary.rifreg <- function(x){
-  estimates <- x$estimates #do.call("cbind",lapply(x$rif_lm, coef))
+  estimates <- x$estimates
   bootstrap_se <- x$bootstrap_se
   if(is.null(bootstrap_se)){
     bootstrap_se <- as.data.frame(matrix(rep(NA, prod(dim(estimates))),ncol=ncol(estimates)))
@@ -25,5 +49,4 @@ summary.rifreg <- function(x){
     cat("Multiple R-squared: ",r.squared[i],",	Adjusted R-squared: ",adj.r.squared[i],"\n", sep="")
     cat("\n")
   }
-
 }

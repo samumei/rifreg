@@ -11,22 +11,22 @@ est_rifreg <- function(formula,
                        ...){
 
   # Use match.call function to call data.vectors
-  function_call = match.call()
-  data_arguments_index = match(c("formula", "data", "weights", "na.action"), names(function_call), 0)
-  data_arguments = function_call[c(1, data_arguments_index)]
-  data_arguments$drop.unused.levels = TRUE
-  data_arguments[[1]] = as.name("model.frame")
-  data_used = eval.parent(data_arguments)
-  function_terms = attr(data_used, "terms")
+  function_call <- match.call()
+  data_arguments_index <- match(c("formula", "data", "weights", "na.action"), names(function_call), 0)
+  data_arguments <- function_call[c(1, data_arguments_index)]
+  data_arguments$drop.unused.levels <- TRUE
+  data_arguments[[1]] <- as.name("model.frame")
+  data_used <- eval.parent(data_arguments)
+  function_terms <- attr(data_used, "terms")
 
   # Extract variables
-  dep_var = model.response(data_used, "numeric")
-  intercept_and_covariates = model.matrix(function_terms, data_used)
+  dep_var <- model.response(data_used, "numeric")
+  intercept_and_covariates <- model.matrix(function_terms, data_used)
   covariate_names <- colnames(intercept_and_covariates)[-1]
-  covariates_numeric = as.matrix(intercept_and_covariates[, -1])
+  covariates_numeric <- as.matrix(intercept_and_covariates[, -1])
 
   # Extract and check weights
-  weights = model.weights(data_used)
+  weights <- model.weights(data_used)
   weights <- check_weights(dep_var = dep_var,
                            weights = weights)
 
@@ -167,7 +167,7 @@ est_rifreg_bootstrap <- function(data_used,
                                  bootstrap_iterations,
                                  ...) {
 
-  sample <- sample(1:nrow(data_used), nrow(data_used), replace=TRUE)
+  sample <- sample(1:nrow(data_used), nrow(data_used), replace = TRUE)
   rif_lm <- est_rifreg_detail(data_used = data_used[sample,],
                               functional = functional,
                               dep_var = dep_var[sample],
