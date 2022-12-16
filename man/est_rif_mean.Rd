@@ -8,9 +8,6 @@ est_rif_mean(dep_var)
 }
 \arguments{
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
-
-\item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default NULL is equivalent to weights = rep(1/nx, nx) where nx is the length of (the finite entries of) dep_var[].}
 }
 \value{
 A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
@@ -20,5 +17,9 @@ Function to estimate the recentered influence function (RIF) of the mean
 of a weighted distribution of a dependent variable.
 }
 \examples{
+
+dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
+est_rif_mean(dep_var)
+
 
 }

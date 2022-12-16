@@ -8,6 +8,7 @@
 #' @param alpha numeric value between 0 and 1 (default = 0.05) that defines the confidence interval
 #'              plotted as a ribbon and defined as \code{qnorm(1-alpha/2)} * standard error.
 #'              Only required if bootstrapped standard errors where computed.
+#' @param ... other parameters to be passed through to plotting functions.
 #'
 #' @return a ggplot containing the coefficients for each (selected) covariate
 #' @export
@@ -30,7 +31,7 @@
 #'
 #' plot(rifreg, varselect = c("age", "unionyes"), alpha = 0.1)
 #'
-plot.rifreg <- function(x, varselect = NULL, alpha = 0.05){
+plot.rifreg <- function(x, varselect = NULL, alpha = 0.05, ...){
 
   estimates <- as.data.frame(x$estimates)
 

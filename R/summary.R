@@ -1,9 +1,10 @@
 #' summary method for class "rifreg"
 #'
-#' @param x an object of class "rifreg", usually , a result of a call to [rifreg()].
+#' @param object an object of class "rifreg", usually , a result of a call to [rifreg()].
+#' @param ... other parameters to be passed through to summary functions.
 #'
 #' @return the function \code{summary.rifreg()} returns a list of summary statistics derived from
-#'  the fitted linear model given in object \code{x}. For further details see [stats::summary.lm()].
+#'  the fitted linear model given in \code{object}. For further details see [stats::summary.lm()].
 #' @export
 #'
 #' @examples
@@ -22,19 +23,19 @@
 #'
 #' summary(rifreg)
 #'
-summary.rifreg <- function(x){
-  estimates <- x$estimates
-  bootstrap_se <- x$bootstrap_se
+summary.rifreg <- function(object, ...){
+  estimates <- object$estimates
+  bootstrap_se <- object$bootstrap_se
   if(is.null(bootstrap_se)){
     bootstrap_se <- as.data.frame(matrix(rep(NA, prod(dim(estimates))),ncol=ncol(estimates)))
     names(bootstrap_se) <- names(estimates)
     rownames(bootstrap_se) <- rownames(estimates)
   }
 
-  r.squared <- unlist(do.call("c",lapply(x$rif_lm, function(z) summary(z)[c("r.squared")])))
-  adj.r.squared <- unlist(do.call("c",lapply(x$rif_lm, function(z) summary(z)[c("adj.r.squared")])))
-  df <- do.call("c",lapply(x$rif_lm, function(z) z$df.residual))
-  sigma <- unlist(do.call("c",lapply(x$rif_lm, function(z) summary(z)[c("sigma")])))
+  r.squared <- unlist(do.call("c",lapply(object$rif_lm, function(z) summary(z)[c("r.squared")])))
+  adj.r.squared <- unlist(do.call("c",lapply(object$rif_lm, function(z) summary(z)[c("adj.r.squared")])))
+  df <- do.call("c",lapply(object$rif_lm, function(z) z$df.residual))
+  sigma <- unlist(do.call("c",lapply(object$rif_lm, function(z) summary(z)[c("sigma")])))
 
   for(i in 1:ncol(estimates)){
     cat("\n")

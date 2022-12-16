@@ -1,7 +1,76 @@
+#' Estimate RIF Regression
+#'
+#' Estimate the Recentered Influence Function Regression (RIFREG) for a chosen
+#' functional of interest.
+#'
+#' @param formula an object of class "formula". See [stats::lm()] for further details.
+#' @param data a data frame containing the variables in the model.
+#' @param functional string containing the functional for which to compute the RIF. Can be one of
+#'                   "mean", "variance", "quantiles", "gini", or "custom". If "custom"
+#'                   is selected a \code{custom_rif_function} needs to be provided.
+#' @param custom_rif_function the RIF function to compute the RIF of the custom functional.
+#' @param quantiles a vector of length 1 or more with quantile positions to calculate the RIF.
+#'                  Each quantile is indicated with value between 0 and 1.
+#' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
+#'                where nx is the length of (the finite entries of) \code{dep_var}.
+#' @param bootstrap boolean (Default = FALSE) indicating if bootstrapped standard errors will be computed
+#' @param bootstrap_iterations positive integer indicating the number of bootstrap iterations to execute.
+#'                             Only required if \code{bootstrap==TRUE}.
+#' @param cores positive integer indicating the number of cores to use when computing bootstrap standard errors.
+#'              Only required if \code{bootstrap==TRUE}.
+#' @param model WHY DO WE NEED THIS PARAMETER?
+#' @param ... the parameters passed to the \code{custom_rif_function}. The must have a different name
+#'            than the the ones of \code{est_rif}. For instance, if you want to pass weights to the
+#'            \code{custom_rif_function}, name them \code{custom_weights}.
+#'
+#' @return an object of class \code{rifreg} containing the RIF regression estimate,
+#'         bootstrap standard errors, the RIF values and further information.
+#' @export
+#'
+#' @examples
+#'
+#' example_data <- CPSmen8305[1:300,]
+#' example_weights <- CPSmen8305$weights[1:300]
+#'
+#' rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+#'                      data = example_data,
+#'                      functional = "quantiles",
+#'                      custom_rif_function = NULL,
+#'                      quantiles = seq(0.1, 0.9, 0.1),
+#'                      weights = example_weights,
+#'                      bootstrap = TRUE,
+#'                      bootstrap_iterations = 100,
+#'                      cores = 1,
+#'                      model = TRUE)
+#'
+#' # custom function
+#' custom_variance_function <- function(dep_var, custom_weights){
+#'   weights <- check_weights(dep_var, weights = custom_weights)
+#'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
+#'   rif <- (dep_var - weighted_mean)^2
+#'   rif <- data.frame(rif, weights)
+#'   names(rif) <- c("rif_variance", "weights")
+#'   return(rif)
+#' }
+#'
+#'
+#' rifreg <- est_rifreg(
+#'   formula = log(wage) ~ union + age,
+#'   data = example_data,
+#'   functional = "custom",
+#'   custom_rif_function = custom_variance_function,
+#'   quantiles = NULL,
+#'   weights = NULL,
+#'   bootstrap = FALSE,
+#'   cores = 1,
+#'   model = TRUE,
+#'   custom_weights = example_weights)
+#'
 est_rifreg <- function(formula,
                        data,
                        functional,
-                       custom_functional = NULL,
+                       custom_rif_function = NULL,
                        quantiles = NULL,
                        weights = NULL,
                        bootstrap = FALSE,
@@ -12,7 +81,7 @@ est_rifreg <- function(formula,
 
   # Use match.call function to call data.vectors
   function_call <- match.call()
-  data_arguments_index <- match(c("formula", "data", "weights", "na.action"), names(function_call), 0)
+  data_arguments_index <- match(c("formula", "data", "weights", "na.action", "custom_weights"), names(function_call), 0)
   data_arguments <- function_call[c(1, data_arguments_index)]
   data_arguments$drop.unused.levels <- TRUE
   data_arguments[[1]] <- as.name("model.frame")
@@ -26,9 +95,11 @@ est_rifreg <- function(formula,
   covariates_numeric <- as.matrix(intercept_and_covariates[, -1])
 
   # Extract and check weights
-  weights <- model.weights(data_used)
-  weights <- check_weights(dep_var = dep_var,
-                           weights = weights)
+  if(!functional == "custom") {
+    weights <- model.weights(data_used)
+    weights <- check_weights(dep_var = dep_var,
+                             weights = weights)
+  }
 
   # RIF
   rifreg_detail <- est_rifreg_detail(formula = formula,
@@ -37,7 +108,7 @@ est_rifreg <- function(formula,
                                      dep_var = dep_var,
                                      weights = weights,
                                      quantiles = quantiles,
-                                     custom_functional = custom_functional,
+                                     custom_rif_function = custom_rif_function,
                                      ...)
   rif_lm <- rifreg_detail[-length(rifreg_detail)]
   rif <- rifreg_detail$rif
@@ -54,7 +125,7 @@ est_rifreg <- function(formula,
                                                                                 dep_var = dep_var,
                                                                                 weights = weights,
                                                                                 quantiles = quantiles,
-                                                                                custom_functional = custom_functional,
+                                                                                custom_rif_function = custom_rif_function,
                                                                                 bootstrap_iterations = bootstrap_iterations,
                                                                                 ...))
     }
@@ -62,15 +133,12 @@ est_rifreg <- function(formula,
       cores <- min(cores, parallel::detectCores() - 1)
       cluster <- parallel::makeCluster(cores)
       parallel::clusterSetRNGStream(cluster, round(runif(1,0,100000)))
-      parallel::clusterEvalQ(cl, {
+      parallel::clusterEvalQ(cl = cluster, {
         library("Hmisc")
-        #library("rwdeco")                  # needs to be activated
       })
-      # foos <- names(as.list(.GlobalEnv))     # needs to be deleted
       parallel::clusterExport(cl = cluster,
-                              #varlist=c(foos,ls()),   # needs to be deleted
-                              varlist=ls(),          # needs to be activated
-                              envir=environment())
+                              varlist = ls(),
+                              envir = environment())
       bootstrap_estimates <- pbapply::pblapply(1:bootstrap_iterations,
                                                function(x) est_rifreg_bootstrap(formula = formula,
                                                                                 data_used = data_used,
@@ -78,7 +146,7 @@ est_rifreg <- function(formula,
                                                                                 dep_var = dep_var,
                                                                                 weights = weights,
                                                                                 quantiles = quantiles,
-                                                                                custom_functional = custom_functional,
+                                                                                custom_rif_function = custom_rif_function,
                                                                                 bootstrap_iterations = bootstrap_iterations,
                                                                                 ...),
                                                cl = cluster)
@@ -113,7 +181,7 @@ est_rifreg <- function(formula,
                   rif_lm = rif_lm,
                   rif = rif,
                   functional = functional,
-                  custom_functional = custom_functional,
+                  custom_rif_function = custom_rif_function,
                   quantiles = quantiles)
 
   class(results) <- c("rifreg", "lm")
@@ -130,7 +198,7 @@ est_rifreg_detail <- function(formula,
                               dep_var,
                               weights,
                               quantiles,
-                              custom_functional,
+                              custom_rif_function,
                               ...) {
 
   # Get RIF for functional
@@ -138,12 +206,12 @@ est_rifreg_detail <- function(formula,
                  dep_var = dep_var,
                  weights = weights,
                  quantiles = quantiles,
-                 custom_functional = custom_functional,
+                 custom_rif_function = custom_rif_function,
                  ...)
 
   # estimate RIF regression
-  data_and_rif <- cbind(rif, data_used, weights)
-  n_rif <- ncol(rif)
+  data_and_rif <- cbind(rif, data_used)
+  n_rif <- ncol(rif) - 1
   rif_lm <- list()
   for(i in 1:n_rif){
     rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(rif)[i]," ~ .")))
@@ -163,7 +231,7 @@ est_rifreg_bootstrap <- function(data_used,
                                  dep_var,
                                  weights,
                                  quantiles,
-                                 custom_functional,
+                                 custom_rif_function,
                                  bootstrap_iterations,
                                  ...) {
 
@@ -173,7 +241,7 @@ est_rifreg_bootstrap <- function(data_used,
                               dep_var = dep_var[sample],
                               weights = (weights[sample]/sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
                               quantiles = quantiles,
-                              custom_functional = custom_functional,
+                              custom_rif_function = custom_rif_function,
                               ...)
   coefs <- do.call("cbind",lapply(rif_lm, coef))
   return(coefs)

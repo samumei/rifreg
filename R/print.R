@@ -1,6 +1,7 @@
 #' print method for class "rifreg"
 #'
 #' @param x an object of class "rifreg", usually , a result of a call to [rifreg()].
+#' @param ... other parameters to be passed through to printing functions.
 #'
 #' @return the function \code{print.rifreg()} returns the the covariates' coefficients
 #'  of the RIF regressions derived from  the fitted linear model given in object \code{x}.
@@ -22,7 +23,7 @@
 #'
 #' print(rifreg)
 #'
-print.rifreg <- function(x){
+print.rifreg <- function(x, ...){
   estimates <- x$estimates
   cat("Rifreg coefficients:\n")
   print(estimates)
