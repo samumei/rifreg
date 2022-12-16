@@ -1,7 +1,14 @@
 #' Estimate RIF Regression
 #'
-#' Estimate the Recentered Influence Function Regression (RIFREG) for a chosen
+#' Estimate the recentered influence function regression (RIFREG) for a chosen
 #' functional of interest.
+#'
+#' @references
+#' Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2009. “Unconditional Quantile
+#' Regressions.” \emph{Econometrica} 77(3): 953–73.
+#'
+#' Cowell, Frank A., and Emmanuel Flachaire. 2015. “Statistical Methods for Distributional Analysis.”
+#' In Anthony B. Atkinson and François Bourguignon (eds.), \emph{Handbook of Income Distribution}. Amsterdam: Elsevier.
 #'
 #' @param formula an object of class "formula". See [stats::lm()] for further details.
 #' @param data a data frame containing the variables in the model.
@@ -9,19 +16,21 @@
 #'                   "mean", "variance", "quantiles", "gini", or "custom". If "custom"
 #'                   is selected a \code{custom_rif_function} needs to be provided.
 #' @param custom_rif_function the RIF function to compute the RIF of the custom functional.
+#'                            Default is NULL.See examples for further details.
 #' @param quantiles a vector of length 1 or more with quantile positions to calculate the RIF.
-#'                  Each quantile is indicated with value between 0 and 1.
+#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
-#' @param bootstrap boolean (Default = FALSE) indicating if bootstrapped standard errors will be computed
+#' @param bootstrap boolean (Default = FALSE) indicating if bootstrapped standard errors shall be computed
 #' @param bootstrap_iterations positive integer indicating the number of bootstrap iterations to execute.
-#'                             Only required if \code{bootstrap==TRUE}.
+#'                             Only required if \code{bootstrap = TRUE}.
 #' @param cores positive integer indicating the number of cores to use when computing bootstrap standard errors.
-#'              Only required if \code{bootstrap==TRUE}.
+#'              Only required if \code{bootstrap = TRUE}.
 #' @param model WHY DO WE NEED THIS PARAMETER?
-#' @param ... the parameters passed to the \code{custom_rif_function}. The must have a different name
-#'            than the the ones of \code{est_rif}. For instance, if you want to pass weights to the
+#' @param ... additional parameters passed to the \code{custom_rif_function}.
+#'            Apart from \code{dep_var} they must have a different name than the the ones of
+#'            \code{est_rif}. For instance, if you want to pass weights to the
 #'            \code{custom_rif_function}, name them \code{custom_weights}.
 #'
 #' @return an object of class \code{rifreg} containing the RIF regression estimate,
@@ -133,9 +142,6 @@ est_rifreg <- function(formula,
       cores <- min(cores, parallel::detectCores() - 1)
       cluster <- parallel::makeCluster(cores)
       parallel::clusterSetRNGStream(cluster, round(runif(1,0,100000)))
-      parallel::clusterEvalQ(cl = cluster, {
-        library("Hmisc")
-      })
       parallel::clusterExport(cl = cluster,
                               varlist = ls(),
                               envir = environment())
@@ -186,7 +192,6 @@ est_rifreg <- function(formula,
 
   class(results) <- c("rifreg", "lm")
 
-  # Return result
   return(results)
 }
 

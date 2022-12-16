@@ -2,7 +2,7 @@
 % Please edit documentation in R/rif.R
 \name{est_rif}
 \alias{est_rif}
-\title{Estimate Recentered Influence Function}
+\title{Estimate Recentered Influence Functions}
 \usage{
 est_rif(
   functional,
@@ -25,12 +25,13 @@ The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
 
 \item{quantiles}{a vector of length 1 or more with quantile positions to calculate the RIF.
-Each quantile is indicated with value between 0 and 1.}
+Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
 
-\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.}
+\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional. Default is NULL.}
 
-\item{...}{the parameters passed to the \code{custom_rif_function}. The must have a different name
-than the the ones of \code{est_rif}. For instance, if you want to pass weights to the
+\item{...}{additional parameters passed to the \code{custom_rif_function}.
+Apart from \code{dep_var} they must have a different name than the the ones of
+\code{est_rif}. For instance, if you want to pass weights to the
 \code{custom_rif_function}, name them \code{custom_weights}.}
 }
 \value{
@@ -40,4 +41,37 @@ a data frame with the RIF value for each observation and in the case of several 
 \description{
 This function estimates the recentered influence function (RIF) of a chosen functional
 (e.g. quantiles, variance or gini).
+}
+\examples{
+
+dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
+quantiles <- seq(1:9)/10
+weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
+rif <- est_rif(functional = "quantiles",
+               dep_var = dep_var,
+               quantiles = quantiles,
+               weights = weights)
+
+# custom function
+custom_variance_function <- function(dep_var, custom_weights){
+  weights <- check_weights(dep_var, custom_weights)
+  weighted_mean <- weighted.mean(x = dep_var, w = weights)
+  rif <- (dep_var - weighted_mean)^2
+  rif <- data.frame(rif, weights)
+  names(rif) <- c("rif_variance", "weights")
+  return(rif)
+}
+
+rif_custom <-  est_rif(functional = "custom",
+                       dep_var = dep_var,
+                       custom_rif_function = custom_variance_function,
+                       custom_weights = weights)
+
+}
+\references{
+Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2009. “Unconditional Quantile
+Regressions.” \emph{Econometrica} 77(3): 953–73.
+
+Cowell, Frank A., and Emmanuel Flachaire. 2015. “Statistical Methods for Distributional Analysis.”
+In Anthony B. Atkinson and François Bourguignon (eds.), \emph{Handbook of Income Distribution}. Amsterdam: Elsevier.
 }

@@ -27,27 +27,29 @@ est_rifreg(
 "mean", "variance", "quantiles", "gini", or "custom". If "custom"
 is selected a \code{custom_rif_function} needs to be provided.}
 
-\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.}
+\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.
+Default is NULL.See examples for further details.}
 
 \item{quantiles}{a vector of length 1 or more with quantile positions to calculate the RIF.
-Each quantile is indicated with value between 0 and 1.}
+Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
 
-\item{bootstrap}{boolean (Default = FALSE) indicating if bootstrapped standard errors will be computed}
+\item{bootstrap}{boolean (Default = FALSE) indicating if bootstrapped standard errors shall be computed}
 
 \item{bootstrap_iterations}{positive integer indicating the number of bootstrap iterations to execute.
-Only required if \code{bootstrap==TRUE}.}
+Only required if \code{bootstrap = TRUE}.}
 
 \item{cores}{positive integer indicating the number of cores to use when computing bootstrap standard errors.
-Only required if \code{bootstrap==TRUE}.}
+Only required if \code{bootstrap = TRUE}.}
 
 \item{model}{WHY DO WE NEED THIS PARAMETER?}
 
-\item{...}{the parameters passed to the \code{custom_rif_function}. The must have a different name
-than the the ones of \code{est_rif}. For instance, if you want to pass weights to the
+\item{...}{additional parameters passed to the \code{custom_rif_function}.
+Apart from \code{dep_var} they must have a different name than the the ones of
+\code{est_rif}. For instance, if you want to pass weights to the
 \code{custom_rif_function}, name them \code{custom_weights}.}
 }
 \value{
@@ -55,7 +57,7 @@ an object of class \code{rifreg} containing the RIF regression estimate,
         bootstrap standard errors, the RIF values and further information.
 }
 \description{
-Estimate the Recentered Influence Function Regression (RIFREG) for a chosen
+Estimate the recentered influence function regression (RIFREG) for a chosen
 functional of interest.
 }
 \examples{
@@ -97,4 +99,11 @@ rifreg <- est_rifreg(
   model = TRUE,
   custom_weights = example_weights)
 
+}
+\references{
+Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2009. “Unconditional Quantile
+Regressions.” \emph{Econometrica} 77(3): 953–73.
+
+Cowell, Frank A., and Emmanuel Flachaire. 2015. “Statistical Methods for Distributional Analysis.”
+In Anthony B. Atkinson and François Bourguignon (eds.), \emph{Handbook of Income Distribution}. Amsterdam: Elsevier.
 }

@@ -4,7 +4,7 @@
 #' @param ... other parameters to be passed through to printing functions.
 #'
 #' @return the function \code{print.rifreg()} returns the the covariates' coefficients
-#'  of the RIF regressions derived from  the fitted linear model given in object \code{x}.
+#'         of the RIF regressions derived from  the fitted linear model given in object \code{x}.
 #' @export
 #'
 #' @examples

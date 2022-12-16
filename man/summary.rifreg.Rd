@@ -7,13 +7,13 @@
 \method{summary}{rifreg}(object, ...)
 }
 \arguments{
-\item{object}{an object of class "rifreg", usually , a result of a call to [rifreg()].}
+\item{object}{an object of class "rifreg", usually, a result of a call to [rifreg()].}
 
-\item{...}{other parameters to be passed through to plotting functions.}
+\item{...}{other parameters to be passed through to summary functions.}
 }
 \value{
 the function \code{summary.rifreg()} returns a list of summary statistics derived from
- the fitted linear model given in \code{object}. For further details see [stats::summary.lm()].
+        the rifreg object given in \code{object}. For further details see [stats::summary.lm()].
 }
 \description{
 summary method for class "rifreg"

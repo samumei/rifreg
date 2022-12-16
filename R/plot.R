@@ -1,9 +1,9 @@
 #' Plot Coefficients for an \code{rifreg} Object
 #'
-#' Coefficients are plotted for each quantile (or any other chosen statistic)
-#' and each covariate. Specific covariates can be selected and SE can also be displayed.
+#' Coefficients are plotted for each quantile and each covariate.
+#' Specific covariates can be selected and SE can also be displayed.
 #'
-#' @param x an object of class "rifreg", usually , a result of a call to [rifreg()].
+#' @param x an object of class "rifreg", usually, a result of a call to [rifreg()] with code{functional = "quantiles"}.
 #' @param varselect vector of length 1 or more containig the names of the covariates to display.
 #' @param alpha numeric value between 0 and 1 (default = 0.05) that defines the confidence interval
 #'              plotted as a ribbon and defined as \code{qnorm(1-alpha/2)} * standard error.

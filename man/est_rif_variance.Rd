@@ -10,7 +10,8 @@ est_rif_variance(dep_var, weights = NULL)
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default NULL is equivalent to weights = rep(1/nx, nx) where nx is the length of (the finite entries of) \code{dep_var}.}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
+where nx is the length of (the finite entries of) \code{dep_var}.}
 }
 \value{
 A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.

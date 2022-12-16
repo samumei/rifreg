@@ -1,13 +1,12 @@
-#' Checks the weights input
+#' Checks weights
 #'
 #' Helper function to check a weights vector. Makes sure the weights
-#' are positve numeric values (not all zeros) and of the same lenght as the
+#' are positive numeric values (not all zeros) and of the same length as the
 #' dependent variable \code{dep_var}. Replaces all \code{NA} with 0 and sets
 #' all weights to 1 if weights is set to NULL.
 #'
 #' @param dep_var dependent variable of distributional function.
-#'                Can be any discrete or continuous vector of lenght 1 or more.
-#'
+#'                Can be any discrete or continuous vector of length 1 or more.
 #' @param weights positive numeric vector of \code{length(dep_var)}
 #'                containing the weights or \code{NULL}.
 #'

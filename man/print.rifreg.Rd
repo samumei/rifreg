@@ -9,11 +9,11 @@
 \arguments{
 \item{x}{an object of class "rifreg", usually , a result of a call to [rifreg()].}
 
-\item{...}{other parameters to be passed through to plotting functions.}
+\item{...}{other parameters to be passed through to printing functions.}
 }
 \value{
 the function \code{print.rifreg()} returns the the covariates' coefficients
- of the RIF regressions derived from  the fitted linear model given in object \code{x}.
+        of the RIF regressions derived from  the fitted linear model given in object \code{x}.
 }
 \description{
 print method for class "rifreg"

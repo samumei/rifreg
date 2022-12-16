@@ -16,8 +16,8 @@ est_rif_quantile(quantile, dep_var, weights, density)
 Each quantile is indicated with value between 0 and 1.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (NULL) is equivalent to weights = rep(1/nx, nx),
-where nx is the length of (the finite entries of) dep_var[].}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
+where nx is the length of (the finite entries of) \code{dep_var}.}
 
 \item{...}{further arguments passed on to \code{stats::density()} function.}
 

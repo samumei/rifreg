@@ -1,5 +1,3 @@
-# RIF Regression
-
 testthat::test_that("RIF regression function does not throw an error" , {
   data <- CPSmen8305[1:300,]
   weights <- CPSmen8305$weights[1:300]
@@ -84,3 +82,23 @@ testthat::test_that("RIF regression function does not throw an error with custom
                           custom_weights = test_weights),
                NA)
 })
+
+
+# The following test does not work in devtools::test()
+# testthat::test_that("RIF regression function does not throw an with several cores" , {
+#   data <- CPSmen8305[1:300,]
+#   weights <- CPSmen8305$weights[1:300]
+#
+#   # with bootstrap and several quantiles
+#   expect_error(est_rifreg(formula = log(wage) ~ union + age,
+#                           data = data,
+#                           functional = "quantiles",
+#                           custom_rif_function = NULL,
+#                           quantiles = c(0.1, 0.5, 0.9),
+#                           weights = weights,
+#                           bootstrap = TRUE,
+#                           bootstrap_iterations = 100,
+#                           cores = 4,
+#                           model = TRUE),
+#                NA)
+# })

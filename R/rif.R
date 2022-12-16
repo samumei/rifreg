@@ -1,7 +1,14 @@
-#' Estimate Recentered Influence Function
+#' Estimate Recentered Influence Functions
 #'
 #' This function estimates the recentered influence function (RIF) of a chosen functional
 #' (e.g. quantiles, variance or gini).
+#'
+#' @references
+#' Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2009. “Unconditional Quantile
+#' Regressions.” \emph{Econometrica} 77(3): 953–73.
+#'
+#' Cowell, Frank A., and Emmanuel Flachaire. 2015. “Statistical Methods for Distributional Analysis.”
+#' In Anthony B. Atkinson and François Bourguignon (eds.), \emph{Handbook of Income Distribution}. Amsterdam: Elsevier.
 #'
 #' @param functional string containing the functional for which to compute the RIF. Can be one of
 #'                   "mean", "variance", "quantiles", "gini", or "custom". If "custom"
@@ -11,12 +18,12 @@
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
 #' @param quantiles a vector of length 1 or more with quantile positions to calculate the RIF.
-#'                  Each quantile is indicated with value between 0 and 1.
-#' @param custom_rif_function the RIF function to compute the RIF of the custom functional.
-#' @param ... the parameters passed to the \code{custom_rif_function}. The must have a different name
-#'            than the the ones of \code{est_rif}. For instance, if you want to pass weights to the
+#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.
+#' @param custom_rif_function the RIF function to compute the RIF of the custom functional. Default is NULL.
+#' @param ... additional parameters passed to the \code{custom_rif_function}.
+#'            Apart from \code{dep_var} they must have a different name than the the ones of
+#'            \code{est_rif}. For instance, if you want to pass weights to the
 #'            \code{custom_rif_function}, name them \code{custom_weights}.
-#'
 #'
 #' @return a data frame with the RIF value for each observation and in the case of several quantiles
 #'         a column for each quantile.
@@ -27,7 +34,7 @@
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 #' quantiles <- seq(1:9)/10
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-#' rif <- est_rif(functional = "quantiles,
+#' rif <- est_rif(functional = "quantiles",
 #'                dep_var = dep_var,
 #'                quantiles = quantiles,
 #'                weights = weights)
@@ -100,7 +107,6 @@ est_rif <- function(functional,
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 #' est_rif_mean(dep_var)
 #'
-#'
 est_rif_mean <- function(dep_var) {
   rif <- as.data.frame(dep_var)
   names(rif) <- "rif_mean"
@@ -117,8 +123,8 @@ est_rif_mean <- function(dep_var) {
 #' @param quantiles a vector of length 1 or more with quantile positions to calculate the RIF.
 #'                  Each quantile is indicated with value between 0 and 1.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (NULL) is equivalent to weights = rep(1/nx, nx),
-#'                where nx is the length of (the finite entries of) dep_var[].
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
+#'                where nx is the length of (the finite entries of) \code{dep_var}.
 #' @param ... further arguments passed on to \code{stats::density()} function.
 #'
 #' @return A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
@@ -161,7 +167,8 @@ est_rif_quantile <- function(quantile, dep_var, weights, density) {
 #'
 #' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#' The default NULL is equivalent to weights = rep(1/nx, nx) where nx is the length of (the finite entries of) \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
+#'                where nx is the length of (the finite entries of) \code{dep_var}.
 #'
 #' @return A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
 #' @export
@@ -181,70 +188,9 @@ est_rif_variance <- function(dep_var, weights = NULL){
   return(rif)
 }
 
-# est_rif_interquantile_range <- function(dep_var, weights = NULL){
-#   weights <- check_weights(dep_var, weights)
-#   weighted_mean <- weighted.mean(x = dep_var, w = weights)
-#   rif <- (dep_var - weighted_mean)^2
-#   rif <- as.data.frame(rif)
-#   names(rif) <- "rif_variance"
-#   return(rif)
-# }
 
+# GINI
 
-
-
-#### GINI -------
-
-# est_rif_gini <- function(dep_var, weights = NULL){
-#   weights <- check_weights(dep_var, weights)
-#   weighted_mean <- weighted.mean(x = dep_var, w = weights)
-#
-#   cumulative_distribution_function <- ecdf(dep_var)
-#   cumulative_distribution_of_dep_vars <- cumulative_distribution_function(dep_var)
-#
-#   dep_var_sorted <- sort(dep_var)
-#   n <- length(dep_var_sorted)
-#
-#   gini <- 2 * sum(dep_var_sorted * 1:n) / (n * sum(dep_var_sorted)) - 1 - (1/n)
-#
-#
-#   rif <- 2 * dep_var / weighted_mean * (Fy(y) - ((1 + vG) / 2)) + 2 * ((1 - vG / 2) - GL(p;Fy)) + vG
-#
-#
-#
-#
-#   rif <- as.data.frame(rif)
-#   names(rif) <- "rif_gini"
-#   return(rif)
-# }
-#
-#
-# dep_vars_on_cumulative_distribution
-#
-#
-#
-# vG
-# Fy(y) => cdf(dep_var)
-# GL(p;FY)
-
-
-
-
-
-
-
-
-
-
-
-# if (missing(formula) || (length(formula) != 3L) || (length(attr(terms(formula[-2L]),
-#                                                                 "term.labels")) != 1L))
-#   stop("'formula' missing or incorrect")
-#
-# x <- as.numeric(x)
-#
-# x <- rep(x, n)    # same handling as Lc
-# if(na.rm) x <- na.omit(x)
-# if (any(is.na(x)) || any(x < 0)) return(NA_real_)
+# IQR
 
 

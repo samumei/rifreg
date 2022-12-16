@@ -21,5 +21,4 @@ of a weighted distribution of a dependent variable.
 dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 est_rif_mean(dep_var)
 
-
 }

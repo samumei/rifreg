@@ -1,10 +1,10 @@
 #' summary method for class "rifreg"
 #'
-#' @param object an object of class "rifreg", usually , a result of a call to [rifreg()].
+#' @param object an object of class "rifreg", usually, a result of a call to [rifreg()].
 #' @param ... other parameters to be passed through to summary functions.
 #'
 #' @return the function \code{summary.rifreg()} returns a list of summary statistics derived from
-#'  the fitted linear model given in \code{object}. For further details see [stats::summary.lm()].
+#'         the rifreg object given in \code{object}. For further details see [stats::summary.lm()].
 #' @export
 #'
 #' @examples

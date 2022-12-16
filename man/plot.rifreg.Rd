@@ -7,7 +7,7 @@
 \method{plot}{rifreg}(x, varselect = NULL, alpha = 0.05, ...)
 }
 \arguments{
-\item{x}{an object of class "rifreg", usually , a result of a call to [rifreg()].}
+\item{x}{an object of class "rifreg", usually, a result of a call to [rifreg()] with code{functional = "quantiles"}.}
 
 \item{varselect}{vector of length 1 or more containig the names of the covariates to display.}
 
@@ -21,8 +21,8 @@ Only required if bootstrapped standard errors where computed.}
 a ggplot containing the coefficients for each (selected) covariate
 }
 \description{
-Coefficients are plotted for each quantile (or any other chosen statistic)
-and each covariate. Specific covariates can be selected and SE can also be displayed.
+Coefficients are plotted for each quantile and each covariate.
+Specific covariates can be selected and SE can also be displayed.
 }
 \examples{
 

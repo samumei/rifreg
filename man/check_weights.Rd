@@ -2,13 +2,13 @@
 % Please edit documentation in R/check_weights.R
 \name{check_weights}
 \alias{check_weights}
-\title{Checks the weights input}
+\title{Checks weights}
 \usage{
 check_weights(dep_var, weights)
 }
 \arguments{
 \item{dep_var}{dependent variable of distributional function.
-Can be any discrete or continuous vector of lenght 1 or more.}
+Can be any discrete or continuous vector of length 1 or more.}
 
 \item{weights}{positive numeric vector of \code{length(dep_var)}
 containing the weights or \code{NULL}.}
@@ -19,7 +19,7 @@ positive numeric vector of \code{length(dep_var)}
 }
 \description{
 Helper function to check a weights vector. Makes sure the weights
-are positve numeric values (not all zeros) and of the same lenght as the
+are positive numeric values (not all zeros) and of the same length as the
 dependent variable \code{dep_var}. Replaces all \code{NA} with 0 and sets
 all weights to 1 if weights is set to NULL.
 }
