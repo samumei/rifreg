@@ -13,20 +13,10 @@ Authors@R:
            role = c("aut", "cre"),
            email = "samuel.meier@sgb.ch",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Maintainer: 
-    person(given = "David",
-           family = "Gallusser",
-           role = c("aut", "cre"),
-           email = "david.gallusser@sgb.ch",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-    person(given = "Samuel",
-           family = "Meier",
-           role = c("aut", "cre"),
-           email = "samuel.meier@sgb.ch",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+Maintainer: David Gallusser <david.gallusser@sgb.ch>,
+            Samuel Meier <samuel.meier@sgb.ch>
 Description: Provides functions to compute recentered influence functions (RIF) of a distributional variable at the mean, quantiles, variance, gini or any custom functional of interest. The package allows to regress the RIF on any number of covariates. Generic print, plot and summary functions are also provided. 
-
-License: GPL (>= 3)
+License: GPL (>= 3) 
 Encoding: UTF-8
 Depends:
     ggplot2
