@@ -5,14 +5,14 @@
 \alias{est_rif_quantile}
 \title{Estimate RIF of Quantiles}
 \usage{
-est_rif_quantiles(dep_var, quantiles, weights = NULL, ...)
+est_rif_quantiles(dep_var, probs, weights = NULL, ...)
 
 est_rif_quantile(quantile, dep_var, weights, density)
 }
 \arguments{
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 
-\item{quantiles}{a vector of length 1 or more with quantile positions to calculate the RIF.
+\item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
 Each quantile is indicated with value between 0 and 1.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
@@ -27,7 +27,7 @@ where nx is the length of (the finite entries of) \code{dep_var}.}
 For further information see \code{?stats::density}.}
 }
 \value{
-A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
+A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the quantile's probabilities.
 }
 \description{
 Function to estimate the recentered influence function (RIF) of one or several specified quantiles
@@ -40,8 +40,8 @@ of a weighted distribution of a dependent variable.
 }}
 \examples{
 dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-quantiles <- seq(1:9)/10
+probs <- seq(1:9)/10
 weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-est_rif_quantiles(dep_var, quantiles, weights = weights)
+est_rif_quantiles(dep_var, probs, weights = weights)
 
 }

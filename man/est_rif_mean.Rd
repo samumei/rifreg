@@ -10,7 +10,7 @@ est_rif_mean(dep_var)
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 }
 \value{
-A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
+A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the probs.
 }
 \description{
 Function to estimate the recentered influence function (RIF) of the mean

@@ -9,7 +9,7 @@ est_rifreg(
   data,
   functional,
   custom_rif_function = NULL,
-  quantiles = NULL,
+  probs = NULL,
   weights = NULL,
   bootstrap = FALSE,
   bootstrap_iterations = 100,
@@ -30,7 +30,7 @@ is selected a \code{custom_rif_function} needs to be provided.}
 \item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.
 Default is NULL.See examples for further details.}
 
-\item{quantiles}{a vector of length 1 or more with quantile positions to calculate the RIF.
+\item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
 Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
@@ -69,7 +69,7 @@ rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                      data = example_data,
                      functional = "quantiles",
                      custom_rif_function = NULL,
-                     quantiles = seq(0.1, 0.9, 0.1),
+                     probs = seq(0.1, 0.9, 0.1),
                      weights = example_weights,
                      bootstrap = TRUE,
                      bootstrap_iterations = 100,
@@ -92,7 +92,7 @@ rifreg <- est_rifreg(
   data = example_data,
   functional = "custom",
   custom_rif_function = custom_variance_function,
-  quantiles = NULL,
+  probs = NULL,
   weights = NULL,
   bootstrap = FALSE,
   cores = 1,

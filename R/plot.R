@@ -5,8 +5,8 @@
 #'
 #' @param x an object of class "rifreg", usually, a result of a call to [rifreg()] with code{functional = "quantiles"}.
 #' @param varselect vector of length 1 or more containig the names of the covariates to display.
-#' @param alpha numeric value between 0 and 1 (default = 0.05) that defines the confidence interval
-#'              plotted as a ribbon and defined as \code{qnorm(1-alpha/2)} * standard error.
+#' @param confidence_level numeric value between 0 and 1 (default = 0.95) that defines the confidence interval
+#'              plotted as a ribbon and defined as \code{qnorm(confidence_level/2)} * standard error.
 #'              Only required if bootstrapped standard errors where computed.
 #' @param ... other parameters to be passed through to plotting functions.
 #'
@@ -29,9 +29,9 @@
 #'
 #' plot(rifreg)
 #'
-#' plot(rifreg, varselect = c("age", "unionyes"), alpha = 0.1)
+#' plot(rifreg, varselect = c("age", "unionyes"), confidence_level = 0.1)
 #'
-plot.rifreg <- function(x, varselect = NULL, alpha = 0.05, ...){
+plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, ...){
 
   estimates <- as.data.frame(x$estimates)
 
@@ -75,7 +75,7 @@ plot.rifreg <- function(x, varselect = NULL, alpha = 0.05, ...){
   }
 
   df <- subset(estimates, variable %in% varselect)
-  t <-  qnorm(1-alpha/2)
+  t <-  qnorm(confidence_level/2)
 
   #Actual plot
   if(length(varselect)==1){

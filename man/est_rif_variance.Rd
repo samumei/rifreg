@@ -14,7 +14,7 @@ The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
 }
 \value{
-A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
+A data frame with one column containing the RIF of the variance for each observation.
 }
 \description{
 Function to estimate the recentered influence function (RIF) of the variance

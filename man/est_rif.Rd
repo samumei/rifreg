@@ -8,7 +8,7 @@ est_rif(
   functional,
   dep_var,
   weights = NULL,
-  quantiles = NULL,
+  probs = NULL,
   custom_rif_function = NULL,
   ...
 )
@@ -24,7 +24,7 @@ is selected a \code{custom_rif_function} needs to be provided.}
 The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
 
-\item{quantiles}{a vector of length 1 or more with quantile positions to calculate the RIF.
+\item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
 Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
 
 \item{custom_rif_function}{the RIF function to compute the RIF of the custom functional. Default is NULL.}
@@ -45,11 +45,11 @@ This function estimates the recentered influence function (RIF) of a chosen func
 \examples{
 
 dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-quantiles <- seq(1:9)/10
+probs <- seq(1:9)/10
 weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 rif <- est_rif(functional = "quantiles",
                dep_var = dep_var,
-               quantiles = quantiles,
+               probs = probs,
                weights = weights)
 
 # custom function
