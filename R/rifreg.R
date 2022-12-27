@@ -27,7 +27,6 @@
 #'                             Only required if \code{bootstrap = TRUE}.
 #' @param cores positive integer indicating the number of cores to use when computing bootstrap standard errors.
 #'              Only required if \code{bootstrap = TRUE}.
-#' @param model WHY DO WE NEED THIS PARAMETER?
 #' @param ... additional parameters passed to the \code{custom_rif_function}.
 #'            Apart from \code{dep_var} they must have a different name than the the ones of
 #'            \code{est_rif}. For instance, if you want to pass weights to the
@@ -50,8 +49,7 @@
 #'                      weights = example_weights,
 #'                      bootstrap = TRUE,
 #'                      bootstrap_iterations = 100,
-#'                      cores = 1,
-#'                      model = TRUE)
+#'                      cores = 1)
 #'
 #' # custom function
 #' custom_variance_function <- function(dep_var, custom_weights){
@@ -73,7 +71,6 @@
 #'   weights = NULL,
 #'   bootstrap = FALSE,
 #'   cores = 1,
-#'   model = TRUE,
 #'   custom_weights = example_weights)
 #'
 est_rifreg <- function(formula,
@@ -85,7 +82,6 @@ est_rifreg <- function(formula,
                        bootstrap = FALSE,
                        bootstrap_iterations = 100,
                        cores = 1,
-                       model = TRUE,
                        ...){
 
   # Use match.call function to call data.vectors
@@ -176,10 +172,6 @@ est_rifreg <- function(formula,
   }
 
   estimates <- do.call("cbind", lapply(rif_lm, coef))
-
-  if(!model) {
-    rif_lm <- NULL
-  }
 
   results <- list(estimates = estimates,
                   bootstrap_se = bootstrap_se,

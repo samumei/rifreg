@@ -9,8 +9,7 @@ test_that("Generic summary method does not throw an error", {
                               weights = weights,
                               bootstrap = FALSE,
                               bootstrap_iterations = 100,
-                              cores = 1,
-                              model = TRUE)
+                              cores = 1)
 
   expect_error(capture.output(summary(rifreg_object)), NA)
 })

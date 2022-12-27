@@ -6,13 +6,11 @@ testthat::test_that("RIF regression function does not throw an error" , {
 expect_error(est_rifreg(formula = log(wage) ~ union + age,
                         data = data,
                         functional = "quantiles",
-                        custom_rif_function = NULL,
                         probs = 0.5,
                         weights = weights,
                         bootstrap = FALSE,
                         bootstrap_iterations = 100,
-                        cores = 1,
-                        model = TRUE),
+                        cores = 1),
              NA)
 
 # with bootstrap and several quantiles
@@ -24,8 +22,7 @@ expect_error(est_rifreg(formula = log(wage) ~ union + age,
                         weights = weights,
                         bootstrap = TRUE,
                         bootstrap_iterations = 100,
-                        cores = 1,
-                        model = TRUE),
+                        cores = 1),
              NA)
 })
 
@@ -50,7 +47,6 @@ testthat::test_that("RIF regression function does not throw an error with custom
                           weights = NULL,
                           bootstrap = FALSE,
                           cores = 1,
-                          model = TRUE,
                           custom_weights = test_weights),
                NA)
 
@@ -78,7 +74,6 @@ testthat::test_that("RIF regression function does not throw an error with custom
                           weights = NULL,
                           bootstrap = FALSE,
                           cores = 1,
-                          model = TRUE,
                           custom_weights = test_weights),
                NA)
 })
@@ -98,7 +93,6 @@ testthat::test_that("RIF regression function does not throw an error with custom
 #                           weights = weights,
 #                           bootstrap = TRUE,
 #                           bootstrap_iterations = 100,
-#                           cores = 4,
-#                           model = TRUE),
+#                           cores = 4),
 #                NA)
 # })

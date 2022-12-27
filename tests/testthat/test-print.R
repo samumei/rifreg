@@ -9,8 +9,7 @@ test_that("Generic print method does not throw an error", {
                           weights = weights,
                           bootstrap = FALSE,
                           bootstrap_iterations = 100,
-                          cores = 1,
-                          model = TRUE)
+                          cores = 1)
 
   expect_error(capture.output(print(rifreg_object)), NA)
 

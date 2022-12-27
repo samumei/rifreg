@@ -14,7 +14,6 @@ est_rifreg(
   bootstrap = FALSE,
   bootstrap_iterations = 100,
   cores = 1,
-  model = TRUE,
   ...
 )
 }
@@ -45,8 +44,6 @@ Only required if \code{bootstrap = TRUE}.}
 \item{cores}{positive integer indicating the number of cores to use when computing bootstrap standard errors.
 Only required if \code{bootstrap = TRUE}.}
 
-\item{model}{WHY DO WE NEED THIS PARAMETER?}
-
 \item{...}{additional parameters passed to the \code{custom_rif_function}.
 Apart from \code{dep_var} they must have a different name than the the ones of
 \code{est_rif}. For instance, if you want to pass weights to the
@@ -73,8 +70,7 @@ rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                      weights = example_weights,
                      bootstrap = TRUE,
                      bootstrap_iterations = 100,
-                     cores = 1,
-                     model = TRUE)
+                     cores = 1)
 
 # custom function
 custom_variance_function <- function(dep_var, custom_weights){
@@ -96,7 +92,6 @@ rifreg <- est_rifreg(
   weights = NULL,
   bootstrap = FALSE,
   cores = 1,
-  model = TRUE,
   custom_weights = example_weights)
 
 }
