@@ -17,7 +17,7 @@
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
-#' @param quantiles a vector of length 1 or more with quantile positions to calculate the RIF.
+#' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
 #'                  Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.
 #' @param custom_rif_function the RIF function to compute the RIF of the custom functional. Default is NULL.
 #' @param ... additional parameters passed to the \code{custom_rif_function}.
@@ -32,11 +32,11 @@
 #' @examples
 #'
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-#' quantiles <- seq(1:9)/10
+#' probs <- seq(1:9)/10
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' rif <- est_rif(functional = "quantiles",
 #'                dep_var = dep_var,
-#'                quantiles = quantiles,
+#'                probs = probs,
 #'                weights = weights)
 #'
 #' # custom function
@@ -57,7 +57,7 @@
 est_rif <- function(functional,
                     dep_var,
                     weights = NULL,
-                    quantiles = NULL,
+                    probs = NULL,
                     custom_rif_function = NULL,
                     ...) {
 
@@ -68,12 +68,12 @@ est_rif <- function(functional,
   }
 
   if(functional == "quantiles") {
-    if(is.null(quantiles)) stop(msg = "Parameter \"quantiles\" needs to have at least one value between 0 and 1.")
-    if(!all(quantiles > 0 & quantiles < 1)) stop(msg = "All \"quantiles\" need to be larger than 0 and smaller than 1.")
+    if(is.null(probs)) stop(msg = "Parameter \"probs\" needs to have at least one value between 0 and 1.")
+    if(!all(probs > 0 & probs < 1)) stop(msg = "All \"probs\" need to be larger than 0 and smaller than 1.")
   }
   if(functional == "custom") {
     if(is.null(custom_rif_function)) stop(msg = "If parameter \"functional\" is \"custom\", parameter \"custom_rif_function\" cannot be NULL, but has to be the custom RIF function!")
-    if(!is.null(quantiles)) stop("Parameter \"quantiles\" cannot be evaluated with custom functions and has to be NULL! To pass quantiles to a custom function give them a new name (e.g. \"custom_quantiles\").
+    if(!is.null(probs)) stop("Parameter \"probs\" cannot be evaluated with custom functions and has to be NULL! To pass probs to a custom function give them a new name (e.g. \"custom_quantiles\").
                             SEE HELP FOR DETAILS.")
     if(is.null(dep_var)) stop("A custom function needs to contain the parameter \"dep_var\".
                               It can be set to NULL if not required.")
@@ -84,7 +84,7 @@ est_rif <- function(functional,
   rif <- switch(functional,
                 mean = est_rif_mean(dep_var = dep_var),
                 variance = est_rif_variance(dep_var = dep_var, weights = weights),
-                quantiles = est_rif_quantiles(quantiles = quantiles, dep_var = dep_var, weights = weights, ... = ...),
+                quantiles = est_rif_quantiles(probs = probs, dep_var = dep_var, weights = weights, ... = ...),
                 gini = stop("GINI NOT YET IMPLEMENTED!"),
                 custom = custom_rif_function(dep_var = dep_var, ...))
 
@@ -99,7 +99,7 @@ est_rif <- function(functional,
 #'
 #' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
 #'
-#' @return A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
+#' @return A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the probs.
 #' @export
 #'
 #' @examples
@@ -120,28 +120,28 @@ est_rif_mean <- function(dep_var) {
 #' of a weighted distribution of a dependent variable.
 #'
 #' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
-#' @param quantiles a vector of length 1 or more with quantile positions to calculate the RIF.
+#' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
 #'                  Each quantile is indicated with value between 0 and 1.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
 #' @param ... further arguments passed on to \code{stats::density()} function.
 #'
-#' @return A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
+#' @return A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the quantile's probabilities.
 #' @export
 #'
 #' @examples
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-#' quantiles <- seq(1:9)/10
+#' probs <- seq(1:9)/10
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-#' est_rif_quantiles(dep_var, quantiles, weights = weights)
+#' est_rif_quantiles(dep_var, probs, weights = weights)
 #'
-est_rif_quantiles <- function(dep_var, quantiles, weights = NULL, ...){
+est_rif_quantiles <- function(dep_var, probs, weights = NULL, ...){
   weights <- check_weights(dep_var, weights)
   density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
-  rif <- sapply(X = quantiles, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
+  rif <- sapply(X = probs, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
   rif <- data.frame(rif, weights)
-  names(rif) <- c(paste0("rif_quantile_", quantiles), "weights")
+  names(rif) <- c(paste0("rif_quantile_", probs), "weights")
   return(rif)
 }
 
@@ -170,7 +170,7 @@ est_rif_quantile <- function(quantile, dep_var, weights, density) {
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
 #'
-#' @return A data frame with the number of columns equaling the length of vector \code{quantiles}. Each column contains the RIF values of the quantiles.
+#' @return A data frame with one column containing the RIF of the variance for each observation.
 #' @export
 #'
 #' @examples

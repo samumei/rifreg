@@ -17,7 +17,7 @@
 #'                   is selected a \code{custom_rif_function} needs to be provided.
 #' @param custom_rif_function the RIF function to compute the RIF of the custom functional.
 #'                            Default is NULL.See examples for further details.
-#' @param quantiles a vector of length 1 or more with quantile positions to calculate the RIF.
+#' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
 #'                  Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
@@ -46,7 +46,7 @@
 #'                      data = example_data,
 #'                      functional = "quantiles",
 #'                      custom_rif_function = NULL,
-#'                      quantiles = seq(0.1, 0.9, 0.1),
+#'                      probs = seq(0.1, 0.9, 0.1),
 #'                      weights = example_weights,
 #'                      bootstrap = TRUE,
 #'                      bootstrap_iterations = 100,
@@ -69,7 +69,7 @@
 #'   data = example_data,
 #'   functional = "custom",
 #'   custom_rif_function = custom_variance_function,
-#'   quantiles = NULL,
+#'   probs = NULL,
 #'   weights = NULL,
 #'   bootstrap = FALSE,
 #'   cores = 1,
@@ -80,7 +80,7 @@ est_rifreg <- function(formula,
                        data,
                        functional,
                        custom_rif_function = NULL,
-                       quantiles = NULL,
+                       probs = NULL,
                        weights = NULL,
                        bootstrap = FALSE,
                        bootstrap_iterations = 100,
@@ -116,7 +116,7 @@ est_rifreg <- function(formula,
                                      functional = functional,
                                      dep_var = dep_var,
                                      weights = weights,
-                                     quantiles = quantiles,
+                                     probs = probs,
                                      custom_rif_function = custom_rif_function,
                                      ...)
   rif_lm <- rifreg_detail[-length(rifreg_detail)]
@@ -133,7 +133,7 @@ est_rifreg <- function(formula,
                                                                                 functional = functional,
                                                                                 dep_var = dep_var,
                                                                                 weights = weights,
-                                                                                quantiles = quantiles,
+                                                                                probs = probs,
                                                                                 custom_rif_function = custom_rif_function,
                                                                                 bootstrap_iterations = bootstrap_iterations,
                                                                                 ...))
@@ -151,7 +151,7 @@ est_rifreg <- function(formula,
                                                                                 functional = functional,
                                                                                 dep_var = dep_var,
                                                                                 weights = weights,
-                                                                                quantiles = quantiles,
+                                                                                probs = probs,
                                                                                 custom_rif_function = custom_rif_function,
                                                                                 bootstrap_iterations = bootstrap_iterations,
                                                                                 ...),
@@ -188,7 +188,7 @@ est_rifreg <- function(formula,
                   rif = rif,
                   functional = functional,
                   custom_rif_function = custom_rif_function,
-                  quantiles = quantiles)
+                  probs = probs)
 
   class(results) <- c("rifreg", "lm")
 
@@ -202,7 +202,7 @@ est_rifreg_detail <- function(formula,
                               functional,
                               dep_var,
                               weights,
-                              quantiles,
+                              probs,
                               custom_rif_function,
                               ...) {
 
@@ -210,7 +210,7 @@ est_rifreg_detail <- function(formula,
   rif <- est_rif(functional = functional,
                  dep_var = dep_var,
                  weights = weights,
-                 quantiles = quantiles,
+                 probs = probs,
                  custom_rif_function = custom_rif_function,
                  ...)
 
@@ -235,7 +235,7 @@ est_rifreg_bootstrap <- function(data_used,
                                  functional,
                                  dep_var,
                                  weights,
-                                 quantiles,
+                                 probs,
                                  custom_rif_function,
                                  bootstrap_iterations,
                                  ...) {
@@ -245,7 +245,7 @@ est_rifreg_bootstrap <- function(data_used,
                               functional = functional,
                               dep_var = dep_var[sample],
                               weights = (weights[sample]/sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
-                              quantiles = quantiles,
+                              probs = probs,
                               custom_rif_function = custom_rif_function,
                               ...)
   coefs <- do.call("cbind",lapply(rif_lm, coef))

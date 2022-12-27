@@ -20,7 +20,7 @@
 #'                      data = data,
 #'                      functional = "quantiles",
 #'                      custom_functional = NULL,
-#'                      quantiles = seq(0.1, 0.9, 0.1),
+#'                      probs = seq(0.1, 0.9, 0.1),
 #'                      weights = weights,
 #'                      bootstrap = FALSE,
 #'                      bootstrap_iterations = 100,
@@ -36,13 +36,13 @@ plot.rifreg <- function(x, varselect = NULL, alpha = 0.05, ...){
   estimates <- as.data.frame(x$estimates)
 
   if(x$functional=="quantiles") {
-    if(length(x$quantiles)==1) stop("Can only plot coefficients for a sequence of quantile RIF regressions, i.e. length(quantiles)>1.")
-    names(estimates) <- x$quantiles
+    if(length(x$probs)==1) stop("Can only plot coefficients for a sequence of quantile RIF regressions, i.e. length(probs)>1.")
+    names(estimates) <- x$probs
   }
 
 
   estimates$variable <- rownames(estimates)
-  estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable,names_to="quantiles"))
+  estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable,names_to="probs"))
 
   if(is.null(x$bootstrap_se)) {
     estimates$se <- NA
@@ -50,13 +50,13 @@ plot.rifreg <- function(x, varselect = NULL, alpha = 0.05, ...){
   else {
     bootstrap_se <- as.data.frame(x$bootstrap_se)
     if(x$functional=="quantiles"){
-      names(bootstrap_se) <- x$quantiles
+      names(bootstrap_se) <- x$probs
     }
     bootstrap_se$variable <- rownames(bootstrap_se)
-    bootstrap_se <- as.data.frame(tidyr::pivot_longer(bootstrap_se,-variable,names_to="quantiles"))
+    bootstrap_se <- as.data.frame(tidyr::pivot_longer(bootstrap_se,-variable,names_to="probs"))
     estimates$se <- bootstrap_se$value
   }
-  estimates$quantiles <- as.numeric(estimates$quantiles)
+  estimates$probs <- as.numeric(estimates$probs)
 
   variables <- unique(estimates$variable)
   if(is.null(varselect)){
@@ -79,16 +79,16 @@ plot.rifreg <- function(x, varselect = NULL, alpha = 0.05, ...){
 
   #Actual plot
   if(length(varselect)==1){
-    plot <- ggplot(df, aes(quantiles,value, color=variable, fill=variable)) +
+    plot <- ggplot(df, aes(probs,value, color=variable, fill=variable)) +
       geom_hline(yintercept = 0, colour="grey") +
       geom_point() + geom_line() +
-      labs(title=paste("Rifreg coefficients",varselect,sep=": "), y="coefficient", x="quantiles")
+      labs(title=paste("Rifreg coefficients",varselect,sep=": "), y="coefficient", x="probs")
   } else {
-    plot <- ggplot(df, aes(quantiles,value, color=variable, fill=variable)) +
+    plot <- ggplot(df, aes(probs,value, color=variable, fill=variable)) +
       geom_hline(yintercept = 0, colour="grey") +
       geom_point() + geom_line() +
       facet_wrap( ~ variable, scales="free") +
-      labs(title="Rifreg coefficients", y="coefficient", x="quantiles")
+      labs(title="Rifreg coefficients", y="coefficient", x="probs")
   }
   if(!is.null(x$bootstrap_se)){
     plot <- plot + geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.4, color=NA)
