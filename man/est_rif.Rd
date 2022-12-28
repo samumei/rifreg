@@ -54,7 +54,6 @@ rif <- est_rif(functional = "quantiles",
 
 # custom function
 custom_variance_function <- function(dep_var, custom_weights){
-  weights <- check_weights(dep_var, custom_weights)
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)

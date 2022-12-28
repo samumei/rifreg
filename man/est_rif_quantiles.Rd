@@ -5,7 +5,7 @@
 \alias{est_rif_quantile}
 \title{Estimate RIF of Quantiles}
 \usage{
-est_rif_quantiles(dep_var, probs, weights = NULL, ...)
+est_rif_quantiles(dep_var, probs, weights, ...)
 
 est_rif_quantile(quantile, dep_var, weights, density)
 }

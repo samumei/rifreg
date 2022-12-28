@@ -63,7 +63,7 @@ testthat::test_that("RIF for several quantiles correctly calculated" , {
 # RIF of variance
 testthat::test_that("RIF for variance correctly calculated" , {
   dep_var <- CPSmen8305$wage[1:300]
-  rif_variance <- est_rif_variance(dep_var)
+  rif_variance <- est_rif_variance(dep_var, weights = rep(1, length(dep_var)))
 
   testthat::expect_equal(names(rif_variance), c("rif_variance", "weights"))
   testthat::expect_equal(rif_variance$rif_variance, (dep_var - mean(dep_var))^2)

@@ -41,7 +41,6 @@
 #'
 #' # custom function
 #' custom_variance_function <- function(dep_var, custom_weights){
-#'   weights <- check_weights(dep_var, custom_weights)
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   rif <- (dep_var - weighted_mean)^2
 #'   rif <- data.frame(rif, weights)
@@ -61,6 +60,9 @@ est_rif <- function(functional,
                     custom_rif_function = NULL,
                     ...) {
 
+  # SHOULD WEIGHTS BE CHECKED HERE, IF est_rif bzw. rif Funktion alleine aufgerufen wird (public function)
+  weights <- check_weights(dep_var, weights)
+
   if(!(functional == "mean" | functional == "variance" |
        functional == "quantiles" | functional == "gini" |
        functional == "custom")) {
@@ -77,8 +79,8 @@ est_rif <- function(functional,
                             SEE HELP FOR DETAILS.")
     if(is.null(dep_var)) stop("A custom function needs to contain the parameter \"dep_var\".
                               It can be set to NULL if not required.")
-    if(!is.null(weights)) stop("Parameter \"weights\" cannot be evaluated with custom functions and has to be NULL! To pass weights to a custom function give the parameter a new name (e.g. \"custom_weights\").
-                            SEEE HELP FOR DETAILS.")
+    # if(!is.null(weights)) stop("Parameter \"weights\" cannot be evaluated with custom functions and has to be NULL! To pass weights to a custom function give the parameter a new name (e.g. \"custom_weights\").
+    #                         SEEE HELP FOR DETAILS.")
   }
 
   rif <- switch(functional,
@@ -136,8 +138,7 @@ est_rif_mean <- function(dep_var) {
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' est_rif_quantiles(dep_var, probs, weights = weights)
 #'
-est_rif_quantiles <- function(dep_var, probs, weights = NULL, ...){
-  weights <- check_weights(dep_var, weights)
+est_rif_quantiles <- function(dep_var, probs, weights, ...){
   density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
   rif <- sapply(X = probs, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
   rif <- data.frame(rif, weights)
@@ -179,8 +180,7 @@ est_rif_quantile <- function(quantile, dep_var, weights, density) {
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' est_rif_variance(dep_var, weights = weights)
 #'
-est_rif_variance <- function(dep_var, weights = NULL){
-  weights <- check_weights(dep_var, weights)
+est_rif_variance <- function(dep_var, weights){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)

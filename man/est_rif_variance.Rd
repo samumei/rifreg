@@ -4,7 +4,7 @@
 \alias{est_rif_variance}
 \title{#' Estimate RIF of Variance}
 \usage{
-est_rif_variance(dep_var, weights = NULL)
+est_rif_variance(dep_var, weights)
 }
 \arguments{
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
