@@ -1,5 +1,6 @@
 test_that("Generic summary method does not throw an error", {
   data <- CPSmen8305[1:300,]
+  weights <- CPSmen8305$weights[1:300]
 
   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
                               data = data,

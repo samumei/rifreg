@@ -62,36 +62,35 @@ functional of interest.
 }
 \examples{
 
-example_data <- CPSmen8305[1:300,]
-example_weights <- CPSmen8305$weights[1:300]
+data <- CPSmen8305[1:300,]
+weights <- CPSmen8305$weights[1:300]
 
 rifreg <- est_rifreg(formula = log(wage) ~ union + age,
-                     data = example_data,
+                     data = data,
                      functional = "quantiles",
                      custom_rif_function = NULL,
                      probs = seq(0.1, 0.9, 0.1),
-                     weights = example_weights,
+                     weights = weights,
                      bootstrap = TRUE,
                      bootstrap_iterations = 100,
                      cores = 1)
+
 
 # custom function
 custom_variance_function <- function(dep_var, weights){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
-  rif <- data.frame(rif, weights)
-  names(rif) <- c("rif_variance", "weights")
   return(rif)
 }
 
 
 rifreg <- est_rifreg(
   formula = log(wage) ~ union + age,
-  data = example_data,
+  data = data,
   functional = "custom",
   custom_rif_function = custom_variance_function,
   probs = NULL,
-  weights = NULL,
+  weights = weights,
   bootstrap = FALSE,
   cores = 1,
   custom_weights = example_weights)

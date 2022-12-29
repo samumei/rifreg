@@ -1,12 +1,12 @@
 testthat::test_that("RIF regression function does not throw an error" , {
   data <- CPSmen8305[1:300,]
-  weights <- CPSmen8305$weights[1:300]
+  test_weights <- CPSmen8305$weights[1:300]
 
   expect_error(est_rifreg(formula = log(wage) ~ union + age,
                           data = data,
                           functional = "quantiles",
                           probs = 0.5,
-                          weights = weights,
+                          weights = test_weights,
                           bootstrap = FALSE,
                           bootstrap_iterations = 100,
                           cores = 1),
@@ -19,7 +19,7 @@ testthat::test_that("RIF regression function does not throw an error" , {
                           functional = "quantiles",
                           custom_rif_function = NULL,
                           probs = c(0.1, 0.5, 0.9),
-                          weights = weights,
+                          weights = test_weights,
                           bootstrap = TRUE,
                           bootstrap_iterations = 100,
                           cores = 1),

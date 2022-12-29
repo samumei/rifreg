@@ -1,5 +1,6 @@
 test_that("Generic plot method does not throw an error", {
   data <- CPSmen8305[1:300,]
+  weights <- CPSmen8305$weights[1:300]
 
   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
                               data = data,
@@ -17,6 +18,7 @@ test_that("Generic plot method does not throw an error", {
 
 test_that("Generic plot method generates a plot", {
   data <- CPSmen8305[1:300,]
+  weights <- CPSmen8305$weights[1:300]
 
   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
                               data = data,
@@ -34,6 +36,7 @@ test_that("Generic plot method generates a plot", {
 
 test_that("Generic plot method generates a plot with SE", {
   data <- CPSmen8305[1:300,]
+  weights <- CPSmen8305$weights[1:300]
 
   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
                               data = data,
@@ -52,6 +55,7 @@ test_that("Generic plot method generates a plot with SE", {
 
 test_that("Generic plot method generates a plot with different alpha", {
   data <- CPSmen8305[1:300,]
+  weights <- CPSmen8305$weights[1:300]
 
   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
                               data = data,
@@ -70,6 +74,7 @@ test_that("Generic plot method generates a plot with different alpha", {
 
 test_that("Generic plot method generates a plot with specific variables", {
   data <- CPSmen8305[1:300,]
+  weights <- CPSmen8305$weights[1:300]
 
   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
                               data = data,

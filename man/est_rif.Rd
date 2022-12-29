@@ -5,24 +5,24 @@
 \title{Estimate Recentered Influence Functions}
 \usage{
 est_rif(
-  functional,
   dep_var,
   weights = NULL,
+  functional,
   probs = NULL,
   custom_rif_function = NULL,
   ...
 )
 }
 \arguments{
-\item{functional}{string containing the functional for which to compute the RIF. Can be one of
-"mean", "variance", "quantiles", "gini", or "custom". If "custom"
-is selected a \code{custom_rif_function} needs to be provided.}
-
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
+
+\item{functional}{string containing the functional for which to compute the RIF. Can be one of
+"mean", "variance", "quantiles", "gini", or "custom". If "custom"
+is selected a \code{custom_rif_function} needs to be provided.}
 
 \item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
 Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
@@ -51,24 +51,22 @@ This function estimates the recentered influence function (RIF) of a chosen func
 dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 probs <- seq(1:9)/10
 weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-rif <- est_rif(functional = "quantiles",
-               dep_var = dep_var,
-               probs = probs,
-               weights = weights)
+rif <- est_rif(dep_var = dep_var,
+               weights = weights,
+               functional = "quantiles",
+               probs = probs)
 
 # custom function
-custom_variance_function <- function(dep_var, custom_weights){
+custom_variance_function <- function(dep_var, weights){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
-  rif <- data.frame(rif, weights)
-  names(rif) <- c("rif_variance", "weights")
   return(rif)
 }
 
-rif_custom <-  est_rif(functional = "custom",
-                       dep_var = dep_var,
-                       custom_rif_function = custom_variance_function,
-                       custom_weights = weights)
+rif_custom <-  est_rif(dep_var = dep_var,
+                       weights = weights,
+                       functional = "custom",
+                       custom_rif_function = custom_variance_function)
 
 }
 \references{
