@@ -27,7 +27,11 @@ where nx is the length of (the finite entries of) \code{dep_var}.}
 \item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
 Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
 
-\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional. Default is NULL.}
+\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.
+Default is NULL. Only needs to provided if \code{functional = "custom"}.
+Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
+If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
+See examples for further details.}
 
 \item{...}{additional parameters passed to the \code{custom_rif_function}.
 Apart from \code{dep_var} they must have a different name than the the ones of

@@ -16,7 +16,10 @@
 #'                   "mean", "variance", "quantiles", "gini", or "custom". If "custom"
 #'                   is selected a \code{custom_rif_function} needs to be provided.
 #' @param custom_rif_function the RIF function to compute the RIF of the custom functional.
-#'                            Default is NULL.See examples for further details.
+#'                            Default is NULL. Only needs to provided if \code{functional = "custom"}.
+#'                            Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
+#'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
+#'                            See examples for further details.
 #' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
 #'                  Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
@@ -52,8 +55,7 @@
 #'                      cores = 1)
 #'
 #' # custom function
-#' custom_variance_function <- function(dep_var, custom_weights){
-#'   weights <- check_weights(dep_var, weights = custom_weights)
+#' custom_variance_function <- function(dep_var, weights){
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   rif <- (dep_var - weighted_mean)^2
 #'   rif <- data.frame(rif, weights)
@@ -86,7 +88,7 @@ est_rifreg <- function(formula,
 
   # Use match.call function to call data.vectors
   function_call <- match.call()
-  data_arguments_index <- match(c("formula", "data", "weights", "na.action", "custom_weights"), names(function_call), 0)
+  data_arguments_index <- match(c("formula", "data", "weights", "na.action"), names(function_call), 0)
   data_arguments <- function_call[c(1, data_arguments_index)]
   data_arguments$drop.unused.levels <- TRUE
   data_arguments[[1]] <- as.name("model.frame")
@@ -100,12 +102,9 @@ est_rifreg <- function(formula,
   covariates_numeric <- as.matrix(intercept_and_covariates[, -1])
 
   # Extract and check weights
-  if(!functional == "custom") {
-    weights <- model.weights(data_used)
-    weights <- check_weights(dep_var = dep_var,
+  weights <- model.weights(data_used)
+  weights <- check_weights(dep_var = dep_var,
                              weights = weights)
-  }
-
   # RIF
   rifreg_detail <- est_rifreg_detail(formula = formula,
                                      data_used = data_used,
@@ -206,12 +205,21 @@ est_rifreg_detail <- function(formula,
                  custom_rif_function = custom_rif_function,
                  ...)
 
-  # estimate RIF regression
-  data_and_rif <- cbind(rif, data_used)
-  n_rif <- ncol(rif) - 1
+  # combine rif and data
+  data_and_rif <- tryCatch(cbind(rif, data_used),
+                           error = function(err){
+                             data_used$rif <- rif
+                             data_used$weights <- weights
+                             return(data_used)
+  })
+
+
+  n_rif <- ncol(rif)
+  if(is.null(n_rif)) n_rif <- 1  #can this be removed???
+
   rif_lm <- list()
   for(i in 1:n_rif){
-    rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(rif)[i]," ~ .")))
+    rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(data_and_rif)[i]," ~ .")))
     rif_lm[[i]] <- lm(rif_formula, data = data_and_rif, weights = weights)
     names(rif_lm)[[i]] <- names(rif)[i]
   }

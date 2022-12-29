@@ -2,36 +2,36 @@ testthat::test_that("RIF regression function does not throw an error" , {
   data <- CPSmen8305[1:300,]
   weights <- CPSmen8305$weights[1:300]
 
+  expect_error(est_rifreg(formula = log(wage) ~ union + age,
+                          data = data,
+                          functional = "quantiles",
+                          probs = 0.5,
+                          weights = weights,
+                          bootstrap = FALSE,
+                          bootstrap_iterations = 100,
+                          cores = 1),
+               NA)
 
-expect_error(est_rifreg(formula = log(wage) ~ union + age,
-                        data = data,
-                        functional = "quantiles",
-                        probs = 0.5,
-                        weights = weights,
-                        bootstrap = FALSE,
-                        bootstrap_iterations = 100,
-                        cores = 1),
-             NA)
 
-# with bootstrap and several quantiles
-expect_error(est_rifreg(formula = log(wage) ~ union + age,
-                        data = data,
-                        functional = "quantiles",
-                        custom_rif_function = NULL,
-                        probs = c(0.1, 0.5, 0.9),
-                        weights = weights,
-                        bootstrap = TRUE,
-                        bootstrap_iterations = 100,
-                        cores = 1),
-             NA)
+  # with bootstrap and several quantiles
+  expect_error(est_rifreg(formula = log(wage) ~ union + age,
+                          data = data,
+                          functional = "quantiles",
+                          custom_rif_function = NULL,
+                          probs = c(0.1, 0.5, 0.9),
+                          weights = weights,
+                          bootstrap = TRUE,
+                          bootstrap_iterations = 100,
+                          cores = 1),
+               NA)
 })
 
 testthat::test_that("RIF regression function does not throw an error with custom functions" , {
   test_data <- CPSmen8305[1:300,]
   test_weights <- CPSmen8305$weights[1:300]
 
-  custom_variance_function <- function(dep_var, custom_weights){
-    weights <- check_weights(dep_var, weights = custom_weights)
+  custom_variance_function <- function(dep_var, weights){
+    weights <- check_weights(dep_var, weights = weights)
     weighted_mean <- weighted.mean(x = dep_var, w = weights)
     rif <- (dep_var - weighted_mean)^2
     rif <- data.frame(rif, weights)
@@ -44,13 +44,12 @@ testthat::test_that("RIF regression function does not throw an error with custom
                           functional = "custom",
                           custom_rif_function = custom_variance_function,
                           probs = NULL,
-                          weights = NULL,
                           bootstrap = FALSE,
                           cores = 1,
-                          custom_weights = test_weights),
+                          weights = test_weights),
                NA)
 
-  custom_quantiles_function <- function(dep_var, custom_probs, custom_weights, ...){
+  custom_quantiles_function <- function(dep_var, custom_probs, weights, ...){
     est_rif_quantile <- function(quantile, dep_var, weights, density) {
       weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = quantile)
       density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
@@ -58,7 +57,6 @@ testthat::test_that("RIF regression function does not throw an error with custom
       return(rif)
     }
 
-    weights <- check_weights(dep_var, custom_weights)
     density <- density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
     rif <- sapply(X = custom_probs, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
     rif <- data.frame(rif, weights)
@@ -71,15 +69,14 @@ testthat::test_that("RIF regression function does not throw an error with custom
                           functional = "custom",
                           custom_rif_function = custom_quantiles_function,
                           custom_probs = c(0.1, 0.5, 0.9),
-                          weights = NULL,
                           bootstrap = FALSE,
                           cores = 1,
-                          custom_weights = test_weights),
+                          weights = test_weights),
                NA)
 })
 
 
-# The following test does not work in devtools::test()
+# The following test does not work in devtools::check()
 # testthat::test_that("RIF regression function does not throw an with several cores" , {
 #   data <- CPSmen8305[1:300,]
 #   weights <- CPSmen8305$weights[1:300]

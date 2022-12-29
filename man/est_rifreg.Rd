@@ -27,7 +27,10 @@ est_rifreg(
 is selected a \code{custom_rif_function} needs to be provided.}
 
 \item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.
-Default is NULL.See examples for further details.}
+Default is NULL. Only needs to provided if \code{functional = "custom"}.
+Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
+If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
+See examples for further details.}
 
 \item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
 Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
@@ -73,8 +76,7 @@ rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                      cores = 1)
 
 # custom function
-custom_variance_function <- function(dep_var, custom_weights){
-  weights <- check_weights(dep_var, weights = custom_weights)
+custom_variance_function <- function(dep_var, weights){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)
