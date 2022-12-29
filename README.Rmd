@@ -45,7 +45,7 @@ small locations shifts in a continuous explanatory variable $X$ on a distributio
 An influence function, as concept from robust statistics, informs about the extent a statistic of an empirical marginal distribution changes due to increasing the probability 
 mass at value $y$ by a small amount. A recentred influence functions is defined as
 the influence function recentred around the original distributional statistic:
-$$\text{RIF}(y;\nu,F_y)= \nu(F_Y)+ \text{IF}(y;\nu,F_Y)$$
+$$\text{RIF}(y;\nu,F_Y)= \nu(F_Y)+ \text{IF}(y;\nu,F_Y)$$
 
 The expected value of a recentred influence function equals the original distributional statistic. Firpo et al. apply the law of iterated expectations to reformulate the distributional statistic in terms of the conditional expecations of the explanatory variables:
 $$\nu(F_Y) = \int \text{RIF}(y;\nu,F_Y) dF_Y=  \int E(\text{RIF}(Y;\nu,F_Y)|X=x) dF_X(x)$$

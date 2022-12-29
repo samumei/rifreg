@@ -63,7 +63,7 @@ the extent a statistic of an empirical marginal distribution changes due
 to increasing the probability mass at value $y$ by a small amount. A
 recentred influence functions is defined as the influence function
 recentred around the original distributional statistic:
-$$\text{RIF}(y;\nu,F_y)= \nu(F_Y)+ \text{IF}(y;\nu,F_Y)$$
+$$\text{RIF}(y;\nu,F_Y)= \nu(F_Y)+ \text{IF}(y;\nu,F_Y)$$
 
 The expected value of a recentred influence function equals the original
 distributional statistic. Firpo et al. apply the law of iterated
@@ -92,8 +92,8 @@ By default, the RIF of quantiles, the mean, the variance, the Gini
 coefficient, the interquantile range and the quantile ratio are
 available in `rifreg`. Moreover, it allows to calculate the RIF for
 additional statistics with user-written functions (see example below).
-Essama-Nssah & Lambert (2012) derive the influence funtions of an array
-of distributional statistics.
+Cowell and Flachaire (2007) and Essama-Nssah & Lambert (2012) derive the
+influence funtions of an array of distributional statistics.
 
 For the sake of illustration, consider the RIF of a quantile
 $q_\tau = \inf_q \{q: F_Y(q) \geq \tau\}$. It is defined as
@@ -214,6 +214,10 @@ ffl_model2 <- wage ~ union + nonwhite + married + education + experience
 ## Credits
 
 ## References
+
+Cowell, Frank A., and Emmanuel Flachaire. 2007. “Income distribution and
+inequality measurement: The problem of extreme values.” *Journal of
+Econometrics* 141: 1044–1072.
 
 Essama-Nssah, Boniface, and Peter J. Lambert. 2012. “Influence Functions
 for Policy Impact Analysis.” In John A. Bishop and Rafael Salas, eds.,
