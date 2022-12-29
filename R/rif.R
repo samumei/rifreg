@@ -166,6 +166,50 @@ est_rif_variance <- function(dep_var, weights){
 
 # GINI
 
+#' Estimate Gini coefficient (slightly adjusted code from Rothe (2015))
+gini <- function (dep_var, weights) {
+  n <- length(dep_var)
+  weights <- weights/sum(weights)
+  gini_coef <- sum(dep_var[order(dep_var)] * 1:n *  weights[order(dep_var)])
+  gini_coef <- 2 *  gini_coef/(n*sum(dep_var[order(dep_var)]  *  weights[order(dep_var)]))
+  gini_coef <- gini_coef - 1 - (1/n)
+  return(gini_coef)
+}
+
+#'#' Estimate RIF of Gini coefficient
+#'
+#' Function to estimate the recentered influence function (RIF) of the
+#' Gini coefficient of a weighted distribution of a dependent variable.
+#'
+#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
+#'                where nx is the length of (the finite entries of) \code{dep_var}.
+#'
+#' @return A data frame with one column containing the RIF of the variance for each observation.
+#' @references
+#' Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2018. “Decomposing Wage Distributions Using Recentered
+#' Influence Function Regressions.” \emph{Econometrics} 6(2), 28.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
+#' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
+#' est_rif_gini(dep_var, weights = weights)
+#'
+est_rif_gini <- function(dep_var, weights){
+  weights <- weights/sum(weights)
+  weighted_mean <- weighted.mean(x = dep_var, w = weights)
+  gini_coef <- gini(dep_var = dep_var, weights = weights)
+  generalized_lorenz_ordinates <- cumsum(dep_var[order(dep_var)] *  weights[order(dep_var)])
+  #weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var<=x)]))
+  rif <- (1/weighted_mean)*(2 * dep_var * gini_coef + (1 - dep_var) + 2 * generalized_lorenz_ordinates)
+  #rif2 <-  (dep_var/weighted_mean)*gini_coef + 1 - dep_var/weighted_mean + (2/weighted_mean) * weighted_ecdf
+  return(rif)
+}
+
 # IQR
 
 
