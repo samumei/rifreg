@@ -171,8 +171,28 @@ gini <- function (dep_var, weights) {
   n <- length(dep_var)
   weights <- weights/sum(weights)
   gini_coef <- sum(dep_var[order(dep_var)] * 1:n *  weights[order(dep_var)])
-  gini_coef <- 2 *  gini_coef/(n*sum(dep_var[order(dep_var)]  *  weights[order(dep_var)]))
+  gini_coef <- 2 *  gini_coef/(n * sum(dep_var[order(dep_var)]  *  weights[order(dep_var)]))
   gini_coef <- gini_coef - 1 - (1/n)
+  return(gini_coef)
+}
+
+
+#' Integrate generalized Lorenz curve
+integrate_generalized_lorenz_curve <- function (dep_var, weights) {
+  weights <- weights/sum(weights)
+  weighted_ecdf <- cumsum(weights[order(dep_var)])
+  generalized_lorenz_ordinates <- cumsum(dep_var[order(dep_var)]*weights[order(dep_var)])
+  lorenz_curve <- approxfun(c(0,weighted_ecdf),  c(0,generalized_lorenz_ordinates))
+  integrated_lorenz_curve <- integrate(lorenz_curve, 0,1)$value
+  return(integrated_lorenz_curve )
+}
+
+#' Estimate Gini coefficient by integrating Lorenz curve
+gini_lc <- function (dep_var, weights) {
+  weights <- weights/sum(weights)
+  weighted_mean <- weighted.mean(x = dep_var, w = weights)
+  integrated_generalized_lorenz_curve <- integrate_generalized_lorenz_curve(dep_var, weights)
+  gini_coef <- 1 - (2/weighted_mean)*integrated_generalized_lorenz_curve
   return(gini_coef)
 }
 
@@ -202,11 +222,18 @@ gini <- function (dep_var, weights) {
 est_rif_gini <- function(dep_var, weights){
   weights <- weights/sum(weights)
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
-  gini_coef <- gini(dep_var = dep_var, weights = weights)
-  generalized_lorenz_ordinates <- cumsum(dep_var[order(dep_var)] *  weights[order(dep_var)])
-  #weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var<=x)]))
-  rif <- (1/weighted_mean)*(2 * dep_var * gini_coef + (1 - dep_var) + 2 * generalized_lorenz_ordinates)
-  #rif2 <-  (dep_var/weighted_mean)*gini_coef + 1 - dep_var/weighted_mean + (2/weighted_mean) * weighted_ecdf
+  weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var<=x)]))
+  generalized_lorenz_ordinates <- sapply(dep_var, function(x) sum(dep_var[which(dep_var<=x)]*weights[which(dep_var<=x)]))
+  integrated_generalized_lorenz_curve <- integrate_generalized_lorenz_curve(dep_var, weights)
+  B2 <- (2*integrated_lorenz_curve)/weighted_mean^2
+  C2 <- -(2/weighted_mean)*(dep_var*(1-weighted_ecdf)) + generalized_lorenz_ordinates
+  rif <- 1 + B2*dep_var + C2
+
+  # # Definition of Cowell/Flachaire
+  # gini_coef <- gini_lc(dep_var, weights)
+  # integrated_lorenz_curve <- integrated_generalized_lorenz_curve/weighted_mean
+  # rif_cb <- gini_coef + 2*(integrated_lorenz_curve - generalized_lorenz_ordinates + (dep_var/weighted_mean)*(integrated_lorenz_curve - (1-weighted_ecdf)))
+  # head(cbind(rif,rif_cb))
   return(rif)
 }
 
