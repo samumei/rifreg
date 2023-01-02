@@ -101,7 +101,7 @@ influence funtions for an array of distributional statistics.
 
 For the sake of illustration, consider the RIF of a quantile
 $q_\tau = \inf_q \{q: F_Y(q) \geq \tau\}$. It is defined as
-$$ \text{RIF}(y;q_\tau,F_Y) = q_\tau  + \frac{\tau-1\{y \leq q_\tau\}}{f_Y(q_\tau)}, $$
+$$\text{RIF}(y;q_\tau,F_Y) = q_\tau  + \frac{\tau-1\{y \leq q_\tau\}}{f_Y(q_\tau)}, $$
 where $1\{\}$ is an indicator function and $f_Y(q_\tau)$ is the density
 at the quantile of interest. Thus, calculating the RIF requires
 estimating the sample quantile and the kernel density. The regression in
@@ -206,7 +206,7 @@ specify a `dep_var` parameter for the outcome variable $Y$ and a
 
 The following example shows how to write the RIF for the top 10 percent
 income share and, then, to estimate the RIF regression using this costum
-function. The formula for this spefic RIF can be found in Essam-Nassah &
+function. The formula for this spefic RIF can be found in Essam-Nssah &
 Lambert (2012) or Rios-Avila (2020).
 
 ``` r
