@@ -170,7 +170,8 @@ custum_top_income_share_rif <- function(dep_var,
 # fit_top_income_share <- rifreg(ffl_model2,
 #                                data=men8385,
 #                                weights=weights,
-#                                distribution_statistic="costum",         #            custom_rif_function=custum_top_income_share_rif,
+#                                distribution_statistic="costum",
+# custom_rif_function=custum_top_income_share_rif,
 #                                probs=0.1)
 ```
 
