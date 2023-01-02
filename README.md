@@ -81,7 +81,8 @@ Firpo et al. propose to approximate the conditional expectation of the
 RIF given the explanatory variables with a linear regression. The
 regression coefficients can be consistent estimates of the average
 derivatives $\widehat{\alpha}(\nu)$ if the conditional expectations of
-the RIF are linear in $X$ (see Firpo et al., 2009, Rothe 2015: 328).
+the RIF are linear in $X$ (see Firpo et al., 2009, [Rothe 2015:
+328](https://doi.org/10.1080/07350015.2014.948959)).
 
 `rifreg` implements this approach. It first calculates the RIF of the
 outcome variable $Y$ and a distributional statistic of interest $\nu$.
@@ -92,8 +93,11 @@ By default, the RIF of quantiles, the mean, the variance, the Gini
 coefficient, the interquantile range and the quantile ratio are
 available in `rifreg`. Moreover, it allows to calculate the RIF for
 additional statistics with user-written functions (see example below).
-Cowell and Flachaire (2007) and Essama-Nssah & Lambert (2012) derive the
-influence funtions of an array of distributional statistics.
+[Cowell and Flachaire
+(2007)](https://doi.org/10.1016/j.jeconom.2007.01.001), [Essama-Nssah &
+Lambert (2012)](https://doi.org/10.1108/S1049-2585(2012)0000020003), and
+[Rios-Avila (2020)](https://doi.org/10.1177/1536867X20909690) derive the
+influence funtions for an array of distributional statistics.
 
 For the sake of illustration, consider the RIF of a quantile
 $q_\tau = \inf_q \{q: F_Y(q) \geq \tau\}$. It is defined as
@@ -108,8 +112,14 @@ Firpo et al., 2009a: 958, 961).
 
 `rifreg` allows to bootstrap standard errors. Analytical standard errors
 can be nontrivial when the RIF introduces an additional estimation step.
-This is the case for quantiles quantiles where one has to estimate the
-density (see Firpo, Fortin, and Lemieux, 2009b).
+In particular, this is the case for quantiles where the density has to
+be estimated (see [Firpo, Fortin, and Lemieux,
+2009b](https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_extensions_0.pdf)).
+
+Per default, `rifreg` returns heteroskedasticity robust standard errors
+estimated by `sandwich::sandwich` if the variance is not bootstrapped.
+Note, however, that these standard errors do not take the variance
+introduced by the RIF estimation step into account.
 
 ## Example
 
@@ -125,18 +135,17 @@ al. (2009a).
 ### Unconditional quantile regressions
 
 We are interested in the unconditional quantile partial effects (UQPE)
-of unions on log hourly wages. We therefore run a regression of the RIF
-on union status and controls for demographic characteristics. The
-parameter `distributional_statistic` specifies quantiles as our
-distributional statistic of interest, while we define with `probs` the
-probabilities of the quantiles we are interested in.
+of union membership on log hourly wages. We therefore RIF regressions on
+union status and controls for demographic characteristics. The parameter
+`statistic` specifies quantiles as our distributional statistic of
+interest, while `probs` defines the probabilities of the quantiles.
 
 ``` r
 ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
 # fit_uqr <- rifreg(ffl_model,
 #                   data=men8385,
 #                   weights=weights,
-#                   distributional_statistic="quantiles",
+#                   statistic="quantiles",
 #                   probs=1:9/10)
 # summary(fit_uqr)
 ```
@@ -158,7 +167,7 @@ and the number of `cores`.
 # fit_uqr <- rifreg(ffl_model,
 #                   data=men8385,
 #                   weights=weights,
-#                   distribution_statistic="quantiles",
+#                   statistic="quantiles",
 #                   bootstrap=TRUE,
 #                   bootstrap_iterations=200,
 #                   cores=4,
@@ -172,18 +181,18 @@ and the number of `cores`.
 
 `rifreg` performs RIF regressions for other distributional statistics
 than quantiles. Per default, the “mean”, “variance”, “quantiles”,
-“gini”, “interquantile\_range” and “quantile\_ratio” are available.
+“gini”, “interquantile\_range” and “interquantile\_ratio” are available.
 
 ``` r
 ffl_model2 <- wage ~ union + nonwhite + married + education + experience
 # fit_gini <- rifreg(ffl_model2,
 #                   data=men8385,
 #                   weights=weights,
-#                   distribution_statistic="Gini")
+#                   statistic="gini")
 # fit_d9d1 <- rifreg(ffl_model2,
 #                   data=men8385,
 #                   weights=weights,
-#                   distribution_statistic="quantile_ratio",
+#                   statistic="interquantile_ratio",
 #                   probs=c(0.9,0.1))
 # fit_gini
 # fit_d9d1
@@ -192,26 +201,48 @@ ffl_model2 <- wage ~ union + nonwhite + married + education + experience
 ### User-written RIF functions
 
 Users may write their own RIF function. Costum RIF functions must
-specify a `dep_var` parameter for the outcome variable $Y$, a `weights`
-for potential sample weights, and `par` for a vector of parameters.
+specify a `dep_var` parameter for the outcome variable $Y$ and a
+`weights` for potential sample weights.
 
-The following example shows how to write the RIF for the Atkinson index
-and, then, to estimate the RIF regression using this costum function.
+The following example shows how to write the RIF for the top 10 percent
+income share and, then, to estimate the RIF regression using this costum
+function. The formula for this spefic RIF can be found in Essam-Nassah &
+Lambert (2012) or Rios-Avila (2020).
 
 ``` r
 ffl_model2 <- wage ~ union + nonwhite + married + education + experience
-# est_Atkinson_RIF <- function(dep_var,weights, par){
-#
-# }
-# fit_Atkinson <- rifreg(ffl_model2,
-#                   data=men8385,
-#                   weights=weights,
-#                   distribution_statistic="costum",
-#                   custom_rif_function=est_Atkinson_RIF,
-#                   par=0.5)
+
+# custom function top 10% percent income share
+custum_top_income_share_rif <- function(dep_var,
+                                        weights,
+                                        probs=0.1){
+  probs <- 1-probs
+  weighted_mean <- weighted.mean(x = dep_var, 
+                                 w = weights)
+  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,
+                                           weights = weights,
+                                           probs = probs)
+  lorenz_ordinate <- sum(dep_var[which(dep_var<=weighted_quantile)]*
+                           weights[which(dep_var<=weighted_quantile)])/
+    sum(dep_var*weights)
+  if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
+                          ifelse(dep_var < weighted_quantile,
+                                 dep_var - (1-probs)*weighted_quantile,
+                                 probs*weighted_quantile)/weighted_mean
+  rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+  return(rif_top_income_share)
+}
+
+# fit_top_income_share <- rifreg(ffl_model2,
+#                                data=men8385,
+#                                weights=weights,
+#                                distribution_statistic="costum",         #            custom_rif_function=custum_top_income_share_rif,
+#                                probs=0.1)
 ```
 
 ## Credits
+
+Samuel Meier, David Gallusser
 
 ## References
 
@@ -230,6 +261,10 @@ Firpo, Sergio, Nicole M. Fortin, and Thomas Lemieux. 2009a.
 Firpo, Sergio, Nicole M. Fortin, and Thomas Lemieux. 2009b. “Supplement
 to ‘Unconditional Quantile Regressions’.” *Econometrica Supplemental
 Material*, 77.
+
+Rios-Avila, Fernando (2020): “Recentered influence functions (RIFs) in
+Stata: RIF regression and RIF decomposition.” *The Stata Journal* 20(1):
+51-94.
 
 Rothe, Christoph (2015): “Decomposing the Composition Effect. The Role
 of Covariates in Determining Between-Group Differences in Economic
