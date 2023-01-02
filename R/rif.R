@@ -93,7 +93,7 @@ est_rif <- function(dep_var,
 }
 
 
-#' Estimate RIF of Quantiles
+#' Estimate RIF of quantiles
 #'
 #' Function to estimate the recentered influence function (RIF) of one or several specified quantiles
 #' of a weighted distribution of a dependent variable.
@@ -138,7 +138,7 @@ est_rif_quantile <- function(quantile, dep_var, weights, density) {
 }
 
 
-#'#' Estimate RIF of Variance
+#'#' Estimate RIF of variance
 #'
 #' Function to estimate the recentered influence function (RIF) of the variance
 #' of a weighted distribution of a dependent variable.
@@ -222,7 +222,7 @@ gini <- function (dep_var, weights) {
 #' Compute the recentered influence function (RIF) of a weighted
 #' Gini coefficient.
 #'
-#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param dep_var values of a non-negative continuous dependent variable
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
@@ -270,8 +270,8 @@ est_rif_gini <- function(dep_var, weights){
 
 #'#' Estimate RIF of interquantile range
 #'
-#' Function to estimate the recentered influence function (RIF) of the
-#' interquantile range of a weighted distribution of a dependent variable.
+#' Compute the recentered influence function (RIF) of a weighted
+#' interquantile range.
 #'
 #' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
 #' @param probs a vector of length 2 with probabilities corresponding to the limits of the interquantile range of interest.
@@ -306,8 +306,8 @@ est_rif_interquantile_range <- function(dep_var, probs=c(0.1,0.9), weights, ...)
 
 #'#' Estimate RIF of interquantile ratio
 #'
-#' Function to estimate the recentered influence function (RIF) of the
-#' interquantile ratio of a weighted distribution of a dependent variable.
+#' Compute the recentered influence function (RIF) of a weighted
+#' interquantile ratio.
 #'
 #' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
 #' @param probs a vector of length 2 with probabilities corresponding to the quantiles in the ratio's numerator and the denominator.
