@@ -59,7 +59,7 @@ if the conditional expectations of the RIF are linear in $X$ (see Firpo et al., 
 `rifreg` implements this approach. It first calculates the RIF of the outcome variable $Y$ and a distributional statistic of interest $\nu$. Then, it runs an OLS regression of the transformed on the explanatory variables $X$. 
 
 By default, the RIF of quantiles, the mean, the variance, the Gini coefficient, the interquantile range and the quantile ratio are available in `rifreg`. Moreover, it allows
-to calculate the RIF for additional statistics with user-written functions (see example below). [Cowell and Flachaire (2007)](https://doi.org/10.1016/j.jeconom.2007.01.001), [Essama-Nssah & Lambert (2012)](https://doi.org/10.1108/S1049-2585(2012)0000020003), and [Rios-Avila (2020)](https://doi.org/10.1177/1536867X20909690) derive the influence funtions for an array of distributional statistics.
+to calculate the RIF for additional statistics with user-written functions (see example below). [Cowell and Flachaire (2007)](https://doi.org/10.1016/j.jeconom.2007.01.001), [Essama-Nssah & Lambert (2012)](https://doi.org/10.1108/S1049-2585(2012)0000020009), and [Rios-Avila (2020)](https://doi.org/10.1177/1536867X20909690) derive the influence funtions for an array of distributional statistics.
 
 For the sake of illustration, consider the RIF of a quantile $q_\tau = \inf_q \{q: F_Y(q) \geq \tau\}$. It is defined as
 $$\text{RIF}(y;q_\tau,F_Y) = q_\tau  + \frac{\tau-1\{y \leq q_\tau\}}{f_Y(q_\tau)}, $$
@@ -104,7 +104,7 @@ ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
 
 ### Bootstrapping standard errors
 
-Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all observations. Moreover, we can set number of `bootstrap_iterations` and the number of `cores`.  
+Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all observations. We can set number of `bootstrap_iterations` and the number of `cores`.  
 
 ```{r}
 # fit_uqr <- rifreg(ffl_model,
