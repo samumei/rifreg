@@ -6,5 +6,6 @@
 #'@import stats
 #'@import Formula
 #'@import parallel
+#'@import sandwich
 NULL
 
