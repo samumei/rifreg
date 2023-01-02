@@ -71,7 +71,7 @@ where $1\{\}$ is an indicator function and $f_Y(q_\tau)$ is the density at the q
 
 `rifreg` allows to bootstrap standard errors. Analytical standard errors can be nontrivial when the RIF introduces an additional estimation step. In particular, this is the case for quantiles where the density has to be estimated (see [Firpo, Fortin, and Lemieux, 2009b](https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_extensions_0.pdf)). 
 
-Per default, `rifreg` returns heteroskedasticity robust standard errors estimated by `sandwich::sandwich` if the variance is not bootstrapped. Note, however, that these standard errors do not take the variance introduced by the RIF estimation step into account.
+Per default, `rifreg` returns heteroscedasticity-consistent standard errors estimated by `sandwich::sandwich` if the variance is not bootstrapped. Note, however, that these standard errors do not take the variance introduced by the RIF estimation step into account.
 
 ## Example
 
@@ -93,10 +93,14 @@ ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
 #                   weights=weights,
 #                   statistic="quantiles",
 #                   probs=1:9/10)
+```
+
+The`summary` method returns the estimated coefficients and the standard errors. Per default, `summary` returns heteroscedasticity-consistent standard errors estimated if the variance is not bootstrapped.
+```{r}
 # summary(fit_uqr)
 ```
 
-`rifreg` comes with a convenient plot function. It illustrates the estimated UQPE across the distribution:
+`rifreg` comes with a convenient plot function. It illustrates the estimated UQPE across the distribution. The confidence bands are based on the same standard errors as displayed by `summary`.
 ```{r}
 # plot(fit_uqr, varselect="union")
 ```
@@ -104,7 +108,7 @@ ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
 
 ### Bootstrapping standard errors
 
-Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all observations. We can set number of `bootstrap_iterations` and the number of `cores`.  
+Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all observations and reestimating both the RIF and the regression in every iteration. We can set number of `bootstrap_iterations` and the number of `cores`.  
 
 ```{r}
 # fit_uqr <- rifreg(ffl_model,
@@ -119,6 +123,7 @@ Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all obser
 #      varselect="union",
 #      confidence_interval=0.95)
 ```
+
 
 ### Other distributional statistics 
 
