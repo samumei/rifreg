@@ -212,10 +212,10 @@ Lambert (2012) or Rios-Avila (2020).
 ``` r
 ffl_model2 <- wage ~ union + nonwhite + married + education + experience
 
-# custom function top 10% percent income share
-custum_top_income_share_rif <- function(dep_var,
-                                        weights,
-                                        probs=0.1){
+# custom RIF function for top 10% percent income share
+custom_top_inc_share <- function(dep_var,
+                                 weights,
+                                 probs=0.1){
   probs <- 1-probs
   weighted_mean <- weighted.mean(x = dep_var, 
                                  w = weights)
@@ -233,11 +233,12 @@ custum_top_income_share_rif <- function(dep_var,
   return(rif_top_income_share)
 }
 
-# fit_top_income_share <- rifreg(ffl_model2,
-#                                data=men8385,
-#                                weights=weights,
-#                                distribution_statistic="costum",         #            custom_rif_function=custum_top_income_share_rif,
-#                                probs=0.1)
+# fit_top_10 <- rifreg(ffl_model2,
+#                      data=men8385,
+#                      weights=weights,
+#                      statistic="costum",
+#                      custom_rif_function=custom_top_inc_share,
+#                      probs=0.1)
 ```
 
 ## Credits
