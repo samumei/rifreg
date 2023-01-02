@@ -3,7 +3,7 @@
 #' @param object an object of class "rifreg", usually, a result of a call to [rifreg()].
 #' @param vcov Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
 #' Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
-#' standard errors do not take variance introduced by estimating RIF into account.
+#' standard errors do not take the variance introduced by estimating RIF into account.
 #' @param ... other parameters to be passed through to summary functions.
 #'
 #' @return the function \code{summary.rifreg()} returns a list of summary statistics derived from
