@@ -1,6 +1,9 @@
 #' summary method for class "rifreg"
 #'
 #' @param object an object of class "rifreg", usually, a result of a call to [rifreg()].
+#' @param vcov Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
+#' Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
+#' standard errors do not take the variance introduced by estimating RIF into account.
 #' @param ... other parameters to be passed through to summary functions.
 #'
 #' @return the function \code{summary.rifreg()} returns a list of summary statistics derived from
@@ -14,22 +17,25 @@
 #'                      data = data,
 #'                      functional = "quantiles",
 #'                      custom_functional = NULL,
-#'                      probs = 0.5,
+#'                      probs = c(0.25, 0.5, 0.75),
 #'                      weights = weights,
-#'                      bootstrap = FALSE,
+#'                      bootstrap = TRUE,
 #'                      bootstrap_iterations = 100,
 #'                      cores = 1,
 #'                      model = TRUE)
 #'
 #' summary(rifreg)
 #'
-summary.rifreg <- function(object, ...){
+summary.rifreg <- function(object, vcov=sandwich::sandwich,...){
   estimates <- object$estimates
-  bootstrap_se <- object$bootstrap_se
-  if(is.null(bootstrap_se)){
-    bootstrap_se <- as.data.frame(matrix(rep(NA, prod(dim(estimates))),ncol=ncol(estimates)))
-    names(bootstrap_se) <- names(estimates)
-    rownames(bootstrap_se) <- rownames(estimates)
+  standard_errors <- object$bootstrap_se
+  standard_errors_type <- "Bootstrap s.e."
+  if(is.null(standard_errors)){
+    # standard_errors <- as.data.frame(matrix(rep(NA, prod(dim(estimates))),ncol=ncol(estimates)))
+    # names(standard_errors) <- names(estimates)
+    # rownames(standard_errors) <- rownames(estimates)
+    standard_errors <- do.call("cbind",lapply(lapply(object$rif_lm, vcov, ...), function(x) sqrt(diag(x))))
+    standard_errors_type <- "Analytical s.e."
   }
 
   r.squared <- unlist(do.call("c",lapply(object$rif_lm, function(z) summary(z)[c("r.squared")])))
@@ -37,17 +43,30 @@ summary.rifreg <- function(object, ...){
   df <- do.call("c",lapply(object$rif_lm, function(z) z$df.residual))
   sigma <- unlist(do.call("c",lapply(object$rif_lm, function(z) summary(z)[c("sigma")])))
 
+  if(standard_errors_type!="Bootstrap s.e."){
+    cat("\n")
+    cat("WARNING: Standard errors have not been bootstrapped!\n         Analytical s.e. do not take variance introduced by\n         estimating the RIF into account.")
+    cat("\n")
+  }
+
   for(i in 1:ncol(estimates)){
     cat("\n")
     cat("RIF regression coefficients for ", gsub("rif_","",colnames(estimates)[i]),"\n",sep="")
     cat("\n")
-    res <- cbind(estimates[,i], bootstrap_se[,i])
+    res <- cbind(estimates[,i], standard_errors[,i])
     res <- cbind(res,res[,1]-res[,2]*1.96,res[,1]+res[,2]*1.96)
-    colnames(res) <- c("Estimate","Bootstrap s.e.", "Lower bound", "Upper bound")
+    colnames(res) <- c("Estimate", standard_errors_type, "Lower bound", "Upper bound")
     print(res)
     cat("\n")
     cat("Residual standard error: ",sigma[i]," on ", df[i], " degrees of freedom\n", sep="")
     cat("Multiple R-squared: ",r.squared[i],",	Adjusted R-squared: ",adj.r.squared[i],"\n", sep="")
     cat("\n")
   }
+
+    invisible(list(estimates=estimates,
+                   standard_errors=standard_errors,
+                   r.squared=r.squared,
+                   adj.r.squared=adj.r.squared,
+                   df=df,
+                   sigma=sigma))
 }

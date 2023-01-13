@@ -7,7 +7,9 @@
 #' @param varselect vector of length 1 or more containig the names of the covariates to display.
 #' @param confidence_level numeric value between 0 and 1 (default = 0.95) that defines the confidence interval
 #'              plotted as a ribbon and defined as \code{qnorm(confidence_level/2)} * standard error.
-#'              Only required if bootstrapped standard errors where computed.
+#' @param vcov Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
+#'             Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
+#'             standard errors do not take the variance introduced by estimating RIF into account.
 #' @param ... other parameters to be passed through to plotting functions.
 #'
 #' @return a ggplot containing the coefficients for each (selected) covariate
@@ -31,7 +33,7 @@
 #'
 #' plot(rifreg, varselect = c("age", "unionyes"), confidence_level = 0.1)
 #'
-plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, ...){
+plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandwich::sandwich, ...){
 
   estimates <- as.data.frame(x$estimates)
 
@@ -40,22 +42,24 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, ...){
     names(estimates) <- x$probs
   }
 
-
   estimates$variable <- rownames(estimates)
   estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable,names_to="probs"))
 
   if(is.null(x$bootstrap_se)) {
-    estimates$se <- NA
+    # estimates$se <- NA
+    warning("Standard errors have not been bootstrapped!\nAnalytical s.e. do not take variance introduced by\nestimating the RIF into account.")
+    standard_errors <- as.data.frame(do.call("cbind",lapply(lapply(x$rif_lm, vcov, ...), function(x) sqrt(diag(x)))))
+  } else {
+    standard_errors <- as.data.frame(x$bootstrap_se)
   }
-  else {
-    bootstrap_se <- as.data.frame(x$bootstrap_se)
-    if(x$functional=="quantiles"){
-      names(bootstrap_se) <- x$probs
-    }
-    bootstrap_se$variable <- rownames(bootstrap_se)
-    bootstrap_se <- as.data.frame(tidyr::pivot_longer(bootstrap_se,-variable,names_to="probs"))
-    estimates$se <- bootstrap_se$value
+
+  if(x$functional=="quantiles"){
+      names(standard_errors) <- x$probs
   }
+  standard_errors$variable <- rownames(standard_errors)
+  standard_errors <- as.data.frame(tidyr::pivot_longer(standard_errors,-variable,names_to="probs"))
+  estimates$se <- standard_errors$value
+
   estimates$probs <- as.numeric(estimates$probs)
 
   variables <- unique(estimates$variable)
@@ -78,21 +82,19 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, ...){
   t <-  qnorm(confidence_level/2)
 
   #Actual plot
-  if(length(varselect)==1){
-    plot <- ggplot(df, aes(probs,value, color=variable, fill=variable)) +
+  plot <- ggplot(df, aes(probs,value, color=variable, fill=variable)) +
       geom_hline(yintercept = 0, colour="grey") +
-      geom_point() + geom_line() +
-      labs(title=paste("Rifreg coefficients",varselect,sep=": "), y="coefficient", x="probs")
-  } else {
-    plot <- ggplot(df, aes(probs,value, color=variable, fill=variable)) +
-      geom_hline(yintercept = 0, colour="grey") +
-      geom_point() + geom_line() +
+      geom_point() +
+      geom_line() +
+      geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.3, color=NA) +
       facet_wrap( ~ variable, scales="free") +
-      labs(title="Rifreg coefficients", y="coefficient", x="probs")
+      labs(y="coefficient", x="probs")
+  if(length(varselect)==1){
+  plot <- plot + theme(legend.position="none")
   }
-  if(!is.null(x$bootstrap_se)){
-    plot <- plot + geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.4, color=NA)
-  }
-
+  # if(!is.null(x$bootstrap_se)){
+  #   plot <- plot +
+  #     geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.4, color=NA)
+  # }
   print(plot)
 }

@@ -19,7 +19,8 @@ Description: Provides functions to compute recentered influence functions (RIF) 
 License: GPL (>= 3) 
 Encoding: UTF-8
 Depends:
-    ggplot2
+    ggplot2,
+    R (>= 2.10)
 Imports: 
     tidyr,
     pbapply,
