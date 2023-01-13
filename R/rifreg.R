@@ -42,7 +42,6 @@
 #' @examples
 #'
 #' data <- CPSmen8305[1:300,]
-#' weights <- CPSmen8305$weights[1:300]
 #'
 #' rifreg <- est_rifreg(formula = log(wage) ~ union + age,
 #'                      data = data,
@@ -59,6 +58,8 @@
 #' custom_variance_function <- function(dep_var, weights){
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   rif <- (dep_var - weighted_mean)^2
+#'   rif <- data.frame(rif, weights)
+#'   names(rif) <- c("rif_variance", "weights")
 #'   return(rif)
 #' }
 #'
@@ -71,8 +72,7 @@
 #'   probs = NULL,
 #'   weights = weights,
 #'   bootstrap = FALSE,
-#'   cores = 1,
-#'   custom_weights = example_weights)
+#'   cores = 1)
 #'
 est_rifreg <- function(formula,
                        data,
@@ -204,20 +204,12 @@ est_rifreg_detail <- function(formula,
                  custom_rif_function = custom_rif_function,
                  ...)
 
-  # combine rif and data
-  data_and_rif <- tryCatch(cbind(rif, data_used),
-                           error = function(err){
-                             data_used$rif <- rif
-                             data_used$weights <- weights
-                             return(data_used)
-  })
-
-
-  n_rif <- ncol(rif)
+  # estimate RIF regression
+  data_and_rif <- cbind(rif, data_used)
+  n_rif <- ncol(rif) - 1
   rif_lm <- list()
-
   for(i in 1:n_rif){
-    rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(data_and_rif)[i]," ~ .")))
+    rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(rif)[i]," ~ .")))
     rif_lm[[i]] <- lm(rif_formula, data = data_and_rif, weights = weights)
     names(rif_lm)[[i]] <- names(rif)[i]
   }

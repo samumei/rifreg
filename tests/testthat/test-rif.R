@@ -36,7 +36,7 @@ testthat::test_that("RIF for several quantiles correctly calculated" , {
   # calculation with function
   rif <- est_rif_quantiles(dep_var = dep_var, weights = weights, probs = probs)
 
-  testthat::expect_equal(names(rif), c(paste0("rif_quantile_", probs)))
+  testthat::expect_equal(names(rif), c(paste0("rif_quantile_", probs), "weights"))
 
   testthat::expect_equal(manual_rif[,1], rif[,1])
   testthat::expect_equal(manual_rif[,2], rif[,2])
@@ -56,7 +56,8 @@ testthat::test_that("RIF for variance correctly calculated" , {
   dep_var <- CPSmen8305$wage[1:300]
   rif_variance <- est_rif_variance(dep_var, weights = rep(1, length(dep_var)))
 
-  testthat::expect_equal(rif_variance, (dep_var - mean(dep_var))^2)
+  testthat::expect_equal(names(rif_variance), c("rif_variance", "weights"))
+  testthat::expect_equal(rif_variance$rif_variance, (dep_var - mean(dep_var))^2)
 })
 
 
@@ -70,6 +71,16 @@ testthat::test_that("RIF for variance correctly calculated" , {
 # })
 
 # RIF Estimation Wrapper
+testthat::test_that("RIF for mean correctly calculated with Wrapper" , {
+  dep_var <- CPSmen8305$wage[1:300]
+  rif_mean <- est_rif_mean(dep_var)
+
+  rif_mean_wrapper <- est_rif(functional = "mean", dep_var = dep_var)
+
+  testthat::expect_equal(names(rif_mean_wrapper), names(rif_mean))
+  testthat::expect_equal(rif_mean, rif_mean_wrapper)
+})
+
 testthat::test_that("RIF at quantiles correctly calculated with Wrapper" , {
   dep_var <- CPSmen8305$wage[1:300]
   weights <- CPSmen8305$weights[1:300]
@@ -91,9 +102,30 @@ testthat::test_that("RIF at variance correctly calculated with Wrapper" , {
   rif <- est_rif_variance(dep_var = dep_var, weights = weights)
   rif_wrapper <-  est_rif(functional = "variance", dep_var = dep_var, weights = weights)
 
+  testthat::expect_equal(names(rif_wrapper), names(rif))
   testthat::expect_equal(rif, rif_wrapper)
 })
 
+# Custom Function
+testthat::test_that("RIF with custom mean function correctly calculated" , {
+  dep_var <- CPSmen8305$wage[1:300]
+
+  # calculation with function
+  rif <- est_rif_mean(dep_var = dep_var)
+
+  # custom function
+  custom_mean <- function(dep_var, weights = NULL) {
+    rif <- as.data.frame(dep_var)
+    names(rif) <- "rif_mean"
+    return(rif)
+  }
+  rif_custom <-  est_rif(functional = "custom",
+                         dep_var = dep_var,
+                         custom_rif_function = custom_mean)
+
+  testthat::expect_equal(names(rif_custom), names(rif))
+  testthat::expect_equal(rif, rif_custom)
+})
 
 testthat::test_that("RIF with custom quantiles function correctly calculated" , {
   test_dep_var <- CPSmen8305$wage[1:300]
@@ -106,19 +138,19 @@ testthat::test_that("RIF with custom quantiles function correctly calculated" , 
                   probs = seq(1:9)/10)
 
   # custom function
-  custom_quantiles_function <- function(dep_var, custom_quantiles, weights, ...){
+  custom_quantiles_function <- function(dep_var, custom_quantiles, custom_weights, ...){
     est_rif_quantile <- function(quantile, dep_var, weights, density) {
-      weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = quantile)
+      weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = custom_weights, probs = quantile)
       density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
       rif <- weighted_quantile + (quantile - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
       return(rif)
     }
 
-    weights <- check_weights(dep_var, weights)
+    weights <- check_weights(dep_var, custom_weights)
     density <- density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
     rif <- sapply(X = custom_quantiles, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
-    rif <- data.frame(rif)
-    names(rif) <- paste0("rif_quantile_", custom_quantiles)
+    rif <- data.frame(rif, weights)
+    names(rif) <- c(paste0("rif_quantile_", custom_quantiles), "weights")
     return(rif)
   }
   rif_custom <-  est_rif(functional = "custom",
@@ -126,6 +158,8 @@ testthat::test_that("RIF with custom quantiles function correctly calculated" , 
                          custom_rif_function = custom_quantiles_function,
                          custom_quantiles = seq(1:9)/10,
                          weights = test_weights)
+
+  testthat::expect_equal(names(rif_custom), names(rif))
   testthat::expect_equal(rif, rif_custom)
 })
 
@@ -142,6 +176,8 @@ testthat::test_that("RIF with custom variance function correctly calculated" , {
     weights <- check_weights(dep_var, weights = weights)
     weighted_mean <- weighted.mean(x = dep_var, w = weights)
     rif <- (dep_var - weighted_mean)^2
+    rif <- data.frame(rif, weights)
+    names(rif) <- c("rif_variance", "weights")
     return(rif)
   }
   rif_custom <-  est_rif(functional = "custom",
@@ -149,6 +185,7 @@ testthat::test_that("RIF with custom variance function correctly calculated" , {
                          custom_rif_function = custom_variance_function,
                          weights = weights)
 
+  testthat::expect_equal(names(rif_custom), names(rif))
   testthat::expect_equal(rif, rif_custom)
 })
 

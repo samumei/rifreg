@@ -83,12 +83,34 @@ est_rif <- function(dep_var,
   }
 
   rif <- switch(functional,
-                mean = dep_var,
+                mean = est_rif_mean(dep_var = dep_var),
                 variance = est_rif_variance(dep_var = dep_var, weights = weights),
                 quantiles = est_rif_quantiles(probs = probs, dep_var = dep_var, weights = weights, ... = ...),
                 gini = stop("GINI NOT YET IMPLEMENTED!"),
                 custom = custom_rif_function(dep_var = dep_var, weights, ...))
 
+  return(rif)
+}
+
+
+#'#' Estimate RIF of the Mean
+#'
+#' Function to estimate the recentered influence function (RIF) of the mean
+#' of a weighted distribution of a dependent variable.
+#'
+#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#'
+#' @return A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the probs.
+#' @export
+#'
+#' @examples
+#'
+#' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
+#' est_rif_mean(dep_var)
+#'
+est_rif_mean <- function(dep_var) {
+  rif <- as.data.frame(dep_var)
+  names(rif) <- "rif_mean"
   return(rif)
 }
 
@@ -118,8 +140,8 @@ est_rif <- function(dep_var,
 est_rif_quantiles <- function(dep_var, probs, weights, ...){
   density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
   rif <- sapply(X = probs, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
-  rif <- data.frame(rif)
-  names(rif) <- paste0("rif_quantile_", probs)
+  rif <- data.frame(rif, weights)
+  names(rif) <- c(paste0("rif_quantile_", probs), "weights")
   return(rif)
 }
 
@@ -160,6 +182,8 @@ est_rif_quantile <- function(quantile, dep_var, weights, density) {
 est_rif_variance <- function(dep_var, weights){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
+  rif <- data.frame(rif, weights)
+  names(rif) <- c("rif_variance", "weights")
   return(rif)
 }
 

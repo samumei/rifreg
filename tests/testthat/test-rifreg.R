@@ -1,16 +1,74 @@
 testthat::test_that("RIF regression function does not throw an error" , {
-  data <- CPSmen8305[1:300,]
-  test_weights <- CPSmen8305$weights[1:300]
+  data <- CPSmen8305[1:300, -length(colnames(CPSmen8305))]
 
+  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+                       data = data,
+                       functional = "quantiles",
+                       probs = 0.5,
+                       weights = NULL,
+                       bootstrap = FALSE,
+                       bootstrap_iterations = 100,
+                       cores = 1)
+  expect_error(rifreg, NA)
+  expect_equal(rifreg[["rif"]][["weights"]], rep(1, length(data$union)))
+
+
+
+  # with bootstrap and several quantiles
   expect_error(est_rifreg(formula = log(wage) ~ union + age,
                           data = data,
                           functional = "quantiles",
-                          probs = 0.5,
-                          weights = test_weights,
-                          bootstrap = FALSE,
+                          custom_rif_function = NULL,
+                          probs = c(0.1, 0.5, 0.9),
+                          weights = NULL,
+                          bootstrap = TRUE,
                           bootstrap_iterations = 100,
                           cores = 1),
                NA)
+})
+
+testthat::test_that("RIF regression function does not throw an error with weights in df" , {
+  data <- CPSmen8305[1:300,]
+
+  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+                       data = data,
+                       functional = "quantiles",
+                       probs = 0.5,
+                       weights = weights,
+                       bootstrap = FALSE,
+                       bootstrap_iterations = 100,
+                       cores = 1)
+  expect_error(rifreg, NA)
+  expect_equal(rifreg[["rif"]][["weights"]], data$weights)
+
+
+  # with bootstrap and several quantiles
+  expect_error(est_rifreg(formula = log(wage) ~ union + age,
+                          data = data,
+                          functional = "quantiles",
+                          custom_rif_function = NULL,
+                          probs = c(0.1, 0.5, 0.9),
+                          weights = weights,
+                          bootstrap = TRUE,
+                          bootstrap_iterations = 100,
+                          cores = 1),
+               NA)
+})
+
+testthat::test_that("RIF regression function does not throw an error with weights as vector" , {
+  data <- CPSmen8305[1:300, -length(colnames(CPSmen8305))]
+  test_weights <- CPSmen8305$weights[1:300]
+
+  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+                       data = data,
+                       functional = "quantiles",
+                       probs = 0.5,
+                       weights = test_weights,
+                       bootstrap = FALSE,
+                       bootstrap_iterations = 100,
+                       cores = 1)
+  expect_error(rifreg, NA)
+  expect_equal(rifreg[["rif"]][["weights"]], test_weights)
 
 
   # with bootstrap and several quantiles
