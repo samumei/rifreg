@@ -22,7 +22,7 @@ generalized Lorenz curve.
 set.seed(123)
 dep_var <- rlnorm(100)
 weights <- rep(1, 100)
-gini_lc(dep_var, weights)
+gini(dep_var, weights)
 
 }
 \references{

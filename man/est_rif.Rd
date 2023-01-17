@@ -73,7 +73,9 @@ custum_top_income_share_function <- function(dep_var, weights, probs=0.1){
   probs <- 1-probs
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
-  lorenz_ordinate <- sum(dep_var[which(dep_var<=weighted_quantile)]*weights[which(dep_var<=weighted_quantile)])/sum(dep_var*weights)
+  lorenz_ordinate <-
+    sum(dep_var[which(dep_var<=weighted_quantile)] *
+      weights[which(dep_var<=weighted_quantile)]) / sum(dep_var*weights)
   if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
                           ifelse(dep_var < weighted_quantile,
                                  dep_var - (1-probs)*weighted_quantile,

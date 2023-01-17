@@ -60,7 +60,9 @@
 #'   probs <- 1-probs
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
-#'   lorenz_ordinate <- sum(dep_var[which(dep_var<=weighted_quantile)]*weights[which(dep_var<=weighted_quantile)])/sum(dep_var*weights)
+#'   lorenz_ordinate <-
+#'     sum(dep_var[which(dep_var<=weighted_quantile)] *
+#'       weights[which(dep_var<=weighted_quantile)]) / sum(dep_var*weights)
 #'   if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
 #'                           ifelse(dep_var < weighted_quantile,
 #'                                  dep_var - (1-probs)*weighted_quantile,
@@ -250,7 +252,7 @@ integrate_generalized_lorenz_curve <- function (dep_var, weights) {
 #' set.seed(123)
 #' dep_var <- rlnorm(100)
 #' weights <- rep(1, 100)
-#' gini_lc(dep_var, weights)
+#' gini(dep_var, weights)
 #'
 gini <- function (dep_var, weights) {
   weights <- weights/sum(weights)
@@ -292,7 +294,7 @@ gini <- function (dep_var, weights) {
 #'
 est_rif_gini <- function(dep_var, weights){
   weights <- weights/sum(weights)
-  gini_coef <- gini_lc(dep_var, weights)
+  gini_coef <- gini(dep_var, weights)
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var<=x)]))
   generalized_lorenz_ordinates <- sapply(dep_var, function(x) sum(dep_var[which(dep_var<=x)]*weights[which(dep_var<=x)]))
