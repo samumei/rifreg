@@ -63,6 +63,25 @@ custom_variance_function <- function(dep_var, weights){
   return(rif)
 }
 
+set.seed(123)
+dep_var <- rlnorm(100)
+weights <- rep(1, 100)
+
+# custom function top 10\% percent income share
+# (see Essam-Nassah & Lambert, 2012, and Rios-Avila, 2020)
+custum_top_income_share_function <- function(dep_var, weights, probs=0.1){
+  probs <- 1-probs
+  weighted_mean <- weighted.mean(x = dep_var, w = weights)
+  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
+  lorenz_ordinate <- sum(dep_var[which(dep_var<=weighted_quantile)]*weights[which(dep_var<=weighted_quantile)])/sum(dep_var*weights)
+  if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
+                          ifelse(dep_var < weighted_quantile,
+                                 dep_var - (1-probs)*weighted_quantile,
+                                 probs*weighted_quantile)/weighted_mean
+  rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+  return(rif_top_income_share)
+}
+
 rif_custom <-  est_rif(dep_var = dep_var,
                        weights = weights,
                        functional = "custom",

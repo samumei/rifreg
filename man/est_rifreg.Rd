@@ -70,7 +70,7 @@ rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                      custom_rif_function = NULL,
                      probs = seq(0.1, 0.9, 0.1),
                      weights = weights,
-                     bootstrap = TRUE,
+                     bootstrap = FALSE,
                      bootstrap_iterations = 100,
                      cores = 1)
 

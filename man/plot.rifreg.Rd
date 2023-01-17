@@ -4,7 +4,13 @@
 \alias{plot.rifreg}
 \title{Plot Coefficients for an \code{rifreg} Object}
 \usage{
-\method{plot}{rifreg}(x, varselect = NULL, confidence_level = 0.05, ...)
+\method{plot}{rifreg}(
+  x,
+  varselect = NULL,
+  confidence_level = 0.05,
+  vcov = sandwich::sandwich,
+  ...
+)
 }
 \arguments{
 \item{x}{an object of class "rifreg", usually, a result of a call to [rifreg()] with code{functional = "quantiles"}.}
@@ -12,8 +18,11 @@
 \item{varselect}{vector of length 1 or more containig the names of the covariates to display.}
 
 \item{confidence_level}{numeric value between 0 and 1 (default = 0.95) that defines the confidence interval
-plotted as a ribbon and defined as \code{qnorm(confidence_level/2)} * standard error.
-Only required if bootstrapped standard errors where computed.}
+plotted as a ribbon and defined as \code{qnorm(confidence_level/2)} * standard error.}
+
+\item{vcov}{Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
+Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
+standard errors do not take the variance introduced by estimating RIF into account.}
 
 \item{...}{other parameters to be passed through to plotting functions.}
 }

@@ -4,10 +4,14 @@
 \alias{summary.rifreg}
 \title{summary method for class "rifreg"}
 \usage{
-\method{summary}{rifreg}(object, ...)
+\method{summary}{rifreg}(object, vcov = sandwich::sandwich, ...)
 }
 \arguments{
 \item{object}{an object of class "rifreg", usually, a result of a call to [rifreg()].}
+
+\item{vcov}{Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
+Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
+standard errors do not take the variance introduced by estimating RIF into account.}
 
 \item{...}{other parameters to be passed through to summary functions.}
 }
@@ -25,9 +29,9 @@ rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                      data = data,
                      functional = "quantiles",
                      custom_functional = NULL,
-                     probs = 0.5,
+                     probs = c(0.25, 0.5, 0.75),
                      weights = weights,
-                     bootstrap = FALSE,
+                     bootstrap = TRUE,
                      bootstrap_iterations = 100,
                      cores = 1,
                      model = TRUE)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/rif.R
 \name{est_rif_variance}
 \alias{est_rif_variance}
-\title{#' Estimate RIF of Variance}
+\title{#' Estimate RIF of variance}
 \usage{
 est_rif_variance(dep_var, weights)
 }
