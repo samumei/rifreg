@@ -7,7 +7,7 @@
 est_rifreg(
   formula,
   data,
-  functional,
+  statistic,
   custom_rif_function = NULL,
   probs = NULL,
   weights = NULL,
@@ -22,18 +22,18 @@ est_rifreg(
 
 \item{data}{a data frame containing the variables in the model.}
 
-\item{functional}{string containing the functional for which to compute the RIF. Can be one of
+\item{statistic}{string containing the disributional statistic of which to compute the RIF. Can be one of
 "mean", "variance", "quantiles", "gini", or "custom". If "custom"
 is selected a \code{custom_rif_function} needs to be provided.}
 
-\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.
-Default is NULL. Only needs to provided if \code{functional = "custom"}.
+\item{custom_rif_function}{the RIF function to compute the RIF of the custom statistic.
+Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
 If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
 See examples for further details.}
 
 \item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
-Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
+Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
@@ -58,7 +58,7 @@ an object of class \code{rifreg} containing the RIF regression estimate,
 }
 \description{
 Estimate the recentered influence function regression (RIFREG) for a chosen
-functional of interest.
+distributional statistic of interest.
 }
 \examples{
 
@@ -69,7 +69,7 @@ rifreg <- est_rifreg(formula = log(wage) ~ union +
                                            education +
                                            experience,
                      data = men8385,
-                     functional = "quantiles",
+                     statistic = "quantiles",
                      probs = seq(0.1, 0.9, 0.1),
                      weights = weights,
                      bootstrap = FALSE)
@@ -88,7 +88,7 @@ custom_variance_function <- function(dep_var, weights){
 rifreg <- est_rifreg(
   formula = log(wage) ~ union + nonwhite + married + education + experience,
   data = men8385,
-  functional = "custom",
+  statistic = "custom",
   custom_rif_function = custom_variance_function,
   probs = NULL,
   weights = weights,

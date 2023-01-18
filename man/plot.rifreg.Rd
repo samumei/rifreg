@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{x}{an object of class "rifreg", usually, a result of a call to [rifreg()] with code{functional = "quantiles"}.}
+\item{x}{an object of class "rifreg", usually, a result of a call to [rifreg()] with code{statistic = "quantiles"}.}
 
 \item{varselect}{vector of length 1 or more containig the names of the covariates to display.}
 
@@ -41,7 +41,7 @@ rifreg <- est_rifreg(formula = log(wage) ~ union +
                                            education +
                                            experience,
                      data = men8385,
-                     functional = "quantiles",
+                     statistic = "quantiles",
                      probs = seq(0.1, 0.9, 0.1),
                      weights = weights)
 

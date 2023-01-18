@@ -4,7 +4,7 @@ test_that("Generic print method does not throw an error", {
 
   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
                           data = data,
-                          functional = "quantiles",
+                          statistic = "quantiles",
                           custom_rif_function = NULL,
                           probs = 0.5,
                           weights = weights,

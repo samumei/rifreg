@@ -18,7 +18,7 @@
 #'                                            education +
 #'                                            experience,
 #'                      data = men8385,
-#'                      functional = "quantiles",
+#'                      statistic = "quantiles",
 #'                      probs = seq(0.1, 0.9, 0.1),
 #'                      weights = weights)
 #' summary(rifreg)

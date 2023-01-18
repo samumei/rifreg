@@ -7,7 +7,7 @@ testthat::test_that("RIF regression function does not throw an error" , {
                                              education +
                                              experience,
                        data = men8385[1:300,],
-                       functional = "quantiles",
+                       statistic = "quantiles",
                        probs = seq(0.1, 0.9, 0.1),
                        weights = NULL,
                        bootstrap = FALSE)
@@ -19,7 +19,7 @@ testthat::test_that("RIF regression function does not throw an error" , {
   # with bootstrap and several quantiles
   expect_error(est_rifreg(formula = log(wage) ~ union + age,
                           data = data,
-                          functional = "quantiles",
+                          statistic = "quantiles",
                           custom_rif_function = NULL,
                           probs = c(0.1, 0.5, 0.9),
                           weights = NULL,
@@ -34,7 +34,7 @@ testthat::test_that("RIF regression function does not throw an error with weight
 
   rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                        data = data,
-                       functional = "quantiles",
+                       statistic = "quantiles",
                        probs = 0.5,
                        weights = weights,
                        bootstrap = FALSE,
@@ -47,7 +47,7 @@ testthat::test_that("RIF regression function does not throw an error with weight
   # with bootstrap and several quantiles
   expect_error(est_rifreg(formula = log(wage) ~ union + age,
                           data = data,
-                          functional = "quantiles",
+                          statistic = "quantiles",
                           custom_rif_function = NULL,
                           probs = c(0.1, 0.5, 0.9),
                           weights = weights,
@@ -63,7 +63,7 @@ testthat::test_that("RIF regression function does not throw an error with weight
 
   rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                        data = data,
-                       functional = "quantiles",
+                       statistic = "quantiles",
                        probs = 0.5,
                        weights = test_weights,
                        bootstrap = FALSE,
@@ -76,7 +76,7 @@ testthat::test_that("RIF regression function does not throw an error with weight
   # with bootstrap and several quantiles
   expect_error(est_rifreg(formula = log(wage) ~ union + age,
                           data = data,
-                          functional = "quantiles",
+                          statistic = "quantiles",
                           custom_rif_function = NULL,
                           probs = c(0.1, 0.5, 0.9),
                           weights = test_weights,
@@ -101,7 +101,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
 
   expect_error(est_rifreg(formula = log(wage) ~ union + age,
                           data = test_data,
-                          functional = "custom",
+                          statistic = "custom",
                           custom_rif_function = custom_variance_function,
                           probs = NULL,
                           bootstrap = FALSE,
@@ -126,7 +126,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
 
   expect_error(est_rifreg(formula = log(wage) ~ union + age,
                           data = test_data,
-                          functional = "custom",
+                          statistic = "custom",
                           custom_rif_function = custom_quantiles_function,
                           custom_probs = c(0.1, 0.5, 0.9),
                           bootstrap = FALSE,
@@ -144,7 +144,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
 #   # with bootstrap and several quantiles
 #   expect_error(est_rifreg(formula = log(wage) ~ union + age,
 #                           data = data,
-#                           functional = "quantiles",
+#                           statistic = "quantiles",
 #                           custom_rif_function = NULL,
 #                           probs = c(0.1, 0.5, 0.9),
 #                           weights = weights,

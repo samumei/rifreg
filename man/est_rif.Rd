@@ -7,7 +7,7 @@
 est_rif(
   dep_var,
   weights = NULL,
-  functional,
+  statistic,
   probs = NULL,
   custom_rif_function = NULL,
   ...
@@ -20,15 +20,15 @@ est_rif(
 The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
 
-\item{functional}{string containing the functional for which to compute the RIF. Can be one of
+\item{statistic}{string containing the distributional statistic for which to compute the RIF. Can be one of
 "mean", "variance", "quantiles", "gini", or "custom". If "custom"
 is selected a \code{custom_rif_function} needs to be provided.}
 
 \item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
-Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.}
+Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.}
 
-\item{custom_rif_function}{the RIF function to compute the RIF of the custom functional.
-Default is NULL. Only needs to provided if \code{functional = "custom"}.
+\item{custom_rif_function}{the RIF function to compute the RIF of the custom statistic.
+Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
 If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
 See examples for further details.}
@@ -43,7 +43,7 @@ a data frame with the RIF value for each observation and in the case of several 
         a column for each quantile.
 }
 \description{
-This function estimates the recentered influence function (RIF) of a chosen functional
+This function estimates the recentered influence function (RIF) of a chosen distributional statistic
 (e.g. quantiles, variance or gini).
 }
 \examples{
@@ -53,7 +53,7 @@ probs <- seq(1:9)/10
 weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 rif <- est_rif(dep_var = dep_var,
                weights = weights,
-               functional = "quantiles",
+               statistic = "quantiles",
                probs = probs)
 
 # custom function
@@ -86,7 +86,7 @@ custum_top_income_share_function <- function(dep_var, weights, probs=0.1){
 
 rif_custom <-  est_rif(dep_var = dep_var,
                        weights = weights,
-                       functional = "custom",
+                       statistic = "custom",
                        custom_rif_function = custom_variance_function)
 
 }

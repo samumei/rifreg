@@ -1,6 +1,6 @@
 #' Estimate Recentered Influence Functions
 #'
-#' This function estimates the recentered influence function (RIF) of a chosen functional
+#' This function estimates the recentered influence function (RIF) of a chosen distributional statistic
 #' (e.g. quantiles, variance or gini).
 #'
 #' @references
@@ -10,7 +10,7 @@
 #' Cowell, Frank A., and Emmanuel Flachaire. 2015. “Statistical Methods for Distributional Analysis.”
 #' In Anthony B. Atkinson and François Bourguignon (eds.), \emph{Handbook of Income Distribution}. Amsterdam: Elsevier.
 #'
-#' @param functional string containing the functional for which to compute the RIF. Can be one of
+#' @param statistic string containing the distributional statistic for which to compute the RIF. Can be one of
 #'                   "mean", "variance", "quantiles", "gini", or "custom". If "custom"
 #'                   is selected a \code{custom_rif_function} needs to be provided.
 #' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
@@ -18,9 +18,9 @@
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
 #' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
-#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.
-#' @param custom_rif_function the RIF function to compute the RIF of the custom functional.
-#'                            Default is NULL. Only needs to provided if \code{functional = "custom"}.
+#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.
+#' @param custom_rif_function the RIF function to compute the RIF of the custom statistic.
+#'                            Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 #'                            Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
 #'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
 #'                            See examples for further details.
@@ -40,7 +40,7 @@
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' rif <- est_rif(dep_var = dep_var,
 #'                weights = weights,
-#'                functional = "quantiles",
+#'                statistic = "quantiles",
 #'                probs = probs)
 #'
 #' # custom function
@@ -73,12 +73,12 @@
 #'
 #' rif_custom <-  est_rif(dep_var = dep_var,
 #'                        weights = weights,
-#'                        functional = "custom",
+#'                        statistic = "custom",
 #'                        custom_rif_function = custom_variance_function)
 #'
 est_rif <- function(dep_var,
                     weights = NULL,
-                    functional,
+                    statistic,
                     probs = NULL,
                     custom_rif_function = NULL,
                     ...) {
@@ -86,24 +86,24 @@ est_rif <- function(dep_var,
   # SHOULD WEIGHTS BE CHECKED HERE, IF est_rif bzw. rif Funktion alleine aufgerufen wird (public function)
   weights <- check_weights(dep_var, weights)
 
-  if(!(functional == "mean" | functional == "variance" |
-       functional == "quantiles" | functional == "gini" |
-       functional == "custom")) {
-    stop("Unknown functional! The functional must be string \"mean\", \"variance\", \"quantiles\", \"gini\", or \"custom\".")
+  if(!(statistic == "mean" | statistic == "variance" |
+       statistic == "quantiles" | statistic == "gini" |
+       statistic == "custom")) {
+    stop("Unknown statistic! The statistic must be string \"mean\", \"variance\", \"quantiles\", \"gini\", or \"custom\".")
   }
 
-  if(functional == "quantiles") {
+  if(statistic == "quantiles") {
     if(is.null(probs)) stop(msg = "Parameter \"probs\" needs to have at least one value between 0 and 1.")
     if(!all(probs > 0 & probs < 1)) stop(msg = "All \"probs\" need to be larger than 0 and smaller than 1.")
   }
-  if(functional == "custom") {
-    if(is.null(custom_rif_function)) stop(msg = "If parameter \"functional\" is \"custom\", parameter \"custom_rif_function\" cannot be NULL, but has to be the custom RIF function!")
+  if(statistic == "custom") {
+    if(is.null(custom_rif_function)) stop(msg = "If parameter \"statistic\" is \"custom\", parameter \"custom_rif_function\" cannot be NULL, but has to be the custom RIF function!")
     if(!is.null(probs)) stop("Parameter \"probs\" cannot be evaluated with custom functions and has to be NULL! To pass probs to a custom function give them a new name (e.g. \"custom_quantiles\").
                             SEE HELP FOR DETAILS.")
 
   }
 
-  rif <- switch(functional,
+  rif <- switch(statistic,
                 mean = est_rif_mean(dep_var = dep_var),
                 variance = est_rif_variance(dep_var = dep_var, weights = weights),
                 quantiles = est_rif_quantiles(probs = probs, dep_var = dep_var, weights = weights, ... = ...),

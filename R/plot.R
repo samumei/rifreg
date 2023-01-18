@@ -3,7 +3,7 @@
 #' Coefficients are plotted for each quantile and each covariate.
 #' Specific covariates can be selected and SE can also be displayed.
 #'
-#' @param x an object of class "rifreg", usually, a result of a call to [rifreg()] with code{functional = "quantiles"}.
+#' @param x an object of class "rifreg", usually, a result of a call to [rifreg()] with code{statistic = "quantiles"}.
 #' @param varselect vector of length 1 or more containig the names of the covariates to display.
 #' @param confidence_level numeric value between 0 and 1 (default = 0.95) that defines the confidence interval
 #'              plotted as a ribbon and defined as \code{qnorm(confidence_level/2)} * standard error.
@@ -23,7 +23,7 @@
 #'                                            education +
 #'                                            experience,
 #'                      data = men8385,
-#'                      functional = "quantiles",
+#'                      statistic = "quantiles",
 #'                      probs = seq(0.1, 0.9, 0.1),
 #'                      weights = weights)
 #'
@@ -35,7 +35,7 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
 
   estimates <- as.data.frame(x$estimates)
 
-  if(x$functional=="quantiles") {
+  if(x$statistic=="quantiles") {
     if(length(x$probs)==1) stop("Can only plot coefficients for a sequence of quantile RIF regressions, i.e. length(probs)>1.")
     names(estimates) <- x$probs
   }
@@ -51,7 +51,7 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
     standard_errors <- as.data.frame(x$bootstrap_se)
   }
 
-  if(x$functional=="quantiles"){
+  if(x$statistic=="quantiles"){
       names(standard_errors) <- x$probs
   }
   standard_errors$variable <- rownames(standard_errors)

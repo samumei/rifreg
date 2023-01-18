@@ -1,7 +1,7 @@
 #' Estimate RIF Regression
 #'
 #' Estimate the recentered influence function regression (RIFREG) for a chosen
-#' functional of interest.
+#' distributional statistic of interest.
 #'
 #' @references
 #' Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2009. “Unconditional Quantile
@@ -12,16 +12,16 @@
 #'
 #' @param formula an object of class "formula". See [stats::lm()] for further details.
 #' @param data a data frame containing the variables in the model.
-#' @param functional string containing the functional for which to compute the RIF. Can be one of
+#' @param statistic string containing the disributional statistic of which to compute the RIF. Can be one of
 #'                   "mean", "variance", "quantiles", "gini", or "custom". If "custom"
 #'                   is selected a \code{custom_rif_function} needs to be provided.
-#' @param custom_rif_function the RIF function to compute the RIF of the custom functional.
-#'                            Default is NULL. Only needs to provided if \code{functional = "custom"}.
+#' @param custom_rif_function the RIF function to compute the RIF of the custom statistic.
+#'                            Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 #'                            Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
 #'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
 #'                            See examples for further details.
 #' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
-#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{functional = "quantiles"}.
+#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 #'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 #'                where nx is the length of (the finite entries of) \code{dep_var}.
@@ -48,7 +48,7 @@
 #'                                            education +
 #'                                            experience,
 #'                      data = men8385,
-#'                      functional = "quantiles",
+#'                      statistic = "quantiles",
 #'                      probs = seq(0.1, 0.9, 0.1),
 #'                      weights = weights,
 #'                      bootstrap = FALSE)
@@ -67,7 +67,7 @@
 #' rifreg <- est_rifreg(
 #'   formula = log(wage) ~ union + nonwhite + married + education + experience,
 #'   data = men8385,
-#'   functional = "custom",
+#'   statistic = "custom",
 #'   custom_rif_function = custom_variance_function,
 #'   probs = NULL,
 #'   weights = weights,
@@ -75,7 +75,7 @@
 #'
 est_rifreg <- function(formula,
                        data,
-                       functional,
+                       statistic,
                        custom_rif_function = NULL,
                        probs = NULL,
                        weights = NULL,
@@ -106,7 +106,7 @@ est_rifreg <- function(formula,
   # RIF
   rifreg_detail <- est_rifreg_detail(formula = formula,
                                      data_used = data_used,
-                                     functional = functional,
+                                     statistic = statistic,
                                      dep_var = dep_var,
                                      weights = weights,
                                      probs = probs,
@@ -123,7 +123,7 @@ est_rifreg <- function(formula,
       bootstrap_estimates <- pbapply::pblapply(1:bootstrap_iterations,
                                                function(x) est_rifreg_bootstrap(formula = formula,
                                                                                 data_used = data_used,
-                                                                                functional = functional,
+                                                                                statistic = statistic,
                                                                                 dep_var = dep_var,
                                                                                 weights = weights,
                                                                                 probs = probs,
@@ -141,7 +141,7 @@ est_rifreg <- function(formula,
       bootstrap_estimates <- pbapply::pblapply(1:bootstrap_iterations,
                                                function(x) est_rifreg_bootstrap(formula = formula,
                                                                                 data_used = data_used,
-                                                                                functional = functional,
+                                                                                statistic = statistic,
                                                                                 dep_var = dep_var,
                                                                                 weights = weights,
                                                                                 probs = probs,
@@ -175,7 +175,7 @@ est_rifreg <- function(formula,
                   bootstrap_vcov = bootstrap_vcov,
                   rif_lm = rif_lm,
                   rif = rif,
-                  functional = functional,
+                  statistic = statistic,
                   custom_rif_function = custom_rif_function,
                   probs = probs)
 
@@ -188,15 +188,15 @@ est_rifreg <- function(formula,
 # specific rifreg function (maybe change name, do not export!)
 est_rifreg_detail <- function(formula,
                               data_used,
-                              functional,
+                              statistic,
                               dep_var,
                               weights,
                               probs,
                               custom_rif_function,
                               ...) {
 
-  # Get RIF for functional
-  rif <- est_rif(functional = functional,
+  # Get RIF of distributional statistic
+  rif <- est_rif(statistic = statistic,
                  dep_var = dep_var,
                  weights = weights,
                  probs = probs,
@@ -221,7 +221,7 @@ est_rifreg_detail <- function(formula,
 
 # Bootstrap iteration (helper function)
 est_rifreg_bootstrap <- function(data_used,
-                                 functional,
+                                 statistic,
                                  dep_var,
                                  weights,
                                  probs,
@@ -231,7 +231,7 @@ est_rifreg_bootstrap <- function(data_used,
 
   sample <- sample(1:nrow(data_used), nrow(data_used), replace = TRUE)
   rif_lm <- est_rifreg_detail(data_used = data_used[sample,],
-                              functional = functional,
+                              statistic = statistic,
                               dep_var = dep_var[sample],
                               weights = (weights[sample]/sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
                               probs = probs,
