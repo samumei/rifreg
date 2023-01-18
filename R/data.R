@@ -6,7 +6,7 @@
 #' and a sample of 53,391 observations of male workers -- corresponding to a fifth of the
 #' original 266,956 observations. See Lemieux (2006) for details on data selection and recoding.
 #'
-#' @format A data frame with 53,391 rows and 10 variables:
+#' @format A data frame with 53,391 rows and 10 variables.
 #' \describe{
 #'   \item{wage}{Hourly wage in US dollars at constant prices}
 #'   \item{union}{Union status indicator}
@@ -14,7 +14,7 @@
 #'   \item{married}{Married indicator}
 #'   \item{education}{Factor variable with 6 education levels: high-school graduates (reference), elementary, high-school dropouts , some college, college graduates, post college graduates}
 #'   \item{experience}{Factor variable with 9 potential experience levels, each of five years gap, 20 to 24 years as reference level)}
-#'   \item{weigths}{CPS sample weights}
+#'   \item{weights}{CPS sample weights}
 #'   \item{age}{Age in years}
 #'   \item{education_in_years}{Education in years}
 #'   \item{experience_in_years}{Experience in years}

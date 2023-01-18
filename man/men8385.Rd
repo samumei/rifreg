@@ -5,7 +5,7 @@
 \alias{men8385}
 \title{Sample of male wage data from the CPS 1983-1985}
 \format{
-A data frame with 53,391 rows and 10 variables:
+A data frame with 53,391 rows and 10 variables.
 \describe{
   \item{wage}{Hourly wage in US dollars at constant prices}
   \item{union}{Union status indicator}
@@ -13,7 +13,7 @@ A data frame with 53,391 rows and 10 variables:
   \item{married}{Married indicator}
   \item{education}{Factor variable with 6 education levels: high-school graduates (reference), elementary, high-school dropouts , some college, college graduates, post college graduates}
   \item{experience}{Factor variable with 9 potential experience levels, each of five years gap, 20 to 24 years as reference level)}
-  \item{weigths}{CPS sample weights}
+  \item{weights}{CPS sample weights}
   \item{age}{Age in years}
   \item{education_in_years}{Education in years}
   \item{experience_in_years}{Experience in years}
