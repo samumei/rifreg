@@ -20,17 +20,15 @@ print method for class "rifreg"
 }
 \examples{
 
-data <- men8385[1:300,]
-rifreg <- est_rifreg(formula = log(wage) ~ union + age,
-                     data = data,
+rifreg <- est_rifreg(formula = log(wage) ~ union +
+                                           nonwhite +
+                                           married +
+                                           education +
+                                           experience,
+                     data = men8385,
                      functional = "quantiles",
-                     custom_functional = NULL,
-                     probs = 0.5,
-                     weights = weights,
-                     bootstrap = FALSE,
-                     bootstrap_iterations = 100,
-                     cores = 1,
-                     model = TRUE)
+                     probs = seq(0.1, 0.9, 0.1),
+                     weights = weights)
 
 print(rifreg)
 

@@ -12,18 +12,15 @@
 #'
 #' @examples
 #'
-#' data <- men8385[1:300,]
-#' rifreg <- est_rifreg(formula = log(wage) ~ union + age,
-#'                      data = data,
+#' rifreg <- est_rifreg(formula = log(wage) ~ union +
+#'                                            nonwhite +
+#'                                            married +
+#'                                            education +
+#'                                            experience,
+#'                      data = men8385,
 #'                      functional = "quantiles",
-#'                      custom_functional = NULL,
-#'                      probs = c(0.25, 0.5, 0.75),
-#'                      weights = weights,
-#'                      bootstrap = TRUE,
-#'                      bootstrap_iterations = 100,
-#'                      cores = 1,
-#'                      model = TRUE)
-#'
+#'                      probs = seq(0.1, 0.9, 0.1),
+#'                      weights = weights)
 #' summary(rifreg)
 #'
 summary.rifreg <- function(object, vcov=sandwich::sandwich,...){

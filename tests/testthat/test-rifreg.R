@@ -1,14 +1,16 @@
 testthat::test_that("RIF regression function does not throw an error" , {
   data <- men8385[1:300, -length(colnames(men8385))]
 
-  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
-                       data = data,
+  rifreg <- est_rifreg(formula = log(wage) ~ union +
+                                             nonwhite +
+                                             married +
+                                             education +
+                                             experience,
+                       data = men8385[1:300,],
                        functional = "quantiles",
-                       probs = 0.5,
+                       probs = seq(0.1, 0.9, 0.1),
                        weights = NULL,
-                       bootstrap = FALSE,
-                       bootstrap_iterations = 100,
-                       cores = 1)
+                       bootstrap = FALSE)
   expect_error(rifreg, NA)
   expect_equal(rifreg[["rif"]][["weights"]], rep(1, length(data$union)))
 

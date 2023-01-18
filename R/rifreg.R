@@ -41,17 +41,17 @@
 #'
 #' @examples
 #'
-#' data <- men8385[1:300,]
 #'
-#' rifreg <- est_rifreg(formula = log(wage) ~ union + age,
-#'                      data = data,
+#' rifreg <- est_rifreg(formula = log(wage) ~ union +
+#'                                            nonwhite +
+#'                                            married +
+#'                                            education +
+#'                                            experience,
+#'                      data = men8385,
 #'                      functional = "quantiles",
-#'                      custom_rif_function = NULL,
 #'                      probs = seq(0.1, 0.9, 0.1),
 #'                      weights = weights,
-#'                      bootstrap = FALSE,
-#'                      bootstrap_iterations = 100,
-#'                      cores = 1)
+#'                      bootstrap = FALSE)
 #'
 #'
 #' # custom function
@@ -65,14 +65,13 @@
 #'
 #'
 #' rifreg <- est_rifreg(
-#'   formula = log(wage) ~ union + age,
-#'   data = data,
+#'   formula = log(wage) ~ union + nonwhite + married + education + experience,
+#'   data = men8385,
 #'   functional = "custom",
 #'   custom_rif_function = custom_variance_function,
 #'   probs = NULL,
 #'   weights = weights,
-#'   bootstrap = FALSE,
-#'   cores = 1)
+#'   bootstrap = FALSE)
 #'
 est_rifreg <- function(formula,
                        data,
