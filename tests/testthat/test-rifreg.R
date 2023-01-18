@@ -1,5 +1,5 @@
 testthat::test_that("RIF regression function does not throw an error" , {
-  data <- CPSmen8305[1:300, -length(colnames(CPSmen8305))]
+  data <- men8385[1:300, -length(colnames(men8385))]
 
   rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                        data = data,
@@ -28,7 +28,7 @@ testthat::test_that("RIF regression function does not throw an error" , {
 })
 
 testthat::test_that("RIF regression function does not throw an error with weights in df" , {
-  data <- CPSmen8305[1:300,]
+  data <- men8385[1:300,]
 
   rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                        data = data,
@@ -56,8 +56,8 @@ testthat::test_that("RIF regression function does not throw an error with weight
 })
 
 testthat::test_that("RIF regression function does not throw an error with weights as vector" , {
-  data <- CPSmen8305[1:300, -length(colnames(CPSmen8305))]
-  test_weights <- CPSmen8305$weights[1:300]
+  data <- men8385[1:300, -length(colnames(men8385))]
+  test_weights <- men8385$weights[1:300]
 
   rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                        data = data,
@@ -85,8 +85,8 @@ testthat::test_that("RIF regression function does not throw an error with weight
 })
 
 testthat::test_that("RIF regression function does not throw an error with custom functions" , {
-  test_data <- CPSmen8305[1:300,]
-  test_weights <- CPSmen8305$weights[1:300]
+  test_data <- men8385[1:300,]
+  test_weights <- men8385$weights[1:300]
 
   custom_variance_function <- function(dep_var, weights){
     weights <- check_weights(dep_var, weights = weights)
@@ -136,8 +136,8 @@ testthat::test_that("RIF regression function does not throw an error with custom
 
 # The following test does not work in devtools::check()
 # testthat::test_that("RIF regression function does not throw an with several cores" , {
-#   data <- CPSmen8305[1:300,]
-#   weights <- CPSmen8305$weights[1:300]
+#   data <- men8385[1:300,]
+#   weights <- men8385$weights[1:300]
 #
 #   # with bootstrap and several quantiles
 #   expect_error(est_rifreg(formula = log(wage) ~ union + age,

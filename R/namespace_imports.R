@@ -9,3 +9,7 @@
 #'@import sandwich
 NULL
 
+# Package data
+data('men8385', envir = environment())
+
+

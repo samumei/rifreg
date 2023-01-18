@@ -35,7 +35,7 @@ Specific covariates can be selected and SE can also be displayed.
 }
 \examples{
 
-data <- CPSmen8305[1:300,]
+data <- men8385[1:300,]
 rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                      data = data,
                      functional = "quantiles",

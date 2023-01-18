@@ -24,7 +24,7 @@ summary method for class "rifreg"
 }
 \examples{
 
-data <- CPSmen8305[1:300,]
+data <- men8385[1:300,]
 rifreg <- est_rifreg(formula = log(wage) ~ union + age,
                      data = data,
                      functional = "quantiles",

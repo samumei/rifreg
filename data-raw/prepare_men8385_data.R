@@ -130,7 +130,6 @@ set.seed(123)
 sel_obs <- sample(1:nrow(men8385),floor(nrow(men8385)/5))
 men8385 <- men8385[sel_obs, ]
 
-#save(men8385,file="data/men8385.rda")
 usethis::use_data(men8385, overwrite=TRUE)
 
 
