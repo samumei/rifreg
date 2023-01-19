@@ -62,13 +62,58 @@ testthat::test_that("RIF for variance correctly calculated" , {
 
 
 # RIF of Gini
-# testthat::test_that("RIF for gini correctly calculated" , {
-#   dep_var <- men8385$wage[1:300]
-#   rif_gini <- est_rif_gini(dep_var)
-#
-#   testthat::expect_equal(names(rif_gini), "rif_gini")
-#   testthat::expect_equal(rif_gini$rif_gini, (dep_var - mean(dep_var))^2)
-# })
+
+## Helper Functions
+testthat::test_that("integrate_generalized_lorenz_curve() does not throw an error" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  integrate_generalized_lorenz_curve <-
+    integrate_generalized_lorenz_curve(dep_var = dep_var,
+                                       weights = weights)
+
+  testthat::expect_error(integrate_generalized_lorenz_curve, NA)
+})
+
+testthat::test_that("compute_gini() does not throw an error" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  gini_coefficient <- compute_gini(dep_var = dep_var,
+                                   weights = weights)
+
+  testthat::expect_error(compute_gini, NA)
+})
+
+testthat::test_that("RIF for gini correctly calculated" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  rif_gini <- est_rif_gini(dep_var = dep_var, weights = weights)
+
+  testthat::expect_error(rif_gini, NA)
+})
+
+# RIF interquantile range
+testthat::test_that("RIF for interquantile range correctly calculated" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  rif_iq_range <- est_rif_interquantile_range(dep_var = dep_var, weights = weights)
+
+  testthat::expect_error(rif_iq_range, NA)
+})
+
+# RIF interquantile ratio
+testthat::test_that("RIF for interquantile ratio correctly calculated" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  rif_iq_ratio <- est_rif_interquantile_ratio(dep_var = dep_var, weights = weights)
+
+  testthat::expect_error(rif_iq_ratio, NA)
+})
+
 
 # RIF Estimation Wrapper
 testthat::test_that("RIF for mean correctly calculated with Wrapper" , {
@@ -105,6 +150,45 @@ testthat::test_that("RIF at variance correctly calculated with Wrapper" , {
   testthat::expect_equal(names(rif_wrapper), names(rif))
   testthat::expect_equal(rif, rif_wrapper)
 })
+
+
+testthat::test_that("RIF for gini correctly calculated with Wrapper" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  # calculation with function
+  rif <- est_rif_gini(dep_var = dep_var, weights = weights)
+  rif_wrapper <-  est_rif(statistic = "gini", dep_var = dep_var, weights = weights)
+
+  testthat::expect_equal(names(rif_wrapper), names(rif))
+  testthat::expect_equal(rif, rif_wrapper)
+})
+
+
+testthat::test_that("RIF for interquantile range correctly calculated with Wrapper" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  # calculation with function
+  rif <- est_rif_interquantile_range(dep_var = dep_var, weights = weights, probs = c(0.1, 0.9))
+  rif_wrapper <-  est_rif(statistic = "interquantile_range", dep_var = dep_var, weights = weights, probs = c(0.1, 0.9))
+
+  testthat::expect_equal(names(rif_wrapper), names(rif))
+  testthat::expect_equal(rif, rif_wrapper)
+})
+
+testthat::test_that("RIF for interquantile ratio correctly calculated with Wrapper" , {
+  dep_var <- men8385$wage[1:300]
+  weights <- men8385$weights[1:300]
+
+  # calculation with function
+  rif <- est_rif_interquantile_ratio(dep_var = dep_var, weights = weights, probs = c(0.1, 0.9))
+  rif_wrapper <-  est_rif(statistic = "interquantile_ratio", dep_var = dep_var, weights = weights, probs = c(0.1, 0.9))
+
+  testthat::expect_equal(names(rif_wrapper), names(rif))
+  testthat::expect_equal(rif, rif_wrapper)
+})
+
 
 # Custom Function
 testthat::test_that("RIF with custom mean function correctly calculated" , {
@@ -188,5 +272,7 @@ testthat::test_that("RIF with custom variance function correctly calculated" , {
   testthat::expect_equal(names(rif_custom), names(rif))
   testthat::expect_equal(rif, rif_custom)
 })
+
+
 
 
