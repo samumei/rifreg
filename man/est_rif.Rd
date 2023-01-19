@@ -21,7 +21,7 @@ The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
 
 \item{statistic}{string containing the distributional statistic for which to compute the RIF. Can be one of
-"mean", "variance", "quantiles", "gini", or "custom". If "custom"
+"mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
 is selected a \code{custom_rif_function} needs to be provided.}
 
 \item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.

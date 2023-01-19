@@ -4,18 +4,18 @@
 \alias{est_rif_interquantile_range}
 \title{#' Estimate RIF of interquantile range}
 \usage{
-est_rif_interquantile_range(dep_var, probs = c(0.1, 0.9), weights, ...)
+est_rif_interquantile_range(dep_var, weights, probs = c(0.1, 0.9), ...)
 }
 \arguments{
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 
-\item{probs}{a vector of length 2 with probabilities corresponding to the limits of the interquantile range of interest.
-The interquantile range is defined as difference between the quantile with the larger probability and the one
-with the lower probability.}
-
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
+
+\item{probs}{a vector of length 2 with probabilities corresponding to the limits of the interquantile range of interest.
+The interquantile range is defined as difference between the quantile with the larger probability and the one
+with the lower probability.}
 
 \item{...}{further arguments passed on to \code{stats::density()} function.}
 }
