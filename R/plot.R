@@ -41,7 +41,15 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
   }
 
   estimates$variable <- rownames(estimates)
-  estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable,names_to="probs"))
+  estimates <- reshape( estimates,
+                             idvar = "variable",
+                             ids=estimates$variable,
+                             times = setdiff(names(estimates),"variable"),
+                             timevar="probs",
+                             varying = list(setdiff(names(estimates),"variable")),
+                             direction = "long",
+                             v.names = "value")
+  estimates$probs <- as.numeric(estimates$probs)
 
   if(is.null(x$bootstrap_se)) {
     # estimates$se <- NA
@@ -55,10 +63,16 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
       names(standard_errors) <- x$probs
   }
   standard_errors$variable <- rownames(standard_errors)
-  standard_errors <- as.data.frame(tidyr::pivot_longer(standard_errors,-variable,names_to="probs"))
-  estimates$se <- standard_errors$value
+  standard_errors <- reshape(standard_errors,
+                             idvar = "variable",
+                             ids=standard_errors$variable,
+                             times = setdiff(names(standard_errors),"variable"),
+                             timevar="probs",
+                             varying = list(setdiff(names(standard_errors),"variable")),
+                             direction = "long",
+                             v.names = "se")
+  estimates$se <- as.numeric(standard_errors$se)
 
-  estimates$probs <- as.numeric(estimates$probs)
 
   variables <- unique(estimates$variable)
   if(is.null(varselect)){
@@ -80,11 +94,11 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
   t <-  qnorm(confidence_level/2)
 
   #Actual plot
-  plot <- ggplot(df, aes(probs, value, color=variable, fill=variable)) +
+  plot <- ggplot(df, aes(probs, value)) +
       geom_hline(yintercept = 0, colour="grey") +
-      geom_point() +
-      geom_line() +
-      geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.3, color=NA) +
+      geom_point(color="red") +
+      geom_line(color="red") +
+      geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.2, color=NA, fill="red") +
       facet_wrap(~ variable, scales="free") +
       labs(y="coefficient", x="probs")
 
