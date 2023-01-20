@@ -307,7 +307,7 @@ est_rif_gini <- function(dep_var, weights){
 
   # Formula (52) of Cowell/Flachaire (2007): RIF = G + 2* (R - C + (y/mu)*(R - (1 - F)))
   rif <- gini_coef +
-    2*(integrated_lorenz_curve - generalized_lorenz_ordinates / weighted_mean +
+    2*(integrated_lorenz_curve - generalized_lorenz_ordinates +
          (dep_var / weighted_mean) * (integrated_lorenz_curve - (1 - weighted_ecdf)))
   rif <- data.frame(rif, weights)
   names(rif) <- c("rif_gini", "weights")
