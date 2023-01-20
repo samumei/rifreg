@@ -4,7 +4,7 @@
 \alias{est_rif_interquantile_range}
 \title{#' Estimate RIF of interquantile range}
 \usage{
-est_rif_interquantile_range(dep_var, weights, probs = c(0.1, 0.9), ...)
+est_rif_interquantile_range(dep_var, weights, probs, ...)
 }
 \arguments{
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}

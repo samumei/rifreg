@@ -3,17 +3,17 @@ testthat::test_that("RIF for specific quantile correctly calculated" , {
 
   dep_var <- men8385$wage[1:300]
   weights <- men8385$weights[1:300]
-  quantile <- 0.5
+  probs <- 0.5
   density_of_dep_var <- density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE))
 
   # manual calculation
-  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = quantile)
+  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
   density_at_quantile <- approx(x = density_of_dep_var$x, y = density_of_dep_var$y, xout = weighted_quantile)$y
-  influence_function <- (quantile - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
+  influence_function <- (probs - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
   manual_rif_q <- weighted_quantile + influence_function
 
   # calculation with function
-  rif_q <- est_rif_quantile(dep_var = dep_var, weights = weights, quantile = quantile, density = density_of_dep_var)
+  rif_q <- est_rif_quantile(dep_var = dep_var, weights = weights, probs = probs, density = density_of_dep_var)
 
   testthat::expect_equal(manual_rif_q, rif_q)
 })
@@ -99,7 +99,9 @@ testthat::test_that("RIF for interquantile range correctly calculated" , {
   dep_var <- men8385$wage[1:300]
   weights <- men8385$weights[1:300]
 
-  rif_iq_range <- est_rif_interquantile_range(dep_var = dep_var, weights = weights)
+  rif_iq_range <- est_rif_interquantile_range(dep_var = dep_var,
+                                              weights = weights,
+                                              probs = c(0.1, 0.9))
 
   testthat::expect_error(rif_iq_range, NA)
 })
@@ -109,7 +111,9 @@ testthat::test_that("RIF for interquantile ratio correctly calculated" , {
   dep_var <- men8385$wage[1:300]
   weights <- men8385$weights[1:300]
 
-  rif_iq_ratio <- est_rif_interquantile_ratio(dep_var = dep_var, weights = weights)
+  rif_iq_ratio <- est_rif_interquantile_ratio(dep_var = dep_var,
+                                              weights = weights,
+                                              probs = c(0.1, 0.9))
 
   testthat::expect_error(rif_iq_ratio, NA)
 })

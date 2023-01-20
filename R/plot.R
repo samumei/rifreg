@@ -80,13 +80,14 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
   t <-  qnorm(confidence_level/2)
 
   #Actual plot
-  plot <- ggplot(df, aes(probs,value, color=variable, fill=variable)) +
+  plot <- ggplot(df, aes(probs, value, color=variable, fill=variable)) +
       geom_hline(yintercept = 0, colour="grey") +
       geom_point() +
       geom_line() +
       geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.3, color=NA) +
-      facet_wrap( ~ variable, scales="free") +
+      facet_wrap(~ variable, scales="free") +
       labs(y="coefficient", x="probs")
+
   if(length(varselect)==1){
   plot <- plot + theme(legend.position="none")
   }
