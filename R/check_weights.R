@@ -27,5 +27,11 @@ check_weights <- function(dep_var, weights) {
   if(!length(dep_var) == length(weights)) stop(msg = "The input vector \"weights\" must be of equal length as the input vector \"dep_var\"!")
   if(!all(weights >= 0)) stop(msg = "Weights cannot contain negative values!")
   if(all(weights == 0)) stop(msg = "Not all weights can be set to zero or NA!")
+  if(sum(weights) < length(dep_var)) {
+    weights * length(dep_var) / sum(weights)
+    warning("The sum of the weights is less than the number of observations.
+Weigths were automatically refactored to as
+weights = weights * length(dep_var) / sum(weights)")
+  }
   return(weights)
 }
