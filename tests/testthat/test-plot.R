@@ -89,3 +89,17 @@ test_that("Generic plot method generates a plot with specific variables", {
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
   expect_equal(class(rifreg_plot), c("gg", "ggplot"))
 })
+
+# test_that("Generic plot method generates a plot for single quantile", {
+#
+#   rifreg_object <- est_rifreg(formula = log(wage) ~ union + age,
+#                               data = men8385[1:300,],
+#                               statistic = "quantiles",
+#                               custom_rif_function = NULL,
+#                               probs = 0.5,
+#                               weights = weights,
+#                               bootstrap = FALSE)
+#   browser()
+#   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
+#   expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+# })

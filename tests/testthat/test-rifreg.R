@@ -86,6 +86,58 @@ testthat::test_that("RIF regression function does not throw an error with weight
                NA)
 })
 
+
+testthat::test_that("RIF regression function for variance does throw an error" , {
+  data <- men8385[1:300,]
+
+  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+                       data = data,
+                       statistic = "variance",
+                       weights = weights)
+  expect_error(rifreg, NA)
+  expect_equal(rifreg[["rif"]][["weights"]], data$weights)
+  expect_equal(class(rifreg), c("rifreg", "lm" ))
+})
+
+testthat::test_that("RIF regression function for gini does throw an error" , {
+  data <- men8385[1:300,]
+
+  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+                       data = data,
+                       statistic = "gini",
+                       weights = weights)
+  expect_error(rifreg, NA)
+  expect_equal(rifreg[["rif"]][["weights"]], data$weights)
+  expect_equal(class(rifreg), c("rifreg", "lm" ))
+})
+
+testthat::test_that("RIF regression function for interquantile range does throw an error" , {
+  data <- men8385[1:300,]
+  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+                       data = data,
+                       statistic = "interquantile_range",
+                       weights = weights,
+                       probs = c(0.1, 0.9))
+  expect_error(rifreg, NA)
+  expect_equal(rifreg[["rif"]][["weights"]], data$weights)
+  expect_equal(class(rifreg), c("rifreg", "lm" ))
+})
+
+testthat::test_that("RIF regression function for interquantile ratio does throw an error" , {
+  data <- men8385[1:300,]
+
+  rifreg <- est_rifreg(formula = log(wage) ~ union + age,
+                       data = data,
+                       statistic = "interquantile_ratio",
+                       weights = weights,
+                       probs = c(0.1, 0.9))
+  expect_error(rifreg, NA)
+  expect_equal(rifreg[["rif"]][["weights"]], data$weights)
+  expect_equal(class(rifreg), c("rifreg", "lm" ))
+})
+
+
+
 testthat::test_that("RIF regression function does not throw an error with custom functions" , {
   test_data <- men8385[1:300,]
   test_weights <- men8385$weights[1:300]
