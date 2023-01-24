@@ -41,7 +41,7 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
   }
 
   estimates$variable <- rownames(estimates)
-  estimates <- reshape( estimates,
+  estimates <- stats::reshape(estimates,
                              idvar = "variable",
                              ids=estimates$variable,
                              times = setdiff(names(estimates),"variable"),
@@ -63,7 +63,7 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
       names(standard_errors) <- x$probs
   }
   standard_errors$variable <- rownames(standard_errors)
-  standard_errors <- reshape(standard_errors,
+  standard_errors <- stats::reshape(standard_errors,
                              idvar = "variable",
                              ids=standard_errors$variable,
                              times = setdiff(names(standard_errors),"variable"),

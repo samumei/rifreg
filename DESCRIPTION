@@ -22,7 +22,6 @@ Depends:
     ggplot2,
     R (>= 2.10)
 Imports: 
-    tidyr,
     pbapply,
     Formula,	 	
     Hmisc,
