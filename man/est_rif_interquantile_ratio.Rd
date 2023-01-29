@@ -2,7 +2,7 @@
 % Please edit documentation in R/rif.R
 \name{est_rif_interquantile_ratio}
 \alias{est_rif_interquantile_ratio}
-\title{#' Estimate RIF of interquantile ratio}
+\title{Estimate RIF of interquantile ratio}
 \usage{
 est_rif_interquantile_ratio(dep_var, weights, probs, ...)
 }

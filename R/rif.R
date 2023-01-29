@@ -116,7 +116,7 @@ est_rif <- function(dep_var,
 }
 
 
-#'#' Estimate RIF of the Mean
+#' Estimate RIF of the Mean
 #'
 #' Function to estimate the recentered influence function (RIF) of the mean
 #' of a weighted distribution of a dependent variable.
@@ -183,7 +183,7 @@ est_rif_quantile <- function(dep_var, weights, probs, density) {
 }
 
 
-#'#' Estimate RIF of variance
+#' Estimate RIF of variance
 #'
 #' Function to estimate the recentered influence function (RIF) of the variance
 #' of a weighted distribution of a dependent variable.
@@ -210,23 +210,7 @@ est_rif_variance <- function(dep_var, weights){
   return(rif)
 }
 
-
-# read gini formula
-
-
-# GINI
-
-#' Estimate Gini coefficient (slightly adjusted code from Rothe (2015))
-# gini <- function (dep_var, weights) {
-#   n <- length(dep_var)
-#   weights <- weights/sum(weights)
-#   gini_coef <- sum(dep_var[order(dep_var)] * 1:n *  weights[order(dep_var)])
-#   gini_coef <- 2 *  gini_coef/(n * sum(dep_var[order(dep_var)]  *  weights[order(dep_var)]))
-#   gini_coef <- gini_coef - 1 - (1/n)
-#   return(gini_coef)
-# }
-
-#' Integrate generalized Lorenz curve
+# Integrate generalized Lorenz curve
 integrate_generalized_lorenz_curve <- function (dep_var, weights) {
   weights <- weights / sum(weights)
   weighted_ecdf <- cumsum(weights[order(dep_var)])
@@ -266,7 +250,7 @@ compute_gini <- function (dep_var, weights) {
   return(gini_coef)
 }
 
-#'#' Estimate RIF of Gini coefficient
+#' Estimate RIF of Gini coefficient
 #'
 #' Compute the recentered influence function (RIF) of a weighted
 #' Gini coefficient.
@@ -314,7 +298,7 @@ est_rif_gini <- function(dep_var, weights){
   return(rif)
 }
 
-#'#' Estimate RIF of interquantile range
+#' Estimate RIF of interquantile range
 #'
 #' Compute the recentered influence function (RIF) of a weighted
 #' interquantile range.
@@ -352,7 +336,7 @@ est_rif_interquantile_range <- function(dep_var, weights, probs, ...){
     return(rif)
 }
 
-#'#' Estimate RIF of interquantile ratio
+#' Estimate RIF of interquantile ratio
 #'
 #' Compute the recentered influence function (RIF) of a weighted
 #' interquantile ratio.

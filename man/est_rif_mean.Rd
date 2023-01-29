@@ -2,7 +2,7 @@
 % Please edit documentation in R/rif.R
 \name{est_rif_mean}
 \alias{est_rif_mean}
-\title{#' Estimate RIF of the Mean}
+\title{Estimate RIF of the Mean}
 \usage{
 est_rif_mean(dep_var)
 }

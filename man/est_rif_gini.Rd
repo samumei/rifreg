@@ -2,7 +2,7 @@
 % Please edit documentation in R/rif.R
 \name{est_rif_gini}
 \alias{est_rif_gini}
-\title{#' Estimate RIF of Gini coefficient}
+\title{Estimate RIF of Gini coefficient}
 \usage{
 est_rif_gini(dep_var, weights)
 }
