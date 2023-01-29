@@ -5,18 +5,18 @@
 \alias{est_rif_quantile}
 \title{Estimate RIF of Quantiles}
 \usage{
-est_rif_quantiles(dep_var, probs, weights, ...)
+est_rif_quantiles(dep_var, weights, probs, ...)
 
 est_rif_quantile(dep_var, weights, probs, density)
 }
 \arguments{
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 
-\item{probs}{the specific quantile for which to estimate the RIF.}
-
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
 where nx is the length of (the finite entries of) \code{dep_var}.}
+
+\item{probs}{the specific quantile for which to estimate the RIF.}
 
 \item{...}{further arguments passed on to \code{stats::density()} function.}
 

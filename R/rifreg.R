@@ -49,8 +49,8 @@
 #'                                            experience,
 #'                      data = men8385,
 #'                      statistic = "quantiles",
-#'                      probs = seq(0.1, 0.9, 0.1),
 #'                      weights = weights,
+#'                      probs = seq(0.1, 0.9, 0.1),
 #'                      bootstrap = FALSE)
 #'
 #'
@@ -68,17 +68,17 @@
 #'   formula = log(wage) ~ union + nonwhite + married + education + experience,
 #'   data = men8385,
 #'   statistic = "custom",
-#'   custom_rif_function = custom_variance_function,
-#'   probs = NULL,
 #'   weights = weights,
+#'   probs = NULL,
+#'   custom_rif_function = custom_variance_function,
 #'   bootstrap = FALSE)
 #'
 est_rifreg <- function(formula,
                        data,
                        statistic,
-                       custom_rif_function = NULL,
-                       probs = NULL,
                        weights = NULL,
+                       probs = NULL,
+                       custom_rif_function = NULL,
                        bootstrap = FALSE,
                        bootstrap_iterations = 100,
                        cores = 1,
@@ -188,9 +188,9 @@ est_rifreg <- function(formula,
 # specific rifreg function (maybe change name, do not export!)
 est_rifreg_detail <- function(formula,
                               data_used,
-                              statistic,
                               dep_var,
                               weights,
+                              statistic,
                               probs,
                               custom_rif_function,
                               ...) {
@@ -221,9 +221,9 @@ est_rifreg_detail <- function(formula,
 
 # Bootstrap iteration (helper function)
 est_rifreg_bootstrap <- function(data_used,
-                                 statistic,
                                  dep_var,
                                  weights,
+                                 statistic,
                                  probs,
                                  custom_rif_function,
                                  bootstrap_iterations,

@@ -8,9 +8,9 @@ est_rifreg(
   formula,
   data,
   statistic,
-  custom_rif_function = NULL,
-  probs = NULL,
   weights = NULL,
+  probs = NULL,
+  custom_rif_function = NULL,
   bootstrap = FALSE,
   bootstrap_iterations = 100,
   cores = 1,
@@ -26,18 +26,18 @@ est_rifreg(
 "mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
 is selected a \code{custom_rif_function} needs to be provided.}
 
+\item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
+where nx is the length of (the finite entries of) \code{dep_var}.}
+
+\item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
+Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.}
+
 \item{custom_rif_function}{the RIF function to compute the RIF of the custom statistic.
 Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
 If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
 See examples for further details.}
-
-\item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
-Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.}
-
-\item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-where nx is the length of (the finite entries of) \code{dep_var}.}
 
 \item{bootstrap}{boolean (Default = FALSE) indicating if bootstrapped standard errors shall be computed}
 
@@ -70,8 +70,8 @@ rifreg <- est_rifreg(formula = log(wage) ~ union +
                                            experience,
                      data = men8385,
                      statistic = "quantiles",
-                     probs = seq(0.1, 0.9, 0.1),
                      weights = weights,
+                     probs = seq(0.1, 0.9, 0.1),
                      bootstrap = FALSE)
 
 
@@ -89,9 +89,9 @@ rifreg <- est_rifreg(
   formula = log(wage) ~ union + nonwhite + married + education + experience,
   data = men8385,
   statistic = "custom",
-  custom_rif_function = custom_variance_function,
-  probs = NULL,
   weights = weights,
+  probs = NULL,
+  custom_rif_function = custom_variance_function,
   bootstrap = FALSE)
 
 }

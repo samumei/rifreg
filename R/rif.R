@@ -160,7 +160,7 @@ est_rif_mean <- function(dep_var) {
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' est_rif_quantiles(dep_var, probs, weights = weights)
 #'
-est_rif_quantiles <- function(dep_var, probs, weights, ...){
+est_rif_quantiles <- function(dep_var, weights, probs, ...){
   density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
   rif <- sapply(X = probs, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
   rif <- data.frame(rif, weights)
@@ -344,7 +344,9 @@ est_rif_gini <- function(dep_var, weights){
 #'
 est_rif_interquantile_range <- function(dep_var, weights, probs, ...){
     probs <- range(probs)
-    rif_quantiles <-  est_rif_quantiles(dep_var, probs, weights, ...)
+    rif_quantiles <-  est_rif_quantiles(dep_var = dep_var,
+                                        weights = weights,
+                                        probs = probs, ...)
     rif <- data.frame(rif_quantiles[, ncol(rif_quantiles)] -  rif_quantiles[, 1], weights)
     names(rif) <- c(paste0("rif_iq_range_",max(probs),"_",min(probs)), "weights")
     return(rif)
