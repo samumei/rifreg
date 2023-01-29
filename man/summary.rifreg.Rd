@@ -24,11 +24,11 @@ summary method for class "rifreg"
 }
 \examples{
 
-rifreg <- est_rifreg(formula = log(wage) ~ union +
-                                           nonwhite +
-                                           married +
-                                           education +
-                                           experience,
+rifreg <- rifreg(formula = log(wage) ~ union +
+                                       nonwhite +
+                                       married +
+                                       education +
+                                       experience,
                      data = men8385,
                      statistic = "quantiles",
                      probs = seq(0.1, 0.9, 0.1),

@@ -12,11 +12,11 @@
 #'
 #' @examples
 #'
-#' rifreg <- est_rifreg(formula = log(wage) ~ union +
-#'                                            nonwhite +
-#'                                            married +
-#'                                            education +
-#'                                            experience,
+#' rifreg <- rifreg(formula = log(wage) ~ union +
+#'                                        nonwhite +
+#'                                        married +
+#'                                        education +
+#'                                        experience,
 #'                      data = men8385,
 #'                      statistic = "quantiles",
 #'                      probs = seq(0.1, 0.9, 0.1),
@@ -60,10 +60,10 @@ summary.rifreg <- function(object, vcov=sandwich::sandwich,...){
     cat("\n")
   }
 
-    invisible(list(estimates=estimates,
-                   standard_errors=standard_errors,
-                   r.squared=r.squared,
-                   adj.r.squared=adj.r.squared,
-                   df=df,
-                   sigma=sigma))
+  invisible(list(estimates=estimates,
+                 standard_errors=standard_errors,
+                 r.squared=r.squared,
+                 adj.r.squared=adj.r.squared,
+                 df=df,
+                 sigma=sigma))
 }

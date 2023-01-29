@@ -42,7 +42,7 @@
 #' @examples
 #'
 #'
-#' rifreg <- est_rifreg(formula = log(wage) ~ union +
+#' rifreg <- rifreg(formula = log(wage) ~ union +
 #'                                            nonwhite +
 #'                                            married +
 #'                                            education +
@@ -64,7 +64,7 @@
 #' }
 #'
 #'
-#' rifreg <- est_rifreg(
+#' rifreg <- rifreg(
 #'   formula = log(wage) ~ union + nonwhite + married + education + experience,
 #'   data = men8385,
 #'   statistic = "custom",
@@ -73,16 +73,16 @@
 #'   custom_rif_function = custom_variance_function,
 #'   bootstrap = FALSE)
 #'
-est_rifreg <- function(formula,
-                       data,
-                       statistic,
-                       weights = NULL,
-                       probs = NULL,
-                       custom_rif_function = NULL,
-                       bootstrap = FALSE,
-                       bootstrap_iterations = 100,
-                       cores = 1,
-                       ...){
+rifreg <- function(formula,
+                   data,
+                   statistic,
+                   weights = NULL,
+                   probs = NULL,
+                   custom_rif_function = NULL,
+                   bootstrap = FALSE,
+                   bootstrap_iterations = 100,
+                   cores = 1,
+                   ...){
 
   # Use match.call function to call data.vectors
   function_call <- match.call()
@@ -102,7 +102,7 @@ est_rifreg <- function(formula,
   # Extract and check weights
   weights <- model.weights(data_used)
   weights <- check_weights(dep_var = dep_var,
-                             weights = weights)
+                           weights = weights)
   # RIF
   rifreg_detail <- est_rifreg_detail(formula = formula,
                                      data_used = data_used,
