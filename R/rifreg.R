@@ -12,8 +12,8 @@
 #'
 #' @param formula an object of class "formula". See [stats::lm()] for further details.
 #' @param data a data frame containing the variables in the model.
-#' @param statistic string containing the disributional statistic of which to compute the RIF. Can be one of
-#'                   "mean", "variance", "quantiles", "gini", or "custom". If "custom"
+#' @param statistic string containing the distributional statistic for which to compute the RIF. Can be one of
+#'                   "mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
 #'                   is selected a \code{custom_rif_function} needs to be provided.
 #' @param custom_rif_function the RIF function to compute the RIF of the custom statistic.
 #'                            Default is NULL. Only needs to provided if \code{statistic = "custom"}.

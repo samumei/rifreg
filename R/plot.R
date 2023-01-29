@@ -45,19 +45,46 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
 
 
   if(x$statistic=="quantiles"){
-      names(estimates) <- x$probs
-      estimates$variable <- rownames(estimates)
-      estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable,names_to="probs"))
-      estimates$probs <- as.numeric(estimates$probs)
-      names(standard_errors) <- x$probs
-      standard_errors$variable <- rownames(standard_errors)
-      standard_errors <- as.data.frame(tidyr::pivot_longer(standard_errors,-variable,names_to="probs"))
+    names(estimates) <- x$probs
+    estimates$variable <- rownames(estimates)
+    estimates <-reshape(estimates,
+                        idvar = "variable",
+                        ids=estimates$variable,
+                        times = setdiff(names(estimates),"variable"),
+                        timevar="probs",
+                        varying = list(setdiff(names(estimates),"variable")),
+                        direction = "long",
+                        v.names = "value")
+
+    estimates$probs <- as.numeric(estimates$probs)
+    names(standard_errors) <- x$probs
+    standard_errors$variable <- rownames(standard_errors)
+    standard_errors <- reshape(standard_errors,
+                               idvar = "variable",
+                               ids=standard_errors$variable,
+                               times = setdiff(names(standard_errors),"variable"),
+                               timevar="probs",
+                               varying = list(setdiff(names(standard_errors),"variable")),
+                               direction = "long",
+                               v.names = "value")
   }
   else{
     estimates$variable <- rownames(estimates)
     standard_errors$variable <- rownames(standard_errors)
-    estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable))
-    standard_errors <- as.data.frame(tidyr::pivot_longer(standard_errors, -variable))
+    estimates <- reshape(estimates,
+                         idvar = "variable",
+                         ids=estimates$variable,
+                         times = setdiff(names(estimates),"variable"),
+                         varying = list(setdiff(names(estimates),"variable")),
+                         direction = "long",
+                         v.names = "value")
+    standard_errors <- reshape(standard_errors,
+                               idvar = "variable",
+                               ids=standard_errors$variable,
+                               times = setdiff(names(standard_errors),"variable"),
+                               varying = list(setdiff(names(standard_errors),"variable")),
+                               direction = "long",
+                               v.names = "value")
   }
 
   estimates$se <- standard_errors$value

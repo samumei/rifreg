@@ -22,8 +22,8 @@ est_rifreg(
 
 \item{data}{a data frame containing the variables in the model.}
 
-\item{statistic}{string containing the disributional statistic of which to compute the RIF. Can be one of
-"mean", "variance", "quantiles", "gini", or "custom". If "custom"
+\item{statistic}{string containing the distributional statistic for which to compute the RIF. Can be one of
+"mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
 is selected a \code{custom_rif_function} needs to be provided.}
 
 \item{custom_rif_function}{the RIF function to compute the RIF of the custom statistic.
