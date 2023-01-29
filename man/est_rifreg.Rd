@@ -49,7 +49,7 @@ Only required if \code{bootstrap = TRUE}.}
 
 \item{...}{additional parameters passed to the \code{custom_rif_function}.
 Apart from \code{dep_var} they must have a different name than the the ones of
-\code{est_rif}. For instance, if you want to pass weights to the
+\code{get_rif}. For instance, if you want to pass weights to the
 \code{custom_rif_function}, name them \code{custom_weights}.}
 }
 \value{

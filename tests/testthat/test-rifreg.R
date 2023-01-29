@@ -162,7 +162,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
                NA)
 
   custom_quantiles_function <- function(dep_var, custom_probs, weights, ...){
-    est_rif_quantile <- function(quantile, dep_var, weights, density) {
+    get_rif_quantile <- function(quantile, dep_var, weights, density) {
       weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = quantile)
       density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
       rif <- weighted_quantile + (quantile - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
@@ -170,7 +170,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
     }
 
     density <- density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
-    rif <- sapply(X = custom_probs, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
+    rif <- sapply(X = custom_probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
     rif <- data.frame(rif, weights)
     names(rif) <- c(paste0("rif_quantile_", custom_probs), "weights")
     return(rif)

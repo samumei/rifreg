@@ -32,7 +32,7 @@
 #'              Only required if \code{bootstrap = TRUE}.
 #' @param ... additional parameters passed to the \code{custom_rif_function}.
 #'            Apart from \code{dep_var} they must have a different name than the the ones of
-#'            \code{est_rif}. For instance, if you want to pass weights to the
+#'            \code{get_rif}. For instance, if you want to pass weights to the
 #'            \code{custom_rif_function}, name them \code{custom_weights}.
 #'
 #' @return an object of class \code{rifreg} containing the RIF regression estimate,
@@ -196,7 +196,7 @@ est_rifreg_detail <- function(formula,
                               ...) {
 
   # Get RIF of distributional statistic
-  rif <- est_rif(statistic = statistic,
+  rif <- get_rif(statistic = statistic,
                  dep_var = dep_var,
                  weights = weights,
                  probs = probs,

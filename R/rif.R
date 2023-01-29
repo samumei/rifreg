@@ -26,7 +26,7 @@
 #'                            See examples for further details.
 #' @param ... additional parameters passed to the \code{custom_rif_function}.
 #'            Apart from \code{dep_var} they must have a different name than the the ones of
-#'            \code{est_rif}. For instance, if you want to pass weights to the
+#'            \code{get_rif}. For instance, if you want to pass weights to the
 #'            \code{custom_rif_function}, name them \code{custom_weights}.
 #'
 #' @return a data frame with the RIF value for each observation and in the case of several quantiles
@@ -38,7 +38,7 @@
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 #' probs <- seq(1:9)/10
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-#' rif <- est_rif(dep_var = dep_var,
+#' rif <- get_rif(dep_var = dep_var,
 #'                weights = weights,
 #'                statistic = "quantiles",
 #'                probs = probs)
@@ -71,18 +71,18 @@
 #'   return(rif_top_income_share)
 #' }
 #'
-#' rif_custom <-  est_rif(dep_var = dep_var,
+#' rif_custom <-  get_rif(dep_var = dep_var,
 #'                        weights = weights,
 #'                        statistic = "custom",
 #'                        custom_rif_function = custom_variance_function)
 #'
-est_rif <- function(dep_var,
+get_rif <- function(dep_var,
                     weights = NULL,
                     statistic,
                     probs = NULL,
                     custom_rif_function = NULL,
                     ...) {
-  # SHOULD WEIGHTS BE CHECKED HERE, IF est_rif bzw. rif Funktion alleine aufgerufen wird (public function)
+  # SHOULD WEIGHTS BE CHECKED HERE, IF get_rif bzw. rif Funktion alleine aufgerufen wird (public function)
   weights <- check_weights(dep_var, weights)
 
   if(!(statistic == "mean" | statistic == "variance" |
@@ -104,12 +104,12 @@ est_rif <- function(dep_var,
   }
 
   rif <- switch(statistic,
-                mean = est_rif_mean(dep_var = dep_var),
-                variance = est_rif_variance(dep_var = dep_var, weights = weights),
-                quantiles = est_rif_quantiles(probs = probs, dep_var = dep_var, weights = weights, ... = ...),
-                gini = est_rif_gini(dep_var = dep_var, weights = weights),
-                interquantile_range = est_rif_interquantile_range(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
-                interquantile_ratio = est_rif_interquantile_ratio(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
+                mean = get_rif_mean(dep_var = dep_var),
+                variance = get_rif_variance(dep_var = dep_var, weights = weights),
+                quantiles = get_rif_quantiles(probs = probs, dep_var = dep_var, weights = weights, ... = ...),
+                gini = get_rif_gini(dep_var = dep_var, weights = weights),
+                interquantile_range = get_rif_interquantile_range(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
+                interquantile_ratio = get_rif_interquantile_ratio(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
                 custom = custom_rif_function(dep_var = dep_var, weights, ...))
 
   return(rif)
@@ -129,9 +129,9 @@ est_rif <- function(dep_var,
 #' @examples
 #'
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-#' est_rif_mean(dep_var)
+#' get_rif_mean(dep_var)
 #'
-est_rif_mean <- function(dep_var) {
+get_rif_mean <- function(dep_var) {
   rif <- as.data.frame(dep_var)
   names(rif) <- "rif_mean"
   return(rif)
@@ -158,24 +158,24 @@ est_rif_mean <- function(dep_var) {
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 #' probs <- seq(1:9)/10
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-#' est_rif_quantiles(dep_var, probs, weights = weights)
+#' get_rif_quantiles(dep_var, probs, weights = weights)
 #'
-est_rif_quantiles <- function(dep_var, weights, probs, ...){
+get_rif_quantiles <- function(dep_var, weights, probs, ...){
   density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
-  rif <- sapply(X = probs, FUN = est_rif_quantile, dep_var = dep_var, weights = weights, density = density)
+  rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
   rif <- data.frame(rif, weights)
   names(rif) <- c(paste0("rif_quantile_", probs), "weights")
   return(rif)
 }
 
 
-#' @describeIn est_rif_quantiles
+#' @describeIn get_rif_quantiles
 #' Helper function to estimate the RIF values of a specific quantile.
 #'
 #' @param probs the specific quantile for which to estimate the RIF.
 #' @param density the kernel density estimation of \code{dep_var}.
 #'                For further information see \code{?stats::density}.
-est_rif_quantile <- function(dep_var, weights, probs, density) {
+get_rif_quantile <- function(dep_var, weights, probs, density) {
   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
   density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
   rif <- weighted_quantile + (probs - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
@@ -200,9 +200,9 @@ est_rif_quantile <- function(dep_var, weights, probs, density) {
 #'
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-#' est_rif_variance(dep_var, weights = weights)
+#' get_rif_variance(dep_var, weights = weights)
 #'
-est_rif_variance <- function(dep_var, weights){
+get_rif_variance <- function(dep_var, weights){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)
@@ -278,9 +278,9 @@ compute_gini <- function (dep_var, weights) {
 #' set.seed(123)
 #' dep_var <- rlnorm(100)
 #' weights <- rep(1, 100)
-#' est_rif_gini(dep_var, weights = weights)
+#' get_rif_gini(dep_var, weights = weights)
 #'
-est_rif_gini <- function(dep_var, weights){
+get_rif_gini <- function(dep_var, weights){
   gini_coef <- compute_gini(dep_var, weights)
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var<=x)])) / sum(weights)
@@ -324,11 +324,11 @@ est_rif_gini <- function(dep_var, weights){
 #' set.seed(123)
 #' dep_var <- rlnorm(100)
 #' weights <- rep(1, 100)
-#' est_rif_interquantile_range(dep_var, probs=c(0.1,0.9), weights = weights)
+#' get_rif_interquantile_range(dep_var, probs=c(0.1,0.9), weights = weights)
 #'
-est_rif_interquantile_range <- function(dep_var, weights, probs, ...){
+get_rif_interquantile_range <- function(dep_var, weights, probs, ...){
     probs <- range(probs)
-    rif_quantiles <-  est_rif_quantiles(dep_var = dep_var,
+    rif_quantiles <-  get_rif_quantiles(dep_var = dep_var,
                                         weights = weights,
                                         probs = probs, ...)
     rif <- data.frame(rif_quantiles[, ncol(rif_quantiles)] -  rif_quantiles[, 1], weights)
@@ -362,9 +362,9 @@ est_rif_interquantile_range <- function(dep_var, weights, probs, ...){
 #' set.seed(123)
 #' dep_var <- rlnorm(100)
 #' weights <- rep(1, 100)
-#' est_rif_interquantile_ratio(dep_var, probs=c(0.1,0.9), weights = weights)
+#' get_rif_interquantile_ratio(dep_var, probs=c(0.1,0.9), weights = weights)
 #'
-est_rif_interquantile_ratio <- function(dep_var, weights, probs, ...){
+get_rif_interquantile_ratio <- function(dep_var, weights, probs, ...){
   probs <- range(probs)
   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
   iqratio <-  weighted_quantile[2]/weighted_quantile[1]
