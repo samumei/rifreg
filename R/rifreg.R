@@ -104,14 +104,14 @@ rifreg <- function(formula,
   weights <- check_weights(dep_var = dep_var,
                            weights = weights)
   # RIF
-  rifreg_detail <- est_rifreg_detail(formula = formula,
-                                     data_used = data_used,
-                                     statistic = statistic,
-                                     dep_var = dep_var,
-                                     weights = weights,
-                                     probs = probs,
-                                     custom_rif_function = custom_rif_function,
-                                     ...)
+  rifreg_detail <- est_rifreg(formula = formula,
+                              data_used = data_used,
+                              statistic = statistic,
+                              dep_var = dep_var,
+                              weights = weights,
+                              probs = probs,
+                              custom_rif_function = custom_rif_function,
+                              ...)
   rif_lm <- rifreg_detail[-length(rifreg_detail)]
   rif <- rifreg_detail$rif
 
@@ -185,15 +185,15 @@ rifreg <- function(formula,
 }
 
 
-# specific rifreg function (maybe change name, do not export!)
-est_rifreg_detail <- function(formula,
-                              data_used,
-                              dep_var,
-                              weights,
-                              statistic,
-                              probs,
-                              custom_rif_function,
-                              ...) {
+# detailed rifreg estimation
+est_rifreg <- function(formula,
+                       data_used,
+                       dep_var,
+                       weights,
+                       statistic,
+                       probs,
+                       custom_rif_function,
+                       ...) {
 
   # Get RIF of distributional statistic
   rif <- get_rif(statistic = statistic,
@@ -230,13 +230,13 @@ est_rifreg_bootstrap <- function(data_used,
                                  ...) {
 
   sample <- sample(1:nrow(data_used), nrow(data_used), replace = TRUE)
-  rif_lm <- est_rifreg_detail(data_used = data_used[sample,],
-                              statistic = statistic,
-                              dep_var = dep_var[sample],
-                              weights = (weights[sample]/sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
-                              probs = probs,
-                              custom_rif_function = custom_rif_function,
-                              ...)
+  rif_lm <- est_rifreg(data_used = data_used[sample,],
+                       statistic = statistic,
+                       dep_var = dep_var[sample],
+                       weights = (weights[sample]/sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
+                       probs = probs,
+                       custom_rif_function = custom_rif_function,
+                       ...)
   coefs <- do.call("cbind",lapply(rif_lm, coef))
   return(coefs)
 }
