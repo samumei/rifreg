@@ -32,16 +32,7 @@
 #' plot(rifreg, varselect = c("age", "unionyes"), confidence_level = 0.1)
 #'
 plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandwich::sandwich, ...){
-
   estimates <- as.data.frame(x$estimates)
-
-  if(x$statistic=="quantiles") {
-    if(length(x$probs)==1) stop("Can only plot coefficients for a sequence of quantile RIF regressions, i.e. length(probs)>1.")
-    names(estimates) <- x$probs
-  }
-
-  estimates$variable <- rownames(estimates)
-  estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable,names_to="probs"))
 
   if(is.null(x$bootstrap_se)) {
     # estimates$se <- NA
@@ -51,16 +42,27 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
     standard_errors <- as.data.frame(x$bootstrap_se)
   }
 
+
+
   if(x$statistic=="quantiles"){
+      names(estimates) <- x$probs
+      estimates$variable <- rownames(estimates)
+      estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable,names_to="probs"))
+      estimates$probs <- as.numeric(estimates$probs)
       names(standard_errors) <- x$probs
+      standard_errors$variable <- rownames(standard_errors)
+      standard_errors <- as.data.frame(tidyr::pivot_longer(standard_errors,-variable,names_to="probs"))
   }
-  standard_errors$variable <- rownames(standard_errors)
-  standard_errors <- as.data.frame(tidyr::pivot_longer(standard_errors,-variable,names_to="probs"))
+  else{
+    estimates$variable <- rownames(estimates)
+    standard_errors$variable <- rownames(standard_errors)
+    estimates <- as.data.frame(tidyr::pivot_longer(estimates,-variable))
+    standard_errors <- as.data.frame(tidyr::pivot_longer(standard_errors, -variable))
+  }
+
   estimates$se <- standard_errors$value
-
-  estimates$probs <- as.numeric(estimates$probs)
-
   variables <- unique(estimates$variable)
+
   if(is.null(varselect)){
     varselect <- variables
   }
@@ -79,8 +81,8 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
   df <- subset(estimates, variable %in% varselect)
   t <-  qnorm(confidence_level/2)
 
-  #Actual plot
-  plot <- ggplot(df, aes(probs, value, color=variable, fill=variable)) +
+  if(x$statistic=="quantiles" & !length(x$probs)==1) {
+    plot <- ggplot(df, aes(probs, value, color=variable, fill=variable)) +
       geom_hline(yintercept = 0, colour="grey") +
       geom_point() +
       geom_line() +
@@ -88,12 +90,26 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
       facet_wrap(~ variable, scales="free") +
       labs(y="coefficient", x="probs")
 
-  if(length(varselect)==1){
-  plot <- plot + theme(legend.position="none")
+    if(length(varselect)==1){
+      plot <- plot + theme(legend.position="none")
+    }
+    # if(!is.null(x$bootstrap_se)){
+    #   plot <- plot +
+    #     geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.4, color=NA)
+    # }
   }
-  # if(!is.null(x$bootstrap_se)){
-  #   plot <- plot +
-  #     geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.4, color=NA)
-  # }
+  else {
+    plot <- ggplot(df,
+                   aes(x = variable, y = value)) +
+      geom_hline(yintercept = 0,
+                 colour = gray(1/2), lty = 2) +
+      geom_point(aes(x = variable,
+                     y = value)) +
+      geom_linerange(aes(x = variable,
+                         ymin = value - t*se,
+                         ymax = value + t*se),
+                     linewidth = 1) +
+      coord_flip()
+  }
   print(plot)
 }
