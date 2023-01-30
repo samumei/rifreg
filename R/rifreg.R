@@ -84,6 +84,21 @@ rifreg <- function(formula,
                    cores = 1,
                    ...){
 
+  # Assertions
+  if(is.null(formula)){
+    stop("No formula provided. Please pass an object of class \"formula\". See stats::lm() for further details.")
+  } else{
+    if(!class(formula) == "formula") {
+      stop("Parameter \"formula\" is not of class \"formula\". Please pass an object of class \"formula\". See stats::lm() for further details.")
+    }
+  }
+  if(is.null(data)){
+    stop("No data provided. Please pass a data frame containing the variables in the model.")
+  } else {
+    if(!class(data)=="data.frame") {
+      stop("Parameter \"data\" is not of class \"data.frame\". Please pass a data frame.")
+    }
+  }
   # Use match.call function to call data.vectors
   function_call <- match.call()
   data_arguments_index <- match(c("formula", "data", "weights", "na.action"), names(function_call), 0)

@@ -82,7 +82,7 @@ get_rif <- function(dep_var,
                     probs = NULL,
                     custom_rif_function = NULL,
                     ...) {
-  # SHOULD WEIGHTS BE CHECKED HERE, IF get_rif bzw. rif Funktion alleine aufgerufen wird (public function)
+  # Assertions
   weights <- check_weights(dep_var, weights)
 
   if(!(statistic == "mean" | statistic == "variance" |
