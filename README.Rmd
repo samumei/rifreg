@@ -25,13 +25,13 @@ RIF regressions estimate the effects of small location shifts in continuous expl
 ## Installation 
 
 You can either install the CRAN version of `rifreg`
-```{r}
-#install.packages("rifreg")
+```{r, eval=FALSE}
+install.packages("rifreg")
 ```
 
 or the latest development version from GitHub:
-```{r}
-#devtools::install_github("samumei/rifreg")
+```{r, eval=FALSE}
+devtools::install_github("samumei/rifreg")
 ```
 
 ## Background
@@ -77,8 +77,8 @@ Per default, `rifreg` returns heteroscedasticity-consistent standard errors esti
 
 In this basic example, we use a sample of the male wage data from the Current Population Survey from 1983 to 1985 as used in Firpo et al. (2009a). 
 ```{r}
-# library("rifreg")
-# data("men8385")
+library(rifreg)
+data("men8385")
 ```
 
 
@@ -88,21 +88,21 @@ We are interested in the unconditional quantile partial effects (UQPE) of union 
 
 ```{r}
 ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
-# fit_uqr <- rifreg(ffl_model,
-#                   data=men8385,
-#                   weights=weights,
-#                   statistic="quantiles",
-#                   probs=1:9/10)
+fit_uqr <- rifreg(ffl_model,
+                  data=men8385,
+                  weights=weights,
+                  statistic="quantiles",
+                  probs=1:9/10)
 ```
 
 The`summary` method returns the estimated coefficients and the standard errors. Per default, `summary` returns heteroscedasticity-consistent standard errors estimated if the variance is not bootstrapped.
 ```{r}
-# summary(fit_uqr)
+summary(fit_uqr)
 ```
 
 `rifreg` comes with a convenient plot function. It illustrates the estimated UQPE across the distribution. The confidence bands are based on the same standard errors as displayed by `summary`.
 ```{r}
-# plot(fit_uqr, varselect="union")
+plot(fit_uqr, varselect="union")
 ```
 
 
@@ -111,17 +111,17 @@ The`summary` method returns the estimated coefficients and the standard errors. 
 Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all observations and reestimating both the RIF and the regression in every iteration. We can set number of `bootstrap_iterations` and the number of `cores`.  
 
 ```{r}
-# fit_uqr <- rifreg(ffl_model,
-#                   data=men8385,
-#                   weights=weights,
-#                   statistic="quantiles",
-#                   bootstrap=TRUE,
-#                   bootstrap_iterations=200,
-#                   cores=4,
-#                   probs=1:9/10)
-# plot(fit_uqr,
-#      varselect="union",
-#      confidence_interval=0.95)
+fit_uqr <- rifreg(ffl_model,
+                  data=men8385,
+                  weights=weights,
+                  statistic="quantiles",
+                  bootstrap=TRUE,
+                  bootstrap_iterations=200,
+                  cores=4,
+                  probs=1:9/10)
+plot(fit_uqr,
+     varselect="union",
+     confidence_interval=0.95)
 ```
 
 
@@ -130,17 +130,17 @@ Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all obser
 `rifreg` performs RIF regressions for other distributional statistics than  quantiles. Per default, the "mean", "variance", "quantiles", "gini",  "interquantile_range" and "interquantile_ratio" are available. 
 ```{r}
 ffl_model2 <- wage ~ union + nonwhite + married + education + experience
-# fit_gini <- rifreg(ffl_model2,
-#                   data=men8385,
-#                   weights=weights,
-#                   statistic="gini")
-# fit_d9d1 <- rifreg(ffl_model2,
-#                   data=men8385,
-#                   weights=weights,
-#                   statistic="interquantile_ratio",
-#                   probs=c(0.9,0.1))
-# fit_gini
-# fit_d9d1
+fit_gini <- rifreg(ffl_model2,
+                  data=men8385,
+                  weights=weights,
+                  statistic="gini")
+fit_d9d1 <- rifreg(ffl_model2,
+                  data=men8385,
+                  weights=weights,
+                  statistic="interquantile_ratio",
+                  probs=c(0.9, 0.1))
+fit_gini
+fit_d9d1
 ```
 
 ### User-written RIF functions
@@ -172,12 +172,12 @@ custom_top_inc_share <- function(dep_var,
   return(rif_top_income_share)
 }
 
-# fit_top_10 <- rifreg(ffl_model2,
-#                      data=men8385,
-#                      weights=weights,
-#                      statistic="costum",
-#                      custom_rif_function=custom_top_inc_share,
-#                      probs=0.1)
+fit_top_10 <- rifreg(ffl_model2,
+                     data=men8385,
+                     weights=weights,
+                     statistic="costum",
+                     custom_rif_function=custom_top_inc_share,
+                     probs=0.1)
 ```
 
 

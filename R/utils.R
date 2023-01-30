@@ -6,6 +6,7 @@
 #'@import Formula
 #'@import parallel
 #'@import sandwich
+#'@importFrom methods is
 NULL
 
-
+utils::globalVariables(c("variable", "probs", "value", "se", "gray"))
