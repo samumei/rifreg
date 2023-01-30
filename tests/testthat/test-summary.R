@@ -6,7 +6,7 @@ test_that("Generic summary method does not throw an error", {
                           data = data,
                           statistic = "quantiles",
                           custom_rif_function = NULL,
-                          probs = 0.5,
+                          probs = seq(0.1, 0.9, 0.1),
                           weights = weights,
                           bootstrap = FALSE,
                           bootstrap_iterations = 100,

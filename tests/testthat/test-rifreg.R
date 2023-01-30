@@ -10,7 +10,8 @@ testthat::test_that("RIF regression function does not throw an error" , {
                    statistic = "quantiles",
                    probs = seq(0.1, 0.9, 0.1),
                    weights = NULL,
-                   bootstrap = FALSE)
+                   bootstrap = T)
+
   expect_error(rifreg, NA)
   expect_equal(rifreg[["rif"]][["weights"]], rep(1, length(data$union)))
 

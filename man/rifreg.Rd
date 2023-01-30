@@ -11,6 +11,7 @@ rifreg(
   weights = NULL,
   probs = NULL,
   custom_rif_function = NULL,
+  na.action = na.omit(),
   bootstrap = FALSE,
   bootstrap_iterations = 100,
   cores = 1,
@@ -39,6 +40,10 @@ Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}
 If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
 See examples for further details.}
 
+\item{na.action}{generic function that defines how NAs in the data should be handled.
+Default is \code{na.omit(), leading to exclusion of observations that contain one or more missings.
+See [stats::na.action()] for further details.}}
+
 \item{bootstrap}{boolean (Default = FALSE) indicating if bootstrapped standard errors shall be computed}
 
 \item{bootstrap_iterations}{positive integer indicating the number of bootstrap iterations to execute.
@@ -53,8 +58,25 @@ Apart from \code{dep_var} they must have a different name than the the ones of
 \code{custom_rif_function}, name them \code{custom_weights}.}
 }
 \value{
-an object of class \code{rifreg} containing the RIF regression estimate,
-        bootstrap standard errors, the RIF values and further information.
+\code{rifreg} returns an object of \code{\link{class}} \code{"rifreg"}.
+
+        A \code{"rifreg"} object is a list containing the following components:
+
+        \item{estimates}{a matrix of RIF regression coefficients for each
+                         covariate and the intercept. In case of several quantiles,
+                         coefficient estimates for each quantile are provided.
+                         Equivalent to \code{coef()} call of object of class \code{"lm"}.}
+        \item{rif_lm}{one or several objects of class \code{"lm"},
+                      containing the detailed RIF regression results.}
+        \item{rif}{a data frame containing the RIF for each observation. }
+        \item{bootstrap_se}{the bootstrapped standard errors for each coefficient.
+                            Only provided if \code{bootstrap = TRUE}.}
+        \item{bootstrap_vcov}{the bootstrapped variance-covariance matrix for each coefficient.
+                              Only provided if \code{bootstrap = TRUE}.}
+        \item{statistic}{the distributional statistic for which the RIFs where computed.}
+        \item{custom_rif_function}{The custom rif function in case it was provided.}
+        \item{probs}{the quantiles that were computed, in case the distributional
+                     statistic requires quantiles.}
 }
 \description{
 Estimate the recentered influence function regression (RIFREG) for a chosen

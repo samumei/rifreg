@@ -210,7 +210,25 @@ get_rif_variance <- function(dep_var, weights){
   return(rif)
 }
 
-# Integrate generalized Lorenz curve
+
+#' Integrate generalized Lorenz curve
+#'
+#' Computes the area under the lorenz curve.
+#'
+#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+#'
+#' @return the size of the area under the lorenz curve (the integrated lorenz curve).
+#' @export
+#'
+#' @examples
+#'
+#' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
+#' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
+#' integrated_lorenz_curve <-
+#'   integrate_generalized_lorenz_curve(dep_var = dep_var,
+#'                                      weights = weights)
+#'
 integrate_generalized_lorenz_curve <- function (dep_var, weights) {
   weights <- weights / sum(weights)
   weighted_ecdf <- cumsum(weights[order(dep_var)])
