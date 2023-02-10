@@ -180,10 +180,155 @@ fit_top_10 <- rifreg(ffl_model2,
                      probs=0.1)
 ```
 
+## Validation 
+
+To validate the functions and provide users with an additional example, we reproduced the RIF regression estimates in Firpo, Fortin, and Lemieux (2009a: 962-966). In their empirical example, Firpo, Fortin, and Lemieux estimate the impact of union status on log wages using a large sample of 266'956 male U.S. workers from 1983-1985. based on the Outgoing Rotation Group (ORG) supplement of the Current Population Survey. In `rifreg` we attached a random sample of this data set containing only XXX observations. To reproduce the code below, make sure you download the entire data set from the [journal's website](https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_data%20and%20programs_0.zip).
+
+### Data preparation
+
+```{r}
+
+library("dplyr")
+
+## getting the data from the journal's website
+# url <- "https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_data%20and%20programs_0.zip"
+# download.file(url = url, destfile = "6822_data%20and%20programs_0.zip")
+# men8385 <- readstata13::read.dta13(file = unzip("6822_data%20and%20programs_0.zip","men8385.dta"))
+
+## Load data
+men8385 <- read.dta13("men8385.dta")
+
+# Save dummies as factor variables
+# nine potential experience categories (each of five years gap)
+men8385$experience <- 5
+men8385[which(men8385$ex1==1),"experience"] <- 1
+men8385[which(men8385$ex2==1),"experience"] <- 2
+men8385[which(men8385$ex3==1),"experience"] <- 3
+men8385[which(men8385$ex4==1),"experience"] <- 4
+# 5 = reference group
+men8385[which(men8385$ex6==1),"experience"] <- 6
+men8385[which(men8385$ex7==1),"experience"] <- 7
+men8385[which(men8385$ex8==1),"experience"] <- 8
+men8385[which(men8385$ex9==1),"experience"] <- 9
+
+# Education
+men8385$education <- 2
+men8385[which(men8385$ed0==1),"education"] <- 0
+men8385[which(men8385$ed1==1),"education"] <- 1
+# high school = reference group
+men8385[which(men8385$ed3==1),"education"] <- 3
+men8385[which(men8385$ed4==1),"education"] <- 4
+men8385[which(men8385$ed5==1),"education"] <- 5
+
+men8385$education <- as.character(men8385$education)
+men8385$experience <- as.character(men8385$experience)
+men8385$experience <- dplyr::recode_factor(men8385$experience,
+                                              "5"="20-24",
+                                              "1"="0-4",
+                                              "2"="5-9",
+                                              "3"="10-14",
+                                              "4"="15-19",
+                                              "6"="25-29",
+                                              "7"="30-34",
+                                              "8"="35-39",
+                                              "9"=">=40")
+
+men8385$education <- dplyr::recode_factor(men8385$education,
+                                             "2"="High School",
+                                             "0"="Elementary",
+                                             "1"="HS dropout",
+                                             "3"="Some College",
+                                             "4"="College",
+                                             "5"="Post-graduate")
+
+
+# Save log wage as wage hourly wage in dollars
+men8385$wage <- exp(men8385$lwage)
+
+# Rename/relevel remaining indicators
+men8385$union <- as.factor(men8385$covered)
+men8385$covered <- NULL
+
+men8385$married <- as.factor(men8385$marr)
+men8385$marr <- NULL
+men8385$nonwhite <- as.factor(men8385$nonwhite)
+levels(men8385$married) <- levels(men8385$nonwhite) <-  levels(men8385$union) <-  c("no","yes")
+
+# Rename weight and education in years variable
+names(men8385)[names(men8385)=="eweight"] <- "weights"
+names(men8385)[names(men8385)=="educ"] <- "education_in_years"
+names(men8385)[names(men8385)=="exper"] <- "experience_in_years"
+
+# Check experience and age groups
+men8385 %>%
+  group_by(experience) %>%
+  dplyr::summarise(min=min(experience_in_years,na.rm=TRUE),
+                   max=max(experience_in_years,na.rm=TRUE))
+
+men8385 %>%
+  group_by(education) %>%
+  dplyr::summarise(min=min(education_in_years,na.rm=TRUE),
+                   max=max(education_in_years,na.rm=TRUE))
+
+# Select relevant variables
+sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age","education_in_years","experience_in_years")
+men8385 <- men8385[, sel_vars]
+
+
+```
+
+### RIF Regression
+
+```{r}
+library(rifreg)
+
+ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
+rifreg <- rifreg(formula = ffl_model, 
+                 data = men8385,
+                 weights = weights,
+                 statistic = "quantiles", 
+                 bootstrap = TRUE, 
+                 bootstrap_iterations = 2, 
+                 probs = seq(0.05, 0.95, 0.05))
+
+ols <- lm(formula = ffl_model, 
+          data = men8385, 
+          weights = weights)
+
+```
+
+### Results
+
+```{r}
+estimates <- data.frame(rifreg$estimates[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
+standard_errors <- data.frame(rifreg$bootstrap_se[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
+results <- cbind(estimates, standard_errors)[, c(1, 4, 2, 5, 3, 6)]
+results$ols <- ols$coefficients[1:9]
+names(results) <- c("Coefficient 0.1", "SE", "Coefficient 0.5", "SE", "Coefficient 0.9", "SE", "OLS")
+
+```
+
+```{r}
+
+rifreg_plot <- plot(rifreg, varselect = "unionyes") 
+
+rifreg_plot + 
+  geom_hline(yintercept = ols$coefficients["unionyes"], linetype = 'dashed') +
+  geom_text(aes(x = 0.8, y = ols$coefficients["unionyes"]  + 0.03, label = "OLS estimate"), color = "black")  +
+  ylab("Effect of Union") +
+  xlab("Quantiles") + 
+  labs(title = "Unconditional Quantile Regression in R") +
+  theme(strip.background = element_blank(), strip.text.x = element_blank())
+
+```
+
+The results are qualitatively with slight deviations the same as in Firpo, Fortin, and Lemieux (2009a: 962-966). Possible reasons for difference 
+Say that it is thus validated and ready to use.
+```
 
 ## Credits
 
-Samuel Meier, David Gallusser
+David Gallusser & Samuel Meier
 
 ## References
 

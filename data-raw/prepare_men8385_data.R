@@ -45,7 +45,7 @@ library("dplyr")
 
 # Load data
 # url <- "https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_data%20and%20programs_0.zip"
-# download.file(url,desfile="6822_data%20and%20programs_0.zip")
+# download.file(url, destfile="6822_data%20and%20programs_0.zip")
 # men8385 <- read.dta13(unz("6822_data%20and%20programs_0.zip","men8385.dta"))
 men8385 <- read.dta13("data-raw/men8385.dta")
 
