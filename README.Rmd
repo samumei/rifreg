@@ -196,7 +196,7 @@ library("dplyr")
 # men8385 <- readstata13::read.dta13(file = unzip("6822_data%20and%20programs_0.zip","men8385.dta"))
 
 ## Load data
-men8385 <- read.dta13("men8385.dta")
+men8385 <- readstata13::read.dta13("men8385.dta")
 
 # Save dummies as factor variables
 # nine potential experience categories (each of five years gap)
@@ -279,21 +279,23 @@ men8385 <- men8385[, sel_vars]
 
 ### RIF Regression
 
+We model is specified as in Firpo, Fortin, and Lemieux (2007a), omitting weights, computing bootstrapped standard errors with 200 iterations and setting a fixed bandwidth of 0.06 for the kernel density in estimation. We also compute a OLS model for comparison with the original results and to validate our data preparation. 
+
 ```{r}
 library(rifreg)
 
-ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
-rifreg <- rifreg(formula = ffl_model, 
+set.seed(97013)
+ffl_model_2009 <- log(wage) ~ union + nonwhite + married + education + experience
+rifreg <- rifreg(formula = ffl_model_2009, 
                  data = men8385,
-                 weights = weights,
-                 statistic = "quantiles", 
+                 statistic = "quantiles",  
+                 probs = seq(0.05, 0.95, 0.05),
+                 bw = 0.06, 
                  bootstrap = TRUE, 
-                 bootstrap_iterations = 2, 
-                 probs = seq(0.05, 0.95, 0.05))
+                 bootstrap_iterations = 200)
 
-ols <- lm(formula = ffl_model, 
-          data = men8385, 
-          weights = weights)
+ols <- lm(formula = ffl_model_2009, 
+          data = men8385)
 
 ```
 
@@ -308,6 +310,8 @@ names(results) <- c("Coefficient 0.1", "SE", "Coefficient 0.5", "SE", "Coefficie
 
 ```
 
+Our results largely match does of Firpo, Fortin, and Lemieux (2009a: 962-966). The OLS results are IDENTICAL as expected. The RIF regression results differ in few instances (e.g. XXX) by about XX percent from the original paper.
+
 ```{r}
 
 rifreg_plot <- plot(rifreg, varselect = "unionyes") 
@@ -321,9 +325,10 @@ rifreg_plot +
   theme(strip.background = element_blank(), strip.text.x = element_blank())
 
 ```
+Looking at the plots, we see that our plots look correspond qualitatively to those presented by Firpo, Fortin, and Lemieux (2009a: 965). The plot example illustrates, how the plot from the generic `rifreg::plot()` function can be further enhanced, for instance with a horizontal line indicating the OLS coefficient for comparison. 
 
-The results are qualitatively with slight deviations the same as in Firpo, Fortin, and Lemieux (2009a: 962-966). Possible reasons for difference 
-Say that it is thus validated and ready to use.
+This validation example illustrates that the `rifreg` package works as intended in computing RIF regressions and reliably yields the expected results. 
+
 ```
 
 ## Credits
@@ -336,6 +341,9 @@ Cowell, Frank A., and Emmanuel Flachaire. 2007. "Income distribution and inequal
 
 Essama-Nssah, Boniface, and Peter J. Lambert. 2012. “Influence Functions for Policy Impact Analysis.” In John A. Bishop and Rafael Salas, eds., *Inequality, Mobility and Segregation: Essays in Honor of Jacques Silber*. Bigley, UK: Emerald Group Publishing
 Limited.
+
+Firpo, Sergio, Nicole M. Fortin, and Thomas Lemieux. 2007a. “Unconditional Quantile Regressions.” *Tech-
+nical Working Paper 339, National Bureau of Economic Research*. Cambridge, MA. 
 
 Firpo, Sergio, Nicole M. Fortin, and Thomas Lemieux. 2009a. "Unconditional Quantile Regressions." *Econometrica* 77(3): 953-973.
 
