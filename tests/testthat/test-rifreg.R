@@ -225,6 +225,42 @@ testthat::test_that("RIF regression function does not throw an error with differ
   expect_equal(rifreg[["rif"]][["weights"]], rep(1, length(data$union)))
 })
 
+testthat::test_that("RIF regression function does not throw an error with custom top income share function" , {
+  ffl_model2 <- wage ~ union + nonwhite + married + education + experience
+
+  # custom RIF function for top 10% percent income share
+  custom_top_inc_share <- function(dep_var,
+                                   weights,
+                                   top_share=0.1){
+    top_share <- 1-top_share
+    weighted_mean <- weighted.mean(x = dep_var,
+                                   w = weights)
+    weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,
+                                             weights = weights,
+                                             probs = top_share)
+    lorenz_ordinate <- sum(dep_var[which(dep_var<=weighted_quantile)]*
+                             weights[which(dep_var<=weighted_quantile)])/
+      sum(dep_var*weights)
+    if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
+      ifelse(dep_var < weighted_quantile,
+             dep_var - (1-top_share)*weighted_quantile,
+             top_share*weighted_quantile)/weighted_mean
+    rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+    rif <- data.frame(rif_top_income_share, weights)
+    names(rif) <- c("rif_top_income_share", "weights")
+    return(rif)
+  }
+
+  fit_top_10 <- rifreg(ffl_model2,
+                       data=men8385,
+                       weights=weights,
+                       statistic="custom",
+                       custom_rif_function=custom_top_inc_share,
+                       top_share=0.1)
+  expect_error(fit_top_10, NA)
+})
+
+
 # # The following test does not work in devtools::check()
 # testthat::test_that("RIF regression function does not throw an error with several cores" , {
 #   data <- men8385[1:300,]
