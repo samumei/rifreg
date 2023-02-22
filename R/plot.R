@@ -1,4 +1,4 @@
-#' Plot Coefficients for a \code{rifreg} Object
+#' Plot the coefficients of a \code{rifreg} object
 #'
 #' Coefficients are plotted for each quantile and each covariate.
 #' Specific covariates can be selected and standard errors displayed if desired.

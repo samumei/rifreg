@@ -327,6 +327,7 @@ rifreg_plot +
   labs(title = "Unconditional Quantile Regression in R") +
   theme(strip.background = element_blank(), strip.text.x = element_blank())
 ```
+
 Looking at the plots, we see that our plots correspond to those presented by Firpo, Fortin, and Lemieux (2009a: 965). The plot example illustrates, how the plot from the generic `rifreg::plot()` function can be further enhanced, for instance with a horizontal line indicating the OLS coefficient for comparison. 
 
 This validation example illustrates that the `rifreg` package works as intended in computing RIF regressions and reliably yields the expected results. 
