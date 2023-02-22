@@ -100,7 +100,7 @@ rifreg <- function(formula,
                    weights = NULL,
                    probs = NULL,
                    custom_rif_function = NULL,
-                   na.action = na.omit(),
+                   na.action = na.omit,
                    bootstrap = FALSE,
                    bootstrap_iterations = 100,
                    cores = 1,
@@ -121,13 +121,15 @@ rifreg <- function(formula,
       stop("Parameter \"data\" is not of class \"data.frame\". Please pass a data frame.")
     }
   }
+
   # Use match.call function to call data.vectors
   function_call <- match.call()
-  data_arguments_index <- match(c("formula", "data", "weights", "na.action"), names(function_call), 0)
+  data_arguments_index <- match(c("formula", "data", "weights"), names(function_call), 0)
   data_arguments <- function_call[c(1, data_arguments_index)]
   data_arguments$drop.unused.levels <- TRUE
   data_arguments[[1]] <- as.name("model.frame")
   data_used <- eval.parent(data_arguments)
+  data_used <- na.action(data_used)
   function_terms <- attr(data_used, "terms")
 
   # Extract variables
@@ -188,7 +190,6 @@ rifreg <- function(formula,
                                                cl = cluster)
       parallel::stopCluster(cluster)
     }
-
     bootstrap_estimates <- as.data.frame(do.call("cbind", bootstrap_estimates))
     modelnames <- unique(colnames(bootstrap_estimates))
     bootstrap_se <- matrix(rep(NA, length(modelnames) * nrow(bootstrap_estimates)), ncol = length(modelnames))
@@ -259,8 +260,8 @@ est_rifreg <- function(formula,
 # Bootstrap iteration (helper function)
 est_rifreg_bootstrap <- function(data_used,
                                  dep_var,
-                                 weights,
                                  statistic,
+                                 weights,
                                  probs,
                                  custom_rif_function,
                                  bootstrap_iterations,

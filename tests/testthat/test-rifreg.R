@@ -199,17 +199,34 @@ testthat::test_that("RIF regression function does not throw an error with missin
                      married +
                      education +
                      experience,
+                   data = data,
+                   statistic = "quantiles",
+                   probs = seq(0.1, 0.9, 0.1),
+                   weights = NULL,
+                   bootstrap = FALSE)
+  expect_error(rifreg, NA)
+})
+
+testthat::test_that("RIF regression function does not throw an error with different na.action" , {
+  data <- men8385[1:300, -length(colnames(men8385))]
+
+  rifreg <- rifreg(formula = log(wage) ~ union +
+                     nonwhite +
+                     married +
+                     education +
+                     experience,
                    data = men8385[1:300,],
                    statistic = "quantiles",
                    probs = seq(0.1, 0.9, 0.1),
+                   na.action = na.fail,
                    weights = NULL,
                    bootstrap = FALSE)
   expect_error(rifreg, NA)
   expect_equal(rifreg[["rif"]][["weights"]], rep(1, length(data$union)))
 })
 
-# The following test does not work in devtools::check()
-# testthat::test_that("RIF regression function does not throw an with several cores" , {
+# # The following test does not work in devtools::check()
+# testthat::test_that("RIF regression function does not throw an error with several cores" , {
 #   data <- men8385[1:300,]
 #   weights <- men8385$weights[1:300]
 #

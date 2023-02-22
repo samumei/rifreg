@@ -11,7 +11,7 @@ rifreg(
   weights = NULL,
   probs = NULL,
   custom_rif_function = NULL,
-  na.action = na.omit(),
+  na.action = na.omit,
   bootstrap = FALSE,
   bootstrap_iterations = 100,
   cores = 1,
