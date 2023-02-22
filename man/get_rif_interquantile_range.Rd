@@ -10,17 +10,16 @@ get_rif_interquantile_range(dep_var, weights, probs, ...)
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-where nx is the length of (the finite entries of) \code{dep_var}.}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
 
 \item{probs}{a vector of length 2 with probabilities corresponding to the limits of the interquantile range of interest.
 The interquantile range is defined as difference between the quantile with the larger probability and the one
 with the lower probability.}
 
-\item{...}{further arguments passed on to \code{stats::density()} function.}
+\item{...}{further arguments passed on to \link[stats]{density}.}
 }
 \value{
-A data frame with one column containing the RIF of the interquantile range for each observation.
+A data frame with one column containing the RIF of the interquantile range for each observation and one column containing the weights.
 }
 \description{
 Compute the recentered influence function (RIF) of a weighted

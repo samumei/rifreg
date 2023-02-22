@@ -1,13 +1,13 @@
 #' summary method for class "rifreg"
 #'
-#' @param object an object of class "rifreg", usually, a result of a call to [rifreg()].
+#' @param object an object of class "rifreg", usually, a result of a call to \link[rifreg]{rifreg}.
 #' @param vcov Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
-#' Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
-#' standard errors do not take the variance introduced by estimating RIF into account.
-#' @param ... other parameters to be passed through to summary functions.
+#'             Per default, heteroscedasticity-consistent (HC) standard errors are calculated using \link[sandwich]{sandwich}.
+#'             Note: These standard errors do not take the variance introduced by estimating RIF into account.
+#' @param ... other parameters to be passed to summary functions.
 #'
 #' @return the function \code{summary.rifreg()} returns a list of summary statistics derived from
-#'         the rifreg object given in \code{object}. For further details see [stats::summary.lm()].
+#'         the rifreg object given in \code{object}. For further details see \link[stats]{summary.lm}.
 #' @export
 #'
 #' @examples
@@ -28,9 +28,6 @@ summary.rifreg <- function(object, vcov=sandwich::sandwich,...){
   standard_errors <- object$bootstrap_se
   standard_errors_type <- "Bootstrap s.e."
   if(is.null(standard_errors)){
-    # standard_errors <- as.data.frame(matrix(rep(NA, prod(dim(estimates))),ncol=ncol(estimates)))
-    # names(standard_errors) <- names(estimates)
-    # rownames(standard_errors) <- rownames(estimates)
     standard_errors <- do.call("cbind",lapply(lapply(object$rif_lm, vcov, ...), function(x) sqrt(diag(x))))
     standard_errors_type <- "Analytical s.e."
   }

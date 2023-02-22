@@ -11,23 +11,23 @@
 #' In Anthony B. Atkinson and François Bourguignon (eds.), \emph{Handbook of Income Distribution}. Amsterdam: Elsevier.
 #'
 #' @param statistic string containing the distributional statistic for which to compute the RIF. Can be one of
-#'                   "mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
-#'                   is selected a \code{custom_rif_function} needs to be provided.
+#'                  "mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
+#'                  is selected a \code{custom_rif_function} needs to be provided.
 #' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
 #' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
-#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.
-#' @param custom_rif_function the RIF function to compute the RIF of the custom statistic.
+#'              Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.
+#' @param custom_rif_function the RIF function to compute the RIF of the custom distributional statistic.
 #'                            Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 #'                            Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
-#'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
-#'                            See examples for further details.
+#'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}).
+#'                            A custom function must return a data frame containing at least a "rif" and "weights" column.
+#'                            See \code{examples} for further details.
 #' @param ... additional parameters passed to the \code{custom_rif_function}.
-#'            Apart from \code{dep_var} they must have a different name than the the ones of
-#'            \code{get_rif}. For instance, if you want to pass weights to the
-#'            \code{custom_rif_function}, name them \code{custom_weights}.
+#'            Apart from \code{dep_var} and \code{weights} they must have a different name than the the ones in
+#'            \code{rifreg}. For instance, if you want to pass \code{probs} to the
+#'            \code{custom_rif_function}, name them \code{custom_probs}.
 #'
 #' @return a data frame with the RIF value for each observation and in the case of several quantiles
 #'         a column for each quantile.
@@ -47,6 +47,8 @@
 #' custom_variance_function <- function(dep_var, weights){
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   rif <- (dep_var - weighted_mean)^2
+#'   rif <- data.frame(rif, weights)
+#'   names(rif) <- c("rif_variance", "weights")
 #'   return(rif)
 #' }
 #'
@@ -68,6 +70,8 @@
 #'                                  dep_var - (1-probs)*weighted_quantile,
 #'                                  probs*weighted_quantile)/weighted_mean
 #'   rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+#'   rif <- data.frame(rif_top_income_share, weights)
+#'   names(rif) <- c("rif_top_income_share", "weights")
 #'   return(rif_top_income_share)
 #' }
 #'
@@ -116,14 +120,14 @@ get_rif <- function(dep_var,
 }
 
 
-#' Estimate RIF of the Mean
+#' Estimate RIF at the Mean
 #'
-#' Function to estimate the recentered influence function (RIF) of the mean
+#' Function to estimate the recentered influence function (RIF) at the mean
 #' of a weighted distribution of a dependent variable.
 #'
-#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param dep_var dependent variable of a distributional function. Discrete or continuous numeric vector.
 #'
-#' @return A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the probs.
+#' @return A data frame with one column of \code{length(dep_var)} containing the RIF at the mean.
 #' @export
 #'
 #' @examples
@@ -138,20 +142,20 @@ get_rif_mean <- function(dep_var) {
 }
 
 
-#' Estimate RIF of Quantiles
+#' Estimate RIF at Quantiles
 #'
-#' Function to estimate the recentered influence function (RIF) of one or several specified quantiles
+#' Function to estimate the recentered influence function (RIF) at one or several specified quantiles
 #' of a weighted distribution of a dependent variable.
 #'
-#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param dep_var dependent variable of a distributional function. Discrete or continuous numeric vector.
 #' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
-#'                  Each quantile is indicated with value between 0 and 1.
+#'              Each quantile is indicated with a value between 0 and 1.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
-#' @param ... further arguments passed on to \code{stats::density()} function.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
+#' @param ... further arguments passed on to \link[stats]{density}.
 #'
-#' @return A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the quantile's probabilities.
+#' @return A data frame with the number of columns equaling the length of vector \code{probs} and an additional column containing the weights.
+#'         Each column contains the RIF values at the quantile's probabilities.
 #' @export
 #'
 #' @examples
@@ -170,11 +174,11 @@ get_rif_quantiles <- function(dep_var, weights, probs, ...){
 
 
 #' @describeIn get_rif_quantiles
-#' Helper function to estimate the RIF values of a specific quantile.
+#' Helper function to estimate the RIF values at a specific quantile.
 #'
-#' @param probs the specific quantile for which to estimate the RIF.
+#' @param probs the specific quantile at which to estimate the RIF.
 #' @param density the kernel density estimation of \code{dep_var}.
-#'                For further information see \code{?stats::density}.
+#'                For further information see \link[stats]{density}.
 get_rif_quantile <- function(dep_var, weights, probs, density) {
   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
   density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
@@ -188,12 +192,11 @@ get_rif_quantile <- function(dep_var, weights, probs, density) {
 #' Function to estimate the recentered influence function (RIF) of the variance
 #' of a weighted distribution of a dependent variable.
 #'
-#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param dep_var dependent variable of a distributional function. Discrete or continuous numeric vector.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
 #'
-#' @return A data frame with one column containing the RIF of the variance for each observation.
+#' @return A data frame with one column containing the RIF of the variance for each observation and one column containing the weights.
 #' @export
 #'
 #' @examples
@@ -215,8 +218,9 @@ get_rif_variance <- function(dep_var, weights){
 #'
 #' Computes the area under the lorenz curve.
 #'
-#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param dep_var dependent variable of a distributional function. Discrete or continuous numeric vector.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
 #'
 #' @return the size of the area under the lorenz curve (the integrated lorenz curve).
 #' @export
@@ -245,8 +249,7 @@ integrate_generalized_lorenz_curve <- function (dep_var, weights) {
 #'
 #' @param dep_var values of a non-negative continuous variable
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
 #'
 #' @references
 #' Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2018. “Decomposing Wage Distributions Using Recentered
@@ -275,8 +278,7 @@ compute_gini <- function (dep_var, weights) {
 #'
 #' @param dep_var values of a non-negative continuous dependent variable
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
 #'
 #' @return A data frame with one column containing the RIF of the Gini coefficient for each observation.
 #' @references
@@ -326,11 +328,10 @@ get_rif_gini <- function(dep_var, weights){
 #'              The interquantile range is defined as difference between the quantile with the larger probability and the one
 #'              with the lower probability.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
-#' @param ... further arguments passed on to \code{stats::density()} function.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
+#' @param ... further arguments passed on to \link[stats]{density}.
 #'
-#' @return A data frame with one column containing the RIF of the interquantile range for each observation.
+#' @return A data frame with one column containing the RIF of the interquantile range for each observation and one column containing the weights.
 #' @references
 #' Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2018. “Decomposing Wage Distributions Using Recentered
 #' Influence Function Regressions.” \emph{Econometrics} 6(2), 28.
@@ -359,14 +360,13 @@ get_rif_interquantile_range <- function(dep_var, weights, probs, ...){
 #' Compute the recentered influence function (RIF) of a weighted
 #' interquantile ratio.
 #'
-#' @param dep_var dependent variable of distributional function. Discrete or continuous numeric vector.
+#' @param dep_var dependent variable of a distributional function. Discrete or continuous numeric vector.
 #' @param probs a vector of length 2 with probabilities corresponding to the quantiles in the ratio's numerator and the denominator.
 #'              The function defines the interquantile ratio as the ratio between the quantile with the larger probability (numerator) and
 #'              the quantile with the lower probability (denominator).
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
-#' @param ... further arguments passed on to \code{stats::density()} function.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
+#' @param ... further arguments passed on to \link[stats]{density}.
 #'
 #' @return A data frame with one column containing the RIF of the interquantile ratio for each observation.
 #' @references

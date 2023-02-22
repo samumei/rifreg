@@ -1,18 +1,18 @@
-#' Plot Coefficients for an \code{rifreg} Object
+#' Plot Coefficients for a \code{rifreg} Object
 #'
 #' Coefficients are plotted for each quantile and each covariate.
-#' Specific covariates can be selected and SE can also be displayed.
+#' Specific covariates can be selected and standard errors displayed if desired.
 #'
-#' @param x an object of class "rifreg", usually, a result of a call to [rifreg()] with code{statistic = "quantiles"}.
+#' @param x an object of class "rifreg", usually, a result of a call to \link[rifreg]{rifreg} with \code{statistic = "quantiles"}.
 #' @param varselect vector of length 1 or more containig the names of the covariates to display.
 #' @param confidence_level numeric value between 0 and 1 (default = 0.95) that defines the confidence interval
 #'              plotted as a ribbon and defined as \code{qnorm(confidence_level/2)} * standard error.
 #' @param vcov Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
-#'             Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
-#'             standard errors do not take the variance introduced by estimating RIF into account.
-#' @param ... other parameters to be passed through to plotting functions.
+#'             Per default, heteroscedasticity-consistent (HC) standard errors are calculated using \link[sandwich]{sandwich}.
+#'             Note: These standard errors do not take the variance introduced by estimating RIF into account.
+#' @param ... other parameters to be passed to plotting function. See \link[ggplot2]{ggplot} for further information.
 #'
-#' @return a ggplot containing the coefficients for each (selected) covariate
+#' @return a "ggplot" containing the coefficients for each (selected) covariate
 #' @export
 #'
 #' @examples
@@ -22,10 +22,10 @@
 #'                                        married +
 #'                                        education +
 #'                                        experience,
-#'                      data = men8385,
-#'                      statistic = "quantiles",
-#'                      probs = seq(0.1, 0.9, 0.1),
-#'                      weights = weights)
+#'                   data = men8385,
+#'                   statistic = "quantiles",
+#'                   probs = seq(0.1, 0.9, 0.1),
+#'                   weights = weights)
 #'
 #' plot(rifreg)
 #'
@@ -35,14 +35,11 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
   estimates <- as.data.frame(x$estimates)
 
   if(is.null(x$bootstrap_se)) {
-    # estimates$se <- NA
     warning("Standard errors have not been bootstrapped!\nAnalytical s.e. do not take variance introduced by\nestimating the RIF into account.")
     standard_errors <- as.data.frame(do.call("cbind",lapply(lapply(x$rif_lm, vcov, ...), function(x) sqrt(diag(x)))))
   } else {
     standard_errors <- as.data.frame(x$bootstrap_se)
   }
-
-
 
   if(x$statistic=="quantiles"){
     names(estimates) <- x$probs
@@ -120,10 +117,6 @@ plot.rifreg <- function(x, varselect = NULL, confidence_level = 0.05, vcov=sandw
     if(length(varselect)==1){
       plot <- plot + theme(legend.position="none")
     }
-    # if(!is.null(x$bootstrap_se)){
-    #   plot <- plot +
-    #     geom_ribbon(aes(ymin = value - t*se, ymax = value + t*se), alpha=0.4, color=NA)
-    # }
   }
   else {
     plot <- ggplot(df,

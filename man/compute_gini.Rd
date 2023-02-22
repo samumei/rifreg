@@ -10,8 +10,7 @@ compute_gini(dep_var, weights)
 \item{dep_var}{values of a non-negative continuous variable}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-where nx is the length of (the finite entries of) \code{dep_var}.}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
 }
 \description{
 Compute a weighted Gini coefficient by integrating the

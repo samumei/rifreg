@@ -2,18 +2,18 @@
 % Please edit documentation in R/rif.R
 \name{get_rif_mean}
 \alias{get_rif_mean}
-\title{Estimate RIF of the Mean}
+\title{Estimate RIF at the Mean}
 \usage{
 get_rif_mean(dep_var)
 }
 \arguments{
-\item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
+\item{dep_var}{dependent variable of a distributional function. Discrete or continuous numeric vector.}
 }
 \value{
-A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the probs.
+A data frame with one column of \code{length(dep_var)} containing the RIF at the mean.
 }
 \description{
-Function to estimate the recentered influence function (RIF) of the mean
+Function to estimate the recentered influence function (RIF) at the mean
 of a weighted distribution of a dependent variable.
 }
 \examples{

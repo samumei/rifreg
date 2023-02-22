@@ -1,6 +1,6 @@
 #' Estimate RIF Regression
 #'
-#' Estimate the recentered influence function regression (RIFREG) for a chosen
+#' Estimate the recentered influence function regression (RIFREG) for a
 #' distributional statistic of interest.
 #'
 #' @references
@@ -10,33 +10,33 @@
 #' Cowell, Frank A., and Emmanuel Flachaire. 2015. “Statistical Methods for Distributional Analysis.”
 #' In Anthony B. Atkinson and François Bourguignon (eds.), \emph{Handbook of Income Distribution}. Amsterdam: Elsevier.
 #'
-#' @param formula an object of class "formula". See [stats::lm()] for further details.
+#' @param formula an object of class "formula". See \link[stats]{lm} for further details.
 #' @param data a data frame containing the variables in the model.
 #' @param statistic string containing the distributional statistic for which to compute the RIF. Can be one of
-#'                   "mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
-#'                   is selected a \code{custom_rif_function} needs to be provided.
-#' @param custom_rif_function the RIF function to compute the RIF of the custom statistic.
+#'                  "mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
+#'                  is selected a \code{custom_rif_function} needs to be provided.
+#' @param custom_rif_function the RIF function to compute the RIF of the custom distributional statistic.
 #'                            Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 #'                            Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
-#'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
-#'                            See examples for further details.
+#'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}).
+#'                            A custom function must return a data frame containing at least a "rif" and "weights" column.
+#'                            See \code{examples} for further details.
 #' @param probs a vector of length 1 or more with quantile positions to calculate the RIF.
-#'                  Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.
+#'              Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-#'                where nx is the length of (the finite entries of) \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
 #' @param na.action generic function that defines how NAs in the data should be handled.
-#'                  Default is \code{na.omit(), leading to exclusion of observations that contain one or more missings.
-#'                  See [stats::na.action()] for further details.}
-#' @param bootstrap boolean (Default = FALSE) indicating if bootstrapped standard errors shall be computed
+#'                  Default is \code{na.omit}, leading to exclusion of observations that contain one or more missings.
+#'                  See \link[stats]{na.action} for further details.
+#' @param bootstrap boolean (Default = FALSE) indicating if bootstrapped standard errors will be computed
 #' @param bootstrap_iterations positive integer indicating the number of bootstrap iterations to execute.
 #'                             Only required if \code{bootstrap = TRUE}.
-#' @param cores positive integer indicating the number of cores to use when computing bootstrap standard errors.
+#' @param cores positive integer indicating the number of cores to use when computing bootstrapped standard errors.
 #'              Only required if \code{bootstrap = TRUE}.
 #' @param ... additional parameters passed to the \code{custom_rif_function}.
-#'            Apart from \code{dep_var} they must have a different name than the the ones of
-#'            \code{get_rif}. For instance, if you want to pass weights to the
-#'            \code{custom_rif_function}, name them \code{custom_weights}.
+#'            Apart from \code{dep_var} and \code{weights} they must have a different name than the the ones in
+#'            \code{rifreg}. For instance, if you want to pass \code{probs} to the
+#'            \code{custom_rif_function}, name them \code{custom_probs}.
 #'
 #' @return \code{rifreg} returns an object of \code{\link{class}} \code{"rifreg"}.
 #'
@@ -45,11 +45,11 @@
 #'         \item{estimates}{a matrix of RIF regression coefficients for each
 #'                          covariate and the intercept. In case of several quantiles,
 #'                          coefficient estimates for each quantile are provided.
-#'                          Equivalent to \code{coef()} call of object of class \code{"lm"}.}
+#'                          Equivalent to \code{coef()} call of an object of class \code{"lm"}.}
 #'         \item{rif_lm}{one or several objects of class \code{"lm"},
 #'                       containing the detailed RIF regression results.}
 #'         \item{rif}{a data frame containing the RIF for each observation. }
-#'         \item{bootstrap_se}{the bootstrapped standard errors for each coefficient.
+#'         \item{bootstrap_se}{bootstrapped standard errors for each coefficient.
 #'                             Only provided if \code{bootstrap = TRUE}.}
 #'         \item{bootstrap_vcov}{the bootstrapped variance-covariance matrix for each coefficient.
 #'                               Only provided if \code{bootstrap = TRUE}.}
@@ -62,17 +62,16 @@
 #'
 #' @examples
 #'
-#'
 #' rifreg <- rifreg(formula = log(wage) ~ union +
-#'                                            nonwhite +
-#'                                            married +
-#'                                            education +
-#'                                            experience,
-#'                      data = men8385,
-#'                      statistic = "quantiles",
-#'                      weights = weights,
-#'                      probs = seq(0.1, 0.9, 0.1),
-#'                      bootstrap = FALSE)
+#'                                        nonwhite +
+#'                                        married +
+#'                                        education +
+#'                                        experience,
+#'                   data = men8385,
+#'                   statistic = "quantiles",
+#'                   weights = weights,
+#'                   probs = seq(0.1, 0.9, 0.1),
+#'                   bootstrap = FALSE)
 #'
 #'
 #' # custom function
@@ -83,7 +82,6 @@
 #'   names(rif) <- c("rif_variance", "weights")
 #'   return(rif)
 #' }
-#'
 #'
 #' rifreg <- rifreg(
 #'   formula = log(wage) ~ union + nonwhite + married + education + experience,
@@ -153,7 +151,6 @@ rifreg <- function(formula,
                               ...)
   rif_lm <- rifreg_detail[-length(rifreg_detail)]
   rif <- rifreg_detail$rif
-
 
   # Calculate Bootstrap standard errors
   if(bootstrap){

@@ -1,8 +1,8 @@
-#' Checks weights
+#' Check weights
 #'
 #' Helper function to check a weights vector. Makes sure the weights
 #' are positive numeric values (not all zeros) and of the same length as the
-#' dependent variable \code{dep_var}. Replaces all \code{NA} with 0 and sets
+#' dependent variable \code{dep_var}. Replaces all \code{NA}s with 0 and sets
 #' all weights to 1 if weights is set to NULL.
 #'
 #' @param dep_var dependent variable of distributional function.

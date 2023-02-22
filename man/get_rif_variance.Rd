@@ -7,14 +7,13 @@
 get_rif_variance(dep_var, weights)
 }
 \arguments{
-\item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
+\item{dep_var}{dependent variable of a distributional function. Discrete or continuous numeric vector.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-where nx is the length of (the finite entries of) \code{dep_var}.}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
 }
 \value{
-A data frame with one column containing the RIF of the variance for each observation.
+A data frame with one column containing the RIF of the variance for each observation and one column containing the weights.
 }
 \description{
 Function to estimate the recentered influence function (RIF) of the variance

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.rifreg}
 \alias{plot.rifreg}
-\title{Plot Coefficients for an \code{rifreg} Object}
+\title{Plot Coefficients for a \code{rifreg} Object}
 \usage{
 \method{plot}{rifreg}(
   x,
@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{x}{an object of class "rifreg", usually, a result of a call to [rifreg()] with code{statistic = "quantiles"}.}
+\item{x}{an object of class "rifreg", usually, a result of a call to \link[rifreg]{rifreg} with \code{statistic = "quantiles"}.}
 
 \item{varselect}{vector of length 1 or more containig the names of the covariates to display.}
 
@@ -21,17 +21,17 @@
 plotted as a ribbon and defined as \code{qnorm(confidence_level/2)} * standard error.}
 
 \item{vcov}{Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
-Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
-standard errors do not take the variance introduced by estimating RIF into account.}
+Per default, heteroscedasticity-consistent (HC) standard errors are calculated using \link[sandwich]{sandwich}.
+Note: These standard errors do not take the variance introduced by estimating RIF into account.}
 
-\item{...}{other parameters to be passed through to plotting functions.}
+\item{...}{other parameters to be passed to plotting function. See \link[ggplot2]{ggplot} for further information.}
 }
 \value{
-a ggplot containing the coefficients for each (selected) covariate
+a "ggplot" containing the coefficients for each (selected) covariate
 }
 \description{
 Coefficients are plotted for each quantile and each covariate.
-Specific covariates can be selected and SE can also be displayed.
+Specific covariates can be selected and standard errors displayed if desired.
 }
 \examples{
 
@@ -40,10 +40,10 @@ rifreg <- rifreg(formula = log(wage) ~ union +
                                        married +
                                        education +
                                        experience,
-                     data = men8385,
-                     statistic = "quantiles",
-                     probs = seq(0.1, 0.9, 0.1),
-                     weights = weights)
+                  data = men8385,
+                  statistic = "quantiles",
+                  probs = seq(0.1, 0.9, 0.1),
+                  weights = weights)
 
 plot(rifreg)
 

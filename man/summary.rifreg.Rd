@@ -7,17 +7,17 @@
 \method{summary}{rifreg}(object, vcov = sandwich::sandwich, ...)
 }
 \arguments{
-\item{object}{an object of class "rifreg", usually, a result of a call to [rifreg()].}
+\item{object}{an object of class "rifreg", usually, a result of a call to \link[rifreg]{rifreg}.}
 
 \item{vcov}{Function to estimate covariance matrix of rifreg coefficients if covariance matrix has not been bootstrapped.
-Per default, heteroscedasticity-consistent (HC) standard errors are calculated using [sandwich::sandwich]. Note: These
-standard errors do not take the variance introduced by estimating RIF into account.}
+Per default, heteroscedasticity-consistent (HC) standard errors are calculated using \link[sandwich]{sandwich}.
+Note: These standard errors do not take the variance introduced by estimating RIF into account.}
 
-\item{...}{other parameters to be passed through to summary functions.}
+\item{...}{other parameters to be passed to summary functions.}
 }
 \value{
 the function \code{summary.rifreg()} returns a list of summary statistics derived from
-        the rifreg object given in \code{object}. For further details see [stats::summary.lm()].
+        the rifreg object given in \code{object}. For further details see \link[stats]{summary.lm}.
 }
 \description{
 summary method for class "rifreg"

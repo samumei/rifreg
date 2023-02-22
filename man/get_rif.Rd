@@ -17,8 +17,7 @@ get_rif(
 \item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-where nx is the length of (the finite entries of) \code{dep_var}.}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
 
 \item{statistic}{string containing the distributional statistic for which to compute the RIF. Can be one of
 "mean", "variance", "quantiles", "gini", "interquantile_range", "interquantile_ratio", or "custom". If "custom"
@@ -27,16 +26,17 @@ is selected a \code{custom_rif_function} needs to be provided.}
 \item{probs}{a vector of length 1 or more with quantile positions to calculate the RIF.
 Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.}
 
-\item{custom_rif_function}{the RIF function to compute the RIF of the custom statistic.
+\item{custom_rif_function}{the RIF function to compute the RIF of the custom distributional statistic.
 Default is NULL. Only needs to provided if \code{statistic = "custom"}.
 Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
-If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}.
-See examples for further details.}
+If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}).
+A custom function must return a data frame containing at least a "rif" and "weights" column.
+See \code{examples} for further details.}
 
 \item{...}{additional parameters passed to the \code{custom_rif_function}.
-Apart from \code{dep_var} they must have a different name than the the ones of
-\code{get_rif}. For instance, if you want to pass weights to the
-\code{custom_rif_function}, name them \code{custom_weights}.}
+Apart from \code{dep_var} and \code{weights} they must have a different name than the the ones in
+\code{rifreg}. For instance, if you want to pass \code{probs} to the
+\code{custom_rif_function}, name them \code{custom_probs}.}
 }
 \value{
 a data frame with the RIF value for each observation and in the case of several quantiles
@@ -60,6 +60,8 @@ rif <- get_rif(dep_var = dep_var,
 custom_variance_function <- function(dep_var, weights){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
+  rif <- data.frame(rif, weights)
+  names(rif) <- c("rif_variance", "weights")
   return(rif)
 }
 
@@ -81,6 +83,8 @@ custum_top_income_share_function <- function(dep_var, weights, probs=0.1){
                                  dep_var - (1-probs)*weighted_quantile,
                                  probs*weighted_quantile)/weighted_mean
   rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+  rif <- data.frame(rif_top_income_share, weights)
+  names(rif) <- c("rif_top_income_share", "weights")
   return(rif_top_income_share)
 }
 

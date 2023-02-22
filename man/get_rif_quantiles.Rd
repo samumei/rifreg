@@ -3,36 +3,36 @@
 \name{get_rif_quantiles}
 \alias{get_rif_quantiles}
 \alias{get_rif_quantile}
-\title{Estimate RIF of Quantiles}
+\title{Estimate RIF at Quantiles}
 \usage{
 get_rif_quantiles(dep_var, weights, probs, ...)
 
 get_rif_quantile(dep_var, weights, probs, density)
 }
 \arguments{
-\item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
+\item{dep_var}{dependent variable of a distributional function. Discrete or continuous numeric vector.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-where nx is the length of (the finite entries of) \code{dep_var}.}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
 
-\item{probs}{the specific quantile for which to estimate the RIF.}
+\item{probs}{the specific quantile at which to estimate the RIF.}
 
-\item{...}{further arguments passed on to \code{stats::density()} function.}
+\item{...}{further arguments passed on to \link[stats]{density}.}
 
 \item{density}{the kernel density estimation of \code{dep_var}.
-For further information see \code{?stats::density}.}
+For further information see \link[stats]{density}.}
 }
 \value{
-A data frame with the number of columns equaling the length of vector \code{probs}. Each column contains the RIF values of the quantile's probabilities.
+A data frame with the number of columns equaling the length of vector \code{probs} and an additional column containing the weights.
+        Each column contains the RIF values at the quantile's probabilities.
 }
 \description{
-Function to estimate the recentered influence function (RIF) of one or several specified quantiles
+Function to estimate the recentered influence function (RIF) at one or several specified quantiles
 of a weighted distribution of a dependent variable.
 }
 \section{Functions}{
 \itemize{
-\item \code{get_rif_quantile()}: Helper function to estimate the RIF values of a specific quantile.
+\item \code{get_rif_quantile()}: Helper function to estimate the RIF values at a specific quantile.
 
 }}
 \examples{

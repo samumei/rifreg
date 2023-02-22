@@ -7,17 +7,16 @@
 get_rif_interquantile_ratio(dep_var, weights, probs, ...)
 }
 \arguments{
-\item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
+\item{dep_var}{dependent variable of a distributional function. Discrete or continuous numeric vector.}
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1/nx, nx)},
-where nx is the length of (the finite entries of) \code{dep_var}.}
+The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
 
 \item{probs}{a vector of length 2 with probabilities corresponding to the quantiles in the ratio's numerator and the denominator.
 The function defines the interquantile ratio as the ratio between the quantile with the larger probability (numerator) and
 the quantile with the lower probability (denominator).}
 
-\item{...}{further arguments passed on to \code{stats::density()} function.}
+\item{...}{further arguments passed on to \link[stats]{density}.}
 }
 \value{
 A data frame with one column containing the RIF of the interquantile ratio for each observation.

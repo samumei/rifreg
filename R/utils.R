@@ -1,4 +1,4 @@
-# Packages to automatically import into NAMESPACE
+# Packages to import into NAMESPACE
 
 #'@import ggplot2
 #'@import pbapply

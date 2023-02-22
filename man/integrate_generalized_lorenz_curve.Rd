@@ -7,9 +7,10 @@
 integrate_generalized_lorenz_curve(dep_var, weights)
 }
 \arguments{
-\item{dep_var}{dependent variable of distributional function. Discrete or continuous numeric vector.}
+\item{dep_var}{dependent variable of a distributional function. Discrete or continuous numeric vector.}
 
-\item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.}
+\item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
 }
 \value{
 the size of the area under the lorenz curve (the integrated lorenz curve).

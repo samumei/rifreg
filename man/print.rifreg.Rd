@@ -2,21 +2,21 @@
 % Please edit documentation in R/print.R
 \name{print.rifreg}
 \alias{print.rifreg}
-\title{print method for class "rifreg"}
+\title{Print method for class "rifreg"}
 \usage{
 \method{print}{rifreg}(x, ...)
 }
 \arguments{
-\item{x}{an object of class "rifreg", usually , a result of a call to [rifreg()].}
+\item{x}{an object of class "rifreg", usually, a result of a call to \link[rifreg]{rifreg}.}
 
-\item{...}{other parameters to be passed through to printing functions.}
+\item{...}{other parameters to be passed to printing function.}
 }
 \value{
 the function \code{print.rifreg()} returns the the covariates' coefficients
         of the RIF regressions derived from  the fitted linear model given in object \code{x}.
 }
 \description{
-print method for class "rifreg"
+Print method for class "rifreg"
 }
 \examples{
 
@@ -25,10 +25,10 @@ rifreg <- rifreg(formula = log(wage) ~ union +
                                        married +
                                        education +
                                        experience,
-                     data = men8385,
-                     statistic = "quantiles",
-                     probs = seq(0.1, 0.9, 0.1),
-                     weights = weights)
+                  data = men8385,
+                  statistic = "quantiles",
+                  probs = seq(0.1, 0.9, 0.1),
+                  weights = weights)
 
 print(rifreg)
 
