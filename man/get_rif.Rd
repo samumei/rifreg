@@ -49,15 +49,17 @@ This function estimates the recentered influence function (RIF) of a chosen dist
 \examples{
 
 dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-probs <- seq(1:9)/10
+probs <- seq(1:9) / 10
 weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-rif <- get_rif(dep_var = dep_var,
-               weights = weights,
-               statistic = "quantiles",
-               probs = probs)
+rif <- get_rif(
+  dep_var = dep_var,
+  weights = weights,
+  statistic = "quantiles",
+  probs = probs
+)
 
 # custom function
-custom_variance_function <- function(dep_var, weights, probs = NULL){
+custom_variance_function <- function(dep_var, weights, probs = NULL) {
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)
@@ -71,27 +73,30 @@ weights <- rep(1, 100)
 
 # custom function top 10\% percent income share
 # (see Essam-Nassah & Lambert, 2012, and Rios-Avila, 2020)
-custom_top_income_share_function <- function(dep_var, weights, probs=0.1){
-  probs <- 1-probs
+custom_top_income_share_function <- function(dep_var, weights, probs = 0.1) {
+  probs <- 1 - probs
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
-  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
+  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
   lorenz_ordinate <-
-    sum(dep_var[which(dep_var<=weighted_quantile)] *
-      weights[which(dep_var<=weighted_quantile)]) / sum(dep_var*weights)
-  if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
-                          ifelse(dep_var < weighted_quantile,
-                                 dep_var - (1-probs)*weighted_quantile,
-                                 probs*weighted_quantile)/weighted_mean
-  rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+    sum(dep_var[which(dep_var <= weighted_quantile)] *
+      weights[which(dep_var <= weighted_quantile)]) / sum(dep_var * weights)
+  if_lorenz_ordinate <- -(dep_var / weighted_mean) * lorenz_ordinate +
+    ifelse(dep_var < weighted_quantile,
+      dep_var - (1 - probs) * weighted_quantile,
+      probs * weighted_quantile
+    ) / weighted_mean
+  rif_top_income_share <- (1 - lorenz_ordinate) - if_lorenz_ordinate
   rif <- data.frame(rif_top_income_share, weights)
   names(rif) <- c("rif_top_income_share", "weights")
   return(rif_top_income_share)
 }
 
-rif_custom <-  get_rif(dep_var = dep_var,
-                       weights = weights,
-                       statistic = "custom",
-                       custom_rif_function = custom_variance_function)
+rif_custom <- get_rif(
+  dep_var = dep_var,
+  weights = weights,
+  statistic = "custom",
+  custom_rif_function = custom_variance_function
+)
 
 }
 \references{

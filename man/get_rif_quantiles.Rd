@@ -37,7 +37,7 @@ of a weighted distribution of a dependent variable.
 }}
 \examples{
 dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-probs <- seq(1:9)/10
+probs <- seq(1:9) / 10
 weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 get_rif_quantiles(dep_var, probs, weights = weights)
 

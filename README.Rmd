@@ -89,10 +89,11 @@ We are interested in the unconditional quantile partial effects (UQPE) of union 
 ```{r}
 ffl_model <- log(wage) ~ union + nonwhite + married + education + experience
 fit_uqr <- rifreg(ffl_model,
-                  data=men8385,
-                  weights=weights,
-                  statistic="quantiles",
-                  probs=1:9/10)
+  data = men8385,
+  weights = weights,
+  statistic = "quantiles",
+  probs = 1:9 / 10
+)
 ```
 
 The`summary` method returns the estimated coefficients and the standard errors. Per default, `summary` returns heteroscedasticity-consistent standard errors estimated if the variance is not bootstrapped.
@@ -102,7 +103,7 @@ summary(fit_uqr)
 
 `rifreg` comes with a convenient plot function. It illustrates the estimated UQPE across the distribution. The confidence bands are based on the same standard errors as displayed by `summary`.
 ```{r}
-plot(fit_uqr, varselect="unionyes")
+plot(fit_uqr, varselect = "unionyes")
 ```
 
 
@@ -112,16 +113,18 @@ Setting `bootstrap=TRUE` bootstraps standard errors by resampling from all obser
 
 ```{r}
 fit_uqr <- rifreg(ffl_model,
-                  data=men8385,
-                  weights=weights,
-                  statistic="quantiles",
-                  bootstrap=TRUE,
-                  bootstrap_iterations=2, #100
-                  cores=4,
-                  probs=1:9/10)
+  data = men8385,
+  weights = weights,
+  statistic = "quantiles",
+  bootstrap = TRUE,
+  bootstrap_iterations = 2, # 100
+  cores = 4,
+  probs = 1:9 / 10
+)
 plot(fit_uqr,
-     varselect="unionyes",
-     confidence_interval=0.95)
+  varselect = "unionyes",
+  confidence_interval = 0.95
+)
 ```
 
 
@@ -131,14 +134,16 @@ plot(fit_uqr,
 ```{r}
 ffl_model2 <- wage ~ union + nonwhite + married + education + experience
 fit_gini <- rifreg(ffl_model2,
-                  data=men8385,
-                  weights=weights,
-                  statistic="gini")
+  data = men8385,
+  weights = weights,
+  statistic = "gini"
+)
 fit_d9d1 <- rifreg(ffl_model2,
-                  data=men8385,
-                  weights=weights,
-                  statistic="interquantile_ratio",
-                  probs=c(0.9, 0.1))
+  data = men8385,
+  weights = weights,
+  statistic = "interquantile_ratio",
+  probs = c(0.9, 0.1)
+)
 fit_gini
 fit_d9d1
 ```
@@ -154,32 +159,38 @@ ffl_model2 <- wage ~ union + nonwhite + married + education + experience
 # custom RIF function for top 10% percent income share
 custom_top_inc_share <- function(dep_var,
                                  weights,
-                                 top_share=0.1){
-  top_share <- 1-top_share
-  weighted_mean <- weighted.mean(x = dep_var, 
-                                 w = weights)
-  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,
-                                           weights = weights,
-                                           probs = top_share)
-  lorenz_ordinate <- sum(dep_var[which(dep_var<=weighted_quantile)]*
-                           weights[which(dep_var<=weighted_quantile)])/
-    sum(dep_var*weights)
-  if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
-                          ifelse(dep_var < weighted_quantile,
-                                 dep_var - (1-top_share)*weighted_quantile,
-                                 top_share*weighted_quantile)/weighted_mean
-  rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+                                 top_share = 0.1) {
+  top_share <- 1 - top_share
+  weighted_mean <- weighted.mean(
+    x = dep_var,
+    w = weights
+  )
+  weighted_quantile <- Hmisc::wtd.quantile(
+    x = dep_var,
+    weights = weights,
+    probs = top_share
+  )
+  lorenz_ordinate <- sum(dep_var[which(dep_var <= weighted_quantile)] *
+    weights[which(dep_var <= weighted_quantile)]) /
+    sum(dep_var * weights)
+  if_lorenz_ordinate <- -(dep_var / weighted_mean) * lorenz_ordinate +
+    ifelse(dep_var < weighted_quantile,
+      dep_var - (1 - top_share) * weighted_quantile,
+      top_share * weighted_quantile
+    ) / weighted_mean
+  rif_top_income_share <- (1 - lorenz_ordinate) - if_lorenz_ordinate
   rif <- data.frame(rif_top_income_share, weights)
   names(rif) <- c("rif_top_income_share", "weights")
   return(rif)
 }
 
 fit_top_10 <- rifreg(ffl_model2,
-                     data=men8385,
-                     weights=weights,
-                     statistic="custom",
-                     custom_rif_function=custom_top_inc_share,
-                     top_share=0.1)
+  data = men8385,
+  weights = weights,
+  statistic = "custom",
+  custom_rif_function = custom_top_inc_share,
+  top_share = 0.1
+)
 
 fit_top_10
 ```
@@ -204,45 +215,47 @@ men8385 <- readstata13::read.dta13("men8385.dta")
 # Save dummies as factor variables
 # nine potential experience categories (each of five years gap)
 men8385$experience <- 5
-men8385[which(men8385$ex1==1),"experience"] <- 1
-men8385[which(men8385$ex2==1),"experience"] <- 2
-men8385[which(men8385$ex3==1),"experience"] <- 3
-men8385[which(men8385$ex4==1),"experience"] <- 4
+men8385[which(men8385$ex1 == 1), "experience"] <- 1
+men8385[which(men8385$ex2 == 1), "experience"] <- 2
+men8385[which(men8385$ex3 == 1), "experience"] <- 3
+men8385[which(men8385$ex4 == 1), "experience"] <- 4
 # 5 = reference group
-men8385[which(men8385$ex6==1),"experience"] <- 6
-men8385[which(men8385$ex7==1),"experience"] <- 7
-men8385[which(men8385$ex8==1),"experience"] <- 8
-men8385[which(men8385$ex9==1),"experience"] <- 9
+men8385[which(men8385$ex6 == 1), "experience"] <- 6
+men8385[which(men8385$ex7 == 1), "experience"] <- 7
+men8385[which(men8385$ex8 == 1), "experience"] <- 8
+men8385[which(men8385$ex9 == 1), "experience"] <- 9
 
 # Education
 men8385$education <- 2
-men8385[which(men8385$ed0==1),"education"] <- 0
-men8385[which(men8385$ed1==1),"education"] <- 1
+men8385[which(men8385$ed0 == 1), "education"] <- 0
+men8385[which(men8385$ed1 == 1), "education"] <- 1
 # high school = reference group
-men8385[which(men8385$ed3==1),"education"] <- 3
-men8385[which(men8385$ed4==1),"education"] <- 4
-men8385[which(men8385$ed5==1),"education"] <- 5
+men8385[which(men8385$ed3 == 1), "education"] <- 3
+men8385[which(men8385$ed4 == 1), "education"] <- 4
+men8385[which(men8385$ed5 == 1), "education"] <- 5
 
 men8385$education <- as.character(men8385$education)
 men8385$experience <- as.character(men8385$experience)
 men8385$experience <- dplyr::recode_factor(men8385$experience,
-                                              "5"="20-24",
-                                              "1"="0-4",
-                                              "2"="5-9",
-                                              "3"="10-14",
-                                              "4"="15-19",
-                                              "6"="25-29",
-                                              "7"="30-34",
-                                              "8"="35-39",
-                                              "9"=">=40")
+  "5" = "20-24",
+  "1" = "0-4",
+  "2" = "5-9",
+  "3" = "10-14",
+  "4" = "15-19",
+  "6" = "25-29",
+  "7" = "30-34",
+  "8" = "35-39",
+  "9" = ">=40"
+)
 
 men8385$education <- dplyr::recode_factor(men8385$education,
-                                             "2"="High School",
-                                             "0"="Elementary",
-                                             "1"="HS dropout",
-                                             "3"="Some College",
-                                             "4"="College",
-                                             "5"="Post-graduate")
+  "2" = "High School",
+  "0" = "Elementary",
+  "1" = "HS dropout",
+  "3" = "Some College",
+  "4" = "College",
+  "5" = "Post-graduate"
+)
 
 
 # Save log wage as wage hourly wage in dollars
@@ -255,26 +268,30 @@ men8385$covered <- NULL
 men8385$married <- as.factor(men8385$marr)
 men8385$marr <- NULL
 men8385$nonwhite <- as.factor(men8385$nonwhite)
-levels(men8385$married) <- levels(men8385$nonwhite) <-  levels(men8385$union) <-  c("no","yes")
+levels(men8385$married) <- levels(men8385$nonwhite) <- levels(men8385$union) <- c("no", "yes")
 
 # Rename weight and education in years variable
-names(men8385)[names(men8385)=="eweight"] <- "weights"
-names(men8385)[names(men8385)=="educ"] <- "education_in_years"
-names(men8385)[names(men8385)=="exper"] <- "experience_in_years"
+names(men8385)[names(men8385) == "eweight"] <- "weights"
+names(men8385)[names(men8385) == "educ"] <- "education_in_years"
+names(men8385)[names(men8385) == "exper"] <- "experience_in_years"
 
 # Check experience and age groups
 men8385 %>%
   group_by(experience) %>%
-  dplyr::summarise(min=min(experience_in_years,na.rm=TRUE),
-                   max=max(experience_in_years,na.rm=TRUE))
+  dplyr::summarise(
+    min = min(experience_in_years, na.rm = TRUE),
+    max = max(experience_in_years, na.rm = TRUE)
+  )
 
 men8385 %>%
   group_by(education) %>%
-  dplyr::summarise(min=min(education_in_years,na.rm=TRUE),
-                   max=max(education_in_years,na.rm=TRUE))
+  dplyr::summarise(
+    min = min(education_in_years, na.rm = TRUE),
+    max = max(education_in_years, na.rm = TRUE)
+  )
 
 # Select relevant variables
-sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age","education_in_years","experience_in_years")
+sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age", "education_in_years", "experience_in_years")
 men8385 <- men8385[, sel_vars]
 ```
 
@@ -287,17 +304,21 @@ library(rifreg)
 
 set.seed(121095)
 ffl_model_2009 <- log(wage) ~ union + nonwhite + married + education + experience
-rifreg <- rifreg(formula = ffl_model_2009, 
-                 data = men8385,
-                 statistic = "quantiles",  
-                 probs = seq(0.05, 0.95, 0.05),
-                 bw = 0.06, 
-                 bootstrap = TRUE, 
-                 bootstrap_iterations = 3, #200
-                 cores=1) 
+rifreg <- rifreg(
+  formula = ffl_model_2009,
+  data = men8385,
+  statistic = "quantiles",
+  probs = seq(0.05, 0.95, 0.05),
+  bw = 0.06,
+  bootstrap = TRUE,
+  bootstrap_iterations = 3, # 200
+  cores = 1
+)
 
-ols <- lm(formula = ffl_model_2009, 
-          data = men8385)
+ols <- lm(
+  formula = ffl_model_2009,
+  data = men8385
+)
 ```
 
 ### Results
@@ -315,15 +336,15 @@ knitr::kable(results)
 Our results largely match those by Firpo, Fortin, and Lemieux (2009a: 962-966). The OLS results are identical as expected. The RIF regression results differ only in a few instances at the third decimal place from the original paper.
 
 ```{r, fig.show='hide'}
-rifreg_plot <- plot(rifreg, varselect = "unionyes") 
+rifreg_plot <- plot(rifreg, varselect = "unionyes")
 ```
 
 ```{r}
-rifreg_plot + 
-  geom_hline(yintercept = ols$coefficients["unionyes"], linetype = 'dashed') +
-  geom_text(aes(x = 0.8, y = ols$coefficients["unionyes"]  + 0.03, label = "OLS estimate"), color = "black")  +
+rifreg_plot +
+  geom_hline(yintercept = ols$coefficients["unionyes"], linetype = "dashed") +
+  geom_text(aes(x = 0.8, y = ols$coefficients["unionyes"] + 0.03, label = "OLS estimate"), color = "black") +
   ylab("Effect of Union") +
-  xlab("Quantiles") + 
+  xlab("Quantiles") +
   labs(title = "Unconditional Quantile Regression in R") +
   theme(strip.background = element_blank(), strip.text.x = element_blank())
 ```

@@ -30,7 +30,7 @@ interquantile range.
 set.seed(123)
 dep_var <- rlnorm(100)
 weights <- rep(1, 100)
-get_rif_interquantile_range(dep_var, probs=c(0.1,0.9), weights = weights)
+get_rif_interquantile_range(dep_var, probs = c(0.1, 0.9), weights = weights)
 
 }
 \references{

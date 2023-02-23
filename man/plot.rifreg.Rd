@@ -35,15 +35,17 @@ Specific covariates can be selected and standard errors displayed if desired.
 }
 \examples{
 
-rifreg <- rifreg(formula = log(wage) ~ union +
-                                       nonwhite +
-                                       married +
-                                       education +
-                                       experience,
-                  data = men8385,
-                  statistic = "quantiles",
-                  probs = seq(0.1, 0.9, 0.1),
-                  weights = weights)
+rifreg <- rifreg(
+  formula = log(wage) ~ union +
+    nonwhite +
+    married +
+    education +
+    experience,
+  data = men8385,
+  statistic = "quantiles",
+  probs = seq(0.1, 0.9, 0.1),
+  weights = weights
+)
 
 plot(rifreg)
 

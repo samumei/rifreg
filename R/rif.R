@@ -36,15 +36,17 @@
 #' @examples
 #'
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-#' probs <- seq(1:9)/10
+#' probs <- seq(1:9) / 10
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
-#' rif <- get_rif(dep_var = dep_var,
-#'                weights = weights,
-#'                statistic = "quantiles",
-#'                probs = probs)
+#' rif <- get_rif(
+#'   dep_var = dep_var,
+#'   weights = weights,
+#'   statistic = "quantiles",
+#'   probs = probs
+#' )
 #'
 #' # custom function
-#' custom_variance_function <- function(dep_var, weights, probs = NULL){
+#' custom_variance_function <- function(dep_var, weights, probs = NULL) {
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   rif <- (dep_var - weighted_mean)^2
 #'   rif <- data.frame(rif, weights)
@@ -58,27 +60,30 @@
 #'
 #' # custom function top 10% percent income share
 #' # (see Essam-Nassah & Lambert, 2012, and Rios-Avila, 2020)
-#' custom_top_income_share_function <- function(dep_var, weights, probs=0.1){
-#'   probs <- 1-probs
+#' custom_top_income_share_function <- function(dep_var, weights, probs = 0.1) {
+#'   probs <- 1 - probs
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
-#'   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
+#'   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
 #'   lorenz_ordinate <-
-#'     sum(dep_var[which(dep_var<=weighted_quantile)] *
-#'       weights[which(dep_var<=weighted_quantile)]) / sum(dep_var*weights)
-#'   if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
-#'                           ifelse(dep_var < weighted_quantile,
-#'                                  dep_var - (1-probs)*weighted_quantile,
-#'                                  probs*weighted_quantile)/weighted_mean
-#'   rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
+#'     sum(dep_var[which(dep_var <= weighted_quantile)] *
+#'       weights[which(dep_var <= weighted_quantile)]) / sum(dep_var * weights)
+#'   if_lorenz_ordinate <- -(dep_var / weighted_mean) * lorenz_ordinate +
+#'     ifelse(dep_var < weighted_quantile,
+#'       dep_var - (1 - probs) * weighted_quantile,
+#'       probs * weighted_quantile
+#'     ) / weighted_mean
+#'   rif_top_income_share <- (1 - lorenz_ordinate) - if_lorenz_ordinate
 #'   rif <- data.frame(rif_top_income_share, weights)
 #'   names(rif) <- c("rif_top_income_share", "weights")
 #'   return(rif_top_income_share)
 #' }
 #'
-#' rif_custom <-  get_rif(dep_var = dep_var,
-#'                        weights = weights,
-#'                        statistic = "custom",
-#'                        custom_rif_function = custom_variance_function)
+#' rif_custom <- get_rif(
+#'   dep_var = dep_var,
+#'   weights = weights,
+#'   statistic = "custom",
+#'   custom_rif_function = custom_variance_function
+#' )
 #'
 get_rif <- function(dep_var,
                     weights = NULL,
@@ -89,29 +94,30 @@ get_rif <- function(dep_var,
   # Assertions
   weights <- check_weights(dep_var, weights)
 
-  if(!(statistic == "mean" | statistic == "variance" |
-       statistic == "quantiles" | statistic == "gini" |
-       statistic == "interquantile_range" | statistic == "interquantile_ratio" |
-       statistic == "custom")) {
+  if (!(statistic == "mean" | statistic == "variance" |
+    statistic == "quantiles" | statistic == "gini" |
+    statistic == "interquantile_range" | statistic == "interquantile_ratio" |
+    statistic == "custom")) {
     stop("Unknown statistic! The statistic must be string \"mean\", \"variance\", \"quantiles\", \"gini\", \"interquantile_range\", \"interquantile_ratio\", or \"custom\".")
   }
 
-  if(statistic == "quantiles") {
-    if(is.null(probs)) stop(msg = "Parameter \"probs\" needs to have at least one value between 0 and 1.")
-    if(!all(probs > 0 & probs < 1)) stop(msg = "All \"probs\" need to be larger than 0 and smaller than 1.")
+  if (statistic == "quantiles") {
+    if (is.null(probs)) stop(msg = "Parameter \"probs\" needs to have at least one value between 0 and 1.")
+    if (!all(probs > 0 & probs < 1)) stop(msg = "All \"probs\" need to be larger than 0 and smaller than 1.")
   }
-  if(statistic == "custom") {
-    if(is.null(custom_rif_function)) stop(msg = "If parameter \"statistic\" is \"custom\", parameter \"custom_rif_function\" cannot be NULL, but has to be the custom RIF function!")
+  if (statistic == "custom") {
+    if (is.null(custom_rif_function)) stop(msg = "If parameter \"statistic\" is \"custom\", parameter \"custom_rif_function\" cannot be NULL, but has to be the custom RIF function!")
   }
 
   rif <- switch(statistic,
-                mean = get_rif_mean(dep_var = dep_var),
-                variance = get_rif_variance(dep_var = dep_var, weights = weights),
-                quantiles = get_rif_quantiles(probs = probs, dep_var = dep_var, weights = weights, ... = ...),
-                gini = get_rif_gini(dep_var = dep_var, weights = weights),
-                interquantile_range = get_rif_interquantile_range(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
-                interquantile_ratio = get_rif_interquantile_ratio(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
-                custom = custom_rif_function(dep_var = dep_var, weights = weights, probs = probs, ...))
+    mean = get_rif_mean(dep_var = dep_var),
+    variance = get_rif_variance(dep_var = dep_var, weights = weights),
+    quantiles = get_rif_quantiles(probs = probs, dep_var = dep_var, weights = weights, ... = ...),
+    gini = get_rif_gini(dep_var = dep_var, weights = weights),
+    interquantile_range = get_rif_interquantile_range(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
+    interquantile_ratio = get_rif_interquantile_ratio(dep_var = dep_var, weights = weights, probs = probs, ... = ...),
+    custom = custom_rif_function(dep_var = dep_var, weights = weights, probs = probs, ...)
+  )
 
   return(rif)
 }
@@ -157,12 +163,12 @@ get_rif_mean <- function(dep_var) {
 #'
 #' @examples
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
-#' probs <- seq(1:9)/10
+#' probs <- seq(1:9) / 10
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' get_rif_quantiles(dep_var, probs, weights = weights)
 #'
-get_rif_quantiles <- function(dep_var, weights, probs, ...){
-  density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
+get_rif_quantiles <- function(dep_var, weights, probs, ...) {
+  density <- stats::density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE), ...)
   rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
   rif <- data.frame(rif, weights)
   names(rif) <- c(paste0("rif_quantile_", probs), "weights")
@@ -177,7 +183,7 @@ get_rif_quantiles <- function(dep_var, weights, probs, ...){
 #' @param density the kernel density estimation of \code{dep_var}.
 #'                For further information see \link[stats]{density}.
 get_rif_quantile <- function(dep_var, weights, probs, density) {
-  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
+  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
   density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
   rif <- weighted_quantile + (probs - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
   return(rif)
@@ -202,7 +208,7 @@ get_rif_quantile <- function(dep_var, weights, probs, density) {
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' get_rif_variance(dep_var, weights = weights)
 #'
-get_rif_variance <- function(dep_var, weights){
+get_rif_variance <- function(dep_var, weights) {
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)
@@ -227,16 +233,18 @@ get_rif_variance <- function(dep_var, weights){
 #' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
 #' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
 #' integrated_lorenz_curve <-
-#'   integrate_generalized_lorenz_curve(dep_var = dep_var,
-#'                                      weights = weights)
+#'   integrate_generalized_lorenz_curve(
+#'     dep_var = dep_var,
+#'     weights = weights
+#'   )
 #'
-integrate_generalized_lorenz_curve <- function (dep_var, weights) {
+integrate_generalized_lorenz_curve <- function(dep_var, weights) {
   weights <- weights / sum(weights)
   weighted_ecdf <- cumsum(weights[order(dep_var)])
   generalized_lorenz_ordinates <- cumsum(dep_var[order(dep_var)] * weights[order(dep_var)])
-  lorenz_curve <- approxfun(c(0, weighted_ecdf),  c(0, generalized_lorenz_ordinates))
+  lorenz_curve <- approxfun(c(0, weighted_ecdf), c(0, generalized_lorenz_ordinates))
   integrated_lorenz_curve <- integrate(lorenz_curve, 0, 1)$value
-  return(integrated_lorenz_curve )
+  return(integrated_lorenz_curve)
 }
 
 #' Compute Gini coefficient
@@ -261,7 +269,7 @@ integrate_generalized_lorenz_curve <- function (dep_var, weights) {
 #' weights <- rep(1, 100)
 #' compute_gini(dep_var, weights)
 #'
-compute_gini <- function (dep_var, weights) {
+compute_gini <- function(dep_var, weights) {
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   integrated_generalized_lorenz_curve <- integrate_generalized_lorenz_curve(dep_var, weights)
   gini_coef <- 1 - (2 / weighted_mean) * integrated_generalized_lorenz_curve
@@ -297,19 +305,21 @@ compute_gini <- function (dep_var, weights) {
 #' weights <- rep(1, 100)
 #' get_rif_gini(dep_var, weights = weights)
 #'
-get_rif_gini <- function(dep_var, weights){
+get_rif_gini <- function(dep_var, weights) {
   gini_coef <- compute_gini(dep_var, weights)
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
-  weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var<=x)])) / sum(weights)
-  generalized_lorenz_ordinates <- sapply(dep_var, function(x) sum(dep_var[which(dep_var<=x)]
-                                                                  * weights[which(dep_var<=x)])) / sum(weights)
+  weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var <= x)])) / sum(weights)
+  generalized_lorenz_ordinates <- sapply(dep_var, function(x) {
+    sum(dep_var[which(dep_var <= x)]
+    * weights[which(dep_var <= x)])
+  }) / sum(weights)
   integrated_generalized_lorenz_curve <- integrate_generalized_lorenz_curve(dep_var, weights)
-  integrated_lorenz_curve <- integrated_generalized_lorenz_curve/weighted_mean
+  integrated_lorenz_curve <- integrated_generalized_lorenz_curve / weighted_mean
 
   # Formula (52) of Cowell/Flachaire (2007): RIF = G + 2* (R - C + (y/mu)*(R - (1 - F)))
   rif <- gini_coef +
-    2*(integrated_lorenz_curve - generalized_lorenz_ordinates +
-         (dep_var / weighted_mean) * (integrated_lorenz_curve - (1 - weighted_ecdf)))
+    2 * (integrated_lorenz_curve - generalized_lorenz_ordinates +
+      (dep_var / weighted_mean) * (integrated_lorenz_curve - (1 - weighted_ecdf)))
   rif <- data.frame(rif, weights)
   names(rif) <- c("rif_gini", "weights")
   return(rif)
@@ -340,16 +350,18 @@ get_rif_gini <- function(dep_var, weights){
 #' set.seed(123)
 #' dep_var <- rlnorm(100)
 #' weights <- rep(1, 100)
-#' get_rif_interquantile_range(dep_var, probs=c(0.1,0.9), weights = weights)
+#' get_rif_interquantile_range(dep_var, probs = c(0.1, 0.9), weights = weights)
 #'
-get_rif_interquantile_range <- function(dep_var, weights, probs, ...){
-    probs <- range(probs)
-    rif_quantiles <-  get_rif_quantiles(dep_var = dep_var,
-                                        weights = weights,
-                                        probs = probs, ...)
-    rif <- data.frame(rif_quantiles[, ncol(rif_quantiles)] -  rif_quantiles[, 1], weights)
-    names(rif) <- c(paste0("rif_iq_range_",max(probs),"_",min(probs)), "weights")
-    return(rif)
+get_rif_interquantile_range <- function(dep_var, weights, probs, ...) {
+  probs <- range(probs)
+  rif_quantiles <- get_rif_quantiles(
+    dep_var = dep_var,
+    weights = weights,
+    probs = probs, ...
+  )
+  rif <- data.frame(rif_quantiles[, ncol(rif_quantiles)] - rif_quantiles[, 1], weights)
+  names(rif) <- c(paste0("rif_iq_range_", max(probs), "_", min(probs)), "weights")
+  return(rif)
 }
 
 #' Estimate RIF of interquantile ratio
@@ -377,19 +389,18 @@ get_rif_interquantile_range <- function(dep_var, weights, probs, ...){
 #' set.seed(123)
 #' dep_var <- rlnorm(100)
 #' weights <- rep(1, 100)
-#' get_rif_interquantile_ratio(dep_var, probs=c(0.1,0.9), weights = weights)
+#' get_rif_interquantile_ratio(dep_var, probs = c(0.1, 0.9), weights = weights)
 #'
-get_rif_interquantile_ratio <- function(dep_var, weights, probs, ...){
+get_rif_interquantile_ratio <- function(dep_var, weights, probs, ...) {
   probs <- range(probs)
-  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
-  iqratio <-  weighted_quantile[2]/weighted_quantile[1]
-  density <- stats::density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
+  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
+  iqratio <- weighted_quantile[2] / weighted_quantile[1]
+  density <- stats::density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE), ...)
   density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
-  rif <-  iqratio +
-    (1/weighted_quantile[1])*((probs[2] - as.numeric(dep_var <= weighted_quantile[2])) / density_at_quantile[2]) -
-    iqratio*((probs[1] - as.numeric(dep_var <= weighted_quantile[1])) / density_at_quantile[1])
+  rif <- iqratio +
+    (1 / weighted_quantile[1]) * ((probs[2] - as.numeric(dep_var <= weighted_quantile[2])) / density_at_quantile[2]) -
+    iqratio * ((probs[1] - as.numeric(dep_var <= weighted_quantile[1])) / density_at_quantile[1])
   rif <- data.frame(rif, weights)
-  names(rif) <- c(paste0("rif_iq_ratio_",max(probs),"_",min(probs)), "weights")
+  names(rif) <- c(paste0("rif_iq_ratio_", max(probs), "_", min(probs)), "weights")
   return(rif)
 }
-

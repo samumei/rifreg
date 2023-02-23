@@ -64,20 +64,22 @@
 #'
 #' @examples
 #'
-#' rifreg <- rifreg(formula = log(wage) ~ union +
-#'                                        nonwhite +
-#'                                        married +
-#'                                        education +
-#'                                        experience,
-#'                   data = men8385,
-#'                   statistic = "quantiles",
-#'                   weights = weights,
-#'                   probs = seq(0.1, 0.9, 0.1),
-#'                   bootstrap = FALSE)
+#' rifreg <- rifreg(
+#'   formula = log(wage) ~ union +
+#'     nonwhite +
+#'     married +
+#'     education +
+#'     experience,
+#'   data = men8385,
+#'   statistic = "quantiles",
+#'   weights = weights,
+#'   probs = seq(0.1, 0.9, 0.1),
+#'   bootstrap = FALSE
+#' )
 #'
 #'
 #' # custom function
-#' custom_variance_function <- function(dep_var, weights, probs = NULL){
+#' custom_variance_function <- function(dep_var, weights, probs = NULL) {
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   rif <- (dep_var - weighted_mean)^2
 #'   rif <- data.frame(rif, weights)
@@ -92,32 +94,32 @@
 #'   weights = weights,
 #'   probs = NULL,
 #'   custom_rif_function = custom_variance_function,
-#'   bootstrap = FALSE)
+#'   bootstrap = FALSE
+#' )
 #'
 rifreg <- function(formula,
                    data,
                    statistic = "quantiles",
                    weights = NULL,
-                   probs = c(1:9)/10,
+                   probs = c(1:9) / 10,
                    custom_rif_function = NULL,
                    na.action = na.omit,
                    bootstrap = FALSE,
                    bootstrap_iterations = 100,
                    cores = 1,
-                   ...){
-
+                   ...) {
   # Assertions
-  if(is.null(formula)){
+  if (is.null(formula)) {
     stop("No formula provided. Please pass an object of class \"formula\". See stats::lm() for further details.")
-  } else{
-    if(!is(formula, "formula")) {
+  } else {
+    if (!is(formula, "formula")) {
       stop("Parameter \"formula\" is not of class \"formula\". Please pass an object of class \"formula\". See stats::lm() for further details.")
     }
   }
-  if(is.null(data)){
+  if (is.null(data)) {
     stop("No data provided. Please pass a data frame containing the variables in the model.")
   } else {
-    if(!is.data.frame(data)) {
+    if (!is.data.frame(data)) {
       stop("Parameter \"data\" is not of class \"data.frame\". Please pass a data frame.")
     }
   }
@@ -140,53 +142,69 @@ rifreg <- function(formula,
 
   # Extract and check weights
   weights <- model.weights(data_used)
-  weights <- check_weights(dep_var = dep_var,
-                           weights = weights)
+  weights <- check_weights(
+    dep_var = dep_var,
+    weights = weights
+  )
   # RIF
-  rifreg_detail <- est_rifreg(formula = formula,
-                              data_used = data_used,
-                              statistic = statistic,
-                              dep_var = dep_var,
-                              weights = weights,
-                              probs = probs,
-                              custom_rif_function = custom_rif_function,
-                              ...)
+  rifreg_detail <- est_rifreg(
+    formula = formula,
+    data_used = data_used,
+    statistic = statistic,
+    dep_var = dep_var,
+    weights = weights,
+    probs = probs,
+    custom_rif_function = custom_rif_function,
+    ...
+  )
   rif_lm <- rifreg_detail[-length(rifreg_detail)]
   rif <- rifreg_detail$rif
 
   # Calculate Bootstrap standard errors
-  if(bootstrap){
+  if (bootstrap) {
     cat("Bootstrapping Standard Errors...\n")
-    if(cores == 1) {
-      bootstrap_estimates <- pbapply::pblapply(1:bootstrap_iterations,
-                                               function(x) est_rifreg_bootstrap(formula = formula,
-                                                                                data_used = data_used,
-                                                                                statistic = statistic,
-                                                                                dep_var = dep_var,
-                                                                                weights = weights,
-                                                                                probs = probs,
-                                                                                custom_rif_function = custom_rif_function,
-                                                                                bootstrap_iterations = bootstrap_iterations,
-                                                                                ...))
-    }
-    else {
+    if (cores == 1) {
+      bootstrap_estimates <- pbapply::pblapply(
+        1:bootstrap_iterations,
+        function(x) {
+          est_rifreg_bootstrap(
+            formula = formula,
+            data_used = data_used,
+            statistic = statistic,
+            dep_var = dep_var,
+            weights = weights,
+            probs = probs,
+            custom_rif_function = custom_rif_function,
+            bootstrap_iterations = bootstrap_iterations,
+            ...
+          )
+        }
+      )
+    } else {
       cores <- min(cores, parallel::detectCores() - 1)
       cluster <- parallel::makeCluster(cores)
-      parallel::clusterSetRNGStream(cluster, round(runif(1,0,100000)))
-      parallel::clusterExport(cl = cluster,
-                              varlist = ls(),
-                              envir = environment())
+      parallel::clusterSetRNGStream(cluster, round(runif(1, 0, 100000)))
+      parallel::clusterExport(
+        cl = cluster,
+        varlist = ls(),
+        envir = environment()
+      )
       bootstrap_estimates <- pbapply::pblapply(1:bootstrap_iterations,
-                                               function(x) est_rifreg_bootstrap(formula = formula,
-                                                                                data_used = data_used,
-                                                                                statistic = statistic,
-                                                                                dep_var = dep_var,
-                                                                                weights = weights,
-                                                                                probs = probs,
-                                                                                custom_rif_function = custom_rif_function,
-                                                                                bootstrap_iterations = bootstrap_iterations,
-                                                                                ...),
-                                               cl = cluster)
+        function(x) {
+          est_rifreg_bootstrap(
+            formula = formula,
+            data_used = data_used,
+            statistic = statistic,
+            dep_var = dep_var,
+            weights = weights,
+            probs = probs,
+            custom_rif_function = custom_rif_function,
+            bootstrap_iterations = bootstrap_iterations,
+            ...
+          )
+        },
+        cl = cluster
+      )
       parallel::stopCluster(cluster)
     }
     bootstrap_estimates <- as.data.frame(do.call("cbind", bootstrap_estimates))
@@ -195,26 +213,27 @@ rifreg <- function(formula,
     rownames(bootstrap_se) <- rownames(bootstrap_estimates)
     colnames(bootstrap_se) <- modelnames
     bootstrap_vcov <- list()
-    for(i in 1:length(modelnames)){
+    for (i in 1:length(modelnames)) {
       sel <- which(names(bootstrap_estimates) %in% modelnames[i])
-      bootstrap_vcov[[i]] <- var(t(bootstrap_estimates[,sel]))
-      bootstrap_se[,i] <- sqrt(diag(bootstrap_vcov[[i]]))
+      bootstrap_vcov[[i]] <- var(t(bootstrap_estimates[, sel]))
+      bootstrap_se[, i] <- sqrt(diag(bootstrap_vcov[[i]]))
     }
-  }
-  else {
+  } else {
     bootstrap_vcov <- bootstrap_se <- NULL
   }
 
   estimates <- do.call("cbind", lapply(rif_lm, coef))
 
-  results <- list(estimates = estimates,
-                  rif_lm = rif_lm,
-                  rif = rif,
-                  bootstrap_se = bootstrap_se,
-                  bootstrap_vcov = bootstrap_vcov,
-                  statistic = statistic,
-                  custom_rif_function = custom_rif_function,
-                  probs = probs)
+  results <- list(
+    estimates = estimates,
+    rif_lm = rif_lm,
+    rif = rif,
+    bootstrap_se = bootstrap_se,
+    bootstrap_vcov = bootstrap_vcov,
+    statistic = statistic,
+    custom_rif_function = custom_rif_function,
+    probs = probs
+  )
 
   class(results) <- c("rifreg", "lm")
 
@@ -231,21 +250,22 @@ est_rifreg <- function(formula,
                        probs,
                        custom_rif_function,
                        ...) {
-
   # Get RIF of distributional statistic
-  rif <- get_rif(statistic = statistic,
-                 dep_var = dep_var,
-                 weights = weights,
-                 probs = probs,
-                 custom_rif_function = custom_rif_function,
-                 ...)
+  rif <- get_rif(
+    statistic = statistic,
+    dep_var = dep_var,
+    weights = weights,
+    probs = probs,
+    custom_rif_function = custom_rif_function,
+    ...
+  )
 
   # estimate RIF regression
   data_and_rif <- cbind(rif, data_used)
   n_rif <- ncol(rif) - 1
   rif_lm <- list()
-  for(i in 1:n_rif){
-    rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(rif)[i]," ~ .")))
+  for (i in 1:n_rif) {
+    rif_formula <- update(Formula::as.Formula(formula), Formula::as.Formula(paste0(names(rif)[i], " ~ .")))
     rif_lm[[i]] <- lm(rif_formula, data = data_and_rif, weights = weights)
     names(rif_lm)[[i]] <- names(rif)[i]
   }
@@ -265,15 +285,16 @@ est_rifreg_bootstrap <- function(data_used,
                                  custom_rif_function,
                                  bootstrap_iterations,
                                  ...) {
-
   sample <- sample(1:nrow(data_used), nrow(data_used), replace = TRUE)
-  rif_lm <- est_rifreg(data_used = data_used[sample,],
-                       statistic = statistic,
-                       dep_var = dep_var[sample],
-                       weights = (weights[sample]/sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
-                       probs = probs,
-                       custom_rif_function = custom_rif_function,
-                       ...)
-  coefs <- do.call("cbind",lapply(rif_lm, coef))
+  rif_lm <- est_rifreg(
+    data_used = data_used[sample, ],
+    statistic = statistic,
+    dep_var = dep_var[sample],
+    weights = (weights[sample] / sum(weights[sample], na.rm = TRUE)) * sum(weights, na.rm = TRUE),
+    probs = probs,
+    custom_rif_function = custom_rif_function,
+    ...
+  )
+  coefs <- do.call("cbind", lapply(rif_lm, coef))
   return(coefs)
 }

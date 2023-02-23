@@ -52,45 +52,47 @@ men8385 <- read.dta13("data-raw/men8385.dta")
 # Save dummies as factor variables
 # nine potential experience categories (each of five years gap)
 men8385$experience <- 5
-men8385[which(men8385$ex1==1),"experience"] <- 1
-men8385[which(men8385$ex2==1),"experience"] <- 2
-men8385[which(men8385$ex3==1),"experience"] <- 3
-men8385[which(men8385$ex4==1),"experience"] <- 4
+men8385[which(men8385$ex1 == 1), "experience"] <- 1
+men8385[which(men8385$ex2 == 1), "experience"] <- 2
+men8385[which(men8385$ex3 == 1), "experience"] <- 3
+men8385[which(men8385$ex4 == 1), "experience"] <- 4
 # 5 = reference group
-men8385[which(men8385$ex6==1),"experience"] <- 6
-men8385[which(men8385$ex7==1),"experience"] <- 7
-men8385[which(men8385$ex8==1),"experience"] <- 8
-men8385[which(men8385$ex9==1),"experience"] <- 9
+men8385[which(men8385$ex6 == 1), "experience"] <- 6
+men8385[which(men8385$ex7 == 1), "experience"] <- 7
+men8385[which(men8385$ex8 == 1), "experience"] <- 8
+men8385[which(men8385$ex9 == 1), "experience"] <- 9
 
 # Education
 men8385$education <- 2
-men8385[which(men8385$ed0==1),"education"] <- 0
-men8385[which(men8385$ed1==1),"education"] <- 1
+men8385[which(men8385$ed0 == 1), "education"] <- 0
+men8385[which(men8385$ed1 == 1), "education"] <- 1
 # high school = reference group
-men8385[which(men8385$ed3==1),"education"] <- 3
-men8385[which(men8385$ed4==1),"education"] <- 4
-men8385[which(men8385$ed5==1),"education"] <- 5
+men8385[which(men8385$ed3 == 1), "education"] <- 3
+men8385[which(men8385$ed4 == 1), "education"] <- 4
+men8385[which(men8385$ed5 == 1), "education"] <- 5
 
 men8385$education <- as.character(men8385$education)
 men8385$experience <- as.character(men8385$experience)
 men8385$experience <- dplyr::recode_factor(men8385$experience,
-                                              "5"="20-24",
-                                              "1"="0-4",
-                                              "2"="5-9",
-                                              "3"="10-14",
-                                              "4"="15-19",
-                                              "6"="25-29",
-                                              "7"="30-34",
-                                              "8"="35-39",
-                                              "9"=">=40")
+  "5" = "20-24",
+  "1" = "0-4",
+  "2" = "5-9",
+  "3" = "10-14",
+  "4" = "15-19",
+  "6" = "25-29",
+  "7" = "30-34",
+  "8" = "35-39",
+  "9" = ">=40"
+)
 
 men8385$education <- dplyr::recode_factor(men8385$education,
-                                             "2"="High School",
-                                             "0"="Elementary",
-                                             "1"="HS dropout",
-                                             "3"="Some College",
-                                             "4"="College",
-                                             "5"="Post-graduate")
+  "2" = "High School",
+  "0" = "Elementary",
+  "1" = "HS dropout",
+  "3" = "Some College",
+  "4" = "College",
+  "5" = "Post-graduate"
+)
 
 
 # Save log wage as wage hourly wage in dollars
@@ -103,33 +105,35 @@ men8385$covered <- NULL
 men8385$married <- as.factor(men8385$marr)
 men8385$marr <- NULL
 men8385$nonwhite <- as.factor(men8385$nonwhite)
-levels(men8385$married) <- levels(men8385$nonwhite) <-  levels(men8385$union) <-  c("no","yes")
+levels(men8385$married) <- levels(men8385$nonwhite) <- levels(men8385$union) <- c("no", "yes")
 
 # Rename weight and education in years variable
-names(men8385)[names(men8385)=="eweight"] <- "weights"
-names(men8385)[names(men8385)=="educ"] <- "education_in_years"
-names(men8385)[names(men8385)=="exper"] <- "experience_in_years"
+names(men8385)[names(men8385) == "eweight"] <- "weights"
+names(men8385)[names(men8385) == "educ"] <- "education_in_years"
+names(men8385)[names(men8385) == "exper"] <- "experience_in_years"
 
 # Check experience and age groups
 men8385 %>%
   group_by(experience) %>%
-  dplyr::summarise(min=min(experience_in_years,na.rm=TRUE),
-                   max=max(experience_in_years,na.rm=TRUE))
+  dplyr::summarise(
+    min = min(experience_in_years, na.rm = TRUE),
+    max = max(experience_in_years, na.rm = TRUE)
+  )
 
 men8385 %>%
   group_by(education) %>%
-  dplyr::summarise(min=min(education_in_years,na.rm=TRUE),
-                   max=max(education_in_years,na.rm=TRUE))
+  dplyr::summarise(
+    min = min(education_in_years, na.rm = TRUE),
+    max = max(education_in_years, na.rm = TRUE)
+  )
 
 # Select relevant variables
-sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age","education_in_years","experience_in_years")
+sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age", "education_in_years", "experience_in_years")
 men8385 <- men8385[, sel_vars]
 
 # Save 20% sample of original data set
 set.seed(123)
-sel_obs <- sample(1:nrow(men8385),floor(nrow(men8385)/5))
+sel_obs <- sample(1:nrow(men8385), floor(nrow(men8385) / 5))
 men8385 <- men8385[sel_obs, ]
 
-usethis::use_data(men8385, overwrite=TRUE)
-
-
+usethis::use_data(men8385, overwrite = TRUE)

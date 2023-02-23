@@ -86,20 +86,22 @@ distributional statistic of interest.
 }
 \examples{
 
-rifreg <- rifreg(formula = log(wage) ~ union +
-                                       nonwhite +
-                                       married +
-                                       education +
-                                       experience,
-                  data = men8385,
-                  statistic = "quantiles",
-                  weights = weights,
-                  probs = seq(0.1, 0.9, 0.1),
-                  bootstrap = FALSE)
+rifreg <- rifreg(
+  formula = log(wage) ~ union +
+    nonwhite +
+    married +
+    education +
+    experience,
+  data = men8385,
+  statistic = "quantiles",
+  weights = weights,
+  probs = seq(0.1, 0.9, 0.1),
+  bootstrap = FALSE
+)
 
 
 # custom function
-custom_variance_function <- function(dep_var, weights, probs = NULL){
+custom_variance_function <- function(dep_var, weights, probs = NULL) {
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)
@@ -114,7 +116,8 @@ rifreg <- rifreg(
   weights = weights,
   probs = NULL,
   custom_rif_function = custom_variance_function,
-  bootstrap = FALSE)
+  bootstrap = FALSE
+)
 
 }
 \references{
