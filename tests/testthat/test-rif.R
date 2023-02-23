@@ -202,7 +202,7 @@ testthat::test_that("RIF with custom mean function correctly calculated" , {
   rif <- get_rif_mean(dep_var = dep_var)
 
   # custom function
-  custom_mean <- function(dep_var, weights = NULL) {
+  custom_mean <- function(dep_var, weights = NULL, probs = NULL) {
     rif <- as.data.frame(dep_var)
     names(rif) <- "rif_mean"
     return(rif)
@@ -226,25 +226,25 @@ testthat::test_that("RIF with custom quantiles function correctly calculated" , 
                   probs = seq(1:9)/10)
 
   # custom function
-  custom_quantiles_function <- function(dep_var, custom_quantiles, custom_weights, ...){
+  custom_quantiles_function <- function(dep_var, weights, probs, ...){
     get_rif_quantile <- function(quantile, dep_var, weights, density) {
-      weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = custom_weights, probs = quantile)
+      weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = quantile)
       density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
       rif <- weighted_quantile + (quantile - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
       return(rif)
     }
 
-    weights <- check_weights(dep_var, custom_weights)
+    weights <- check_weights(dep_var, weights)
     density <- density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
-    rif <- sapply(X = custom_quantiles, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
+    rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
     rif <- data.frame(rif, weights)
-    names(rif) <- c(paste0("rif_quantile_", custom_quantiles), "weights")
+    names(rif) <- c(paste0("rif_quantile_", probs), "weights")
     return(rif)
   }
   rif_custom <-  get_rif(statistic = "custom",
                          dep_var = test_dep_var,
                          custom_rif_function = custom_quantiles_function,
-                         custom_quantiles = seq(1:9)/10,
+                         probs = seq(1:9)/10,
                          weights = test_weights)
 
   testthat::expect_equal(names(rif_custom), names(rif))
@@ -260,7 +260,7 @@ testthat::test_that("RIF with custom variance function correctly calculated" , {
   rif <-  get_rif(statistic = "variance", dep_var = dep_var, weights = weights)
 
   # custom function
-  custom_variance_function <- function(dep_var, weights){
+  custom_variance_function <- function(dep_var, weights, probs = NULL){
     weights <- check_weights(dep_var, weights = weights)
     weighted_mean <- weighted.mean(x = dep_var, w = weights)
     rif <- (dep_var - weighted_mean)^2

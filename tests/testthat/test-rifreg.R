@@ -143,7 +143,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
   test_data <- men8385[1:300,]
   test_weights <- men8385$weights[1:300]
 
-  custom_variance_function <- function(dep_var, weights){
+  custom_variance_function <- function(dep_var, weights, probs = NULL){
     weights <- check_weights(dep_var, weights = weights)
     weighted_mean <- weighted.mean(x = dep_var, w = weights)
     rif <- (dep_var - weighted_mean)^2
@@ -162,7 +162,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
                       weights = test_weights),
                NA)
 
-  custom_quantiles_function <- function(dep_var, custom_probs, weights, ...){
+  custom_quantiles_function <- function(dep_var, probs, weights, ...){
     get_rif_quantile <- function(quantile, dep_var, weights, density) {
       weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = quantile)
       density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
@@ -171,9 +171,9 @@ testthat::test_that("RIF regression function does not throw an error with custom
     }
 
     density <- density(x = dep_var, weights = weights/sum(weights, na.rm = TRUE), ...)
-    rif <- sapply(X = custom_probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
+    rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
     rif <- data.frame(rif, weights)
-    names(rif) <- c(paste0("rif_quantile_", custom_probs), "weights")
+    names(rif) <- c(paste0("rif_quantile_", probs), "weights")
     return(rif)
   }
 
@@ -181,7 +181,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
                       data = test_data,
                       statistic = "custom",
                       custom_rif_function = custom_quantiles_function,
-                      custom_probs = c(0.1, 0.5, 0.9),
+                      probs = c(0.1, 0.5, 0.9),
                       bootstrap = FALSE,
                       cores = 1,
                       weights = test_weights),
@@ -231,20 +231,20 @@ testthat::test_that("RIF regression function does not throw an error with custom
   # custom RIF function for top 10% percent income share
   custom_top_inc_share <- function(dep_var,
                                    weights,
-                                   top_share=0.1){
-    top_share <- 1-top_share
+                                   probs=0.1){
+    probs <- 1-probs
     weighted_mean <- weighted.mean(x = dep_var,
                                    w = weights)
     weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,
                                              weights = weights,
-                                             probs = top_share)
+                                             probs = probs)
     lorenz_ordinate <- sum(dep_var[which(dep_var<=weighted_quantile)]*
                              weights[which(dep_var<=weighted_quantile)])/
       sum(dep_var*weights)
     if_lorenz_ordinate <- -(dep_var/weighted_mean) * lorenz_ordinate +
       ifelse(dep_var < weighted_quantile,
-             dep_var - (1-top_share)*weighted_quantile,
-             top_share*weighted_quantile)/weighted_mean
+             dep_var - (1-probs)*weighted_quantile,
+             probs*weighted_quantile)/weighted_mean
     rif_top_income_share <-  (1-lorenz_ordinate) - if_lorenz_ordinate
     rif <- data.frame(rif_top_income_share, weights)
     names(rif) <- c("rif_top_income_share", "weights")
@@ -256,7 +256,7 @@ testthat::test_that("RIF regression function does not throw an error with custom
                        weights=weights,
                        statistic="custom",
                        custom_rif_function=custom_top_inc_share,
-                       top_share=0.1)
+                       probs=0.1)
   expect_error(fit_top_10, NA)
 })
 

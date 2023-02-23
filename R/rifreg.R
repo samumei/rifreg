@@ -17,8 +17,8 @@
 #'                  Default is "quantiles". If "custom" is selected, a \code{custom_rif_function} needs to be provided.
 #' @param custom_rif_function the RIF function to compute the RIF of the custom distributional statistic.
 #'                            Default is NULL. Only needs to be provided if \code{statistic = "custom"}.
-#'                            Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
-#'                            If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}).
+#'                            Every custom_rif_function needs the parameters \code{dep_var}, \code{weights} and \code{probs}.
+#'                            If they are not needed they must be set to NULL in the function definition (e.g. \code{probs = NULL}).
 #'                            A custom function must return a data frame containing at least a "rif" and "weights" column.
 #'                            See \code{examples} for further details.
 #' @param probs a vector of length 1 or more with probabilities of quantiles. Each quantile is indicated with a value between 0 and 1.
@@ -36,9 +36,9 @@
 #' @param cores positive integer indicating the number of cores to use when computing bootstrapped standard errors.
 #'              Only required if \code{bootstrap = TRUE}.
 #' @param ... additional parameters passed to the \code{custom_rif_function}.
-#'            Apart from \code{dep_var} and \code{weights} they must have a different name than the the ones in
-#'            \code{rifreg}. For instance, if you want to pass \code{probs} to the
-#'            \code{custom_rif_function}, name them \code{custom_probs}.
+#'            Apart from \code{dep_var}, \code{weights} and \code{probs} they must have a different name than the the ones in
+#'            \code{rifreg}. For instance, if you want to pass a parameter \code{statistic} to the
+#'            \code{custom_rif_function}, name it \code{custom_statistic}.
 #'
 #' @return \code{rifreg} returns an object of \code{\link{class}} \code{"rifreg"}.
 #'
@@ -77,7 +77,7 @@
 #'
 #'
 #' # custom function
-#' custom_variance_function <- function(dep_var, weights){
+#' custom_variance_function <- function(dep_var, weights, probs = NULL){
 #'   weighted_mean <- weighted.mean(x = dep_var, w = weights)
 #'   rif <- (dep_var - weighted_mean)^2
 #'   rif <- data.frame(rif, weights)
