@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.rifreg}
 \alias{plot.rifreg}
-\title{Plot Coefficients for a \code{rifreg} Object}
+\title{Plot the coefficients of a \code{rifreg} object}
 \usage{
 \method{plot}{rifreg}(
   x,

@@ -27,16 +27,16 @@ is selected a \code{custom_rif_function} needs to be provided.}
 Each quantile is indicated with value between 0 and 1. Only required if \code{statistic = "quantiles"}.}
 
 \item{custom_rif_function}{the RIF function to compute the RIF of the custom distributional statistic.
-Default is NULL. Only needs to provided if \code{statistic = "custom"}.
-Every custom_rif_function needs the parameters \code{dep_var} and \code{weights}.
-If they are not needed they can be set to NULL in the function definition (e.g. \code{weights = NULL}).
+Default is NULL. Only needs to be provided if \code{statistic = "custom"}.
+Every custom_rif_function needs the parameters \code{dep_var}, \code{weights} and \code{probs}.
+If they are not needed they must be set to NULL in the function definition (e.g. \code{probs = NULL}).
 A custom function must return a data frame containing at least a "rif" and "weights" column.
 See \code{examples} for further details.}
 
 \item{...}{additional parameters passed to the \code{custom_rif_function}.
-Apart from \code{dep_var} and \code{weights} they must have a different name than the the ones in
-\code{rifreg}. For instance, if you want to pass \code{probs} to the
-\code{custom_rif_function}, name them \code{custom_probs}.}
+Apart from \code{dep_var}, \code{weights} and \code{probs} they must have a different name than the the ones in
+\code{rif}. For instance, if you want to pass a parameter \code{statistic} to the
+\code{custom_rif_function}, name it \code{custom_statistic}.}
 }
 \value{
 a data frame with the RIF value for each observation and in the case of several quantiles
@@ -57,7 +57,7 @@ rif <- get_rif(dep_var = dep_var,
                probs = probs)
 
 # custom function
-custom_variance_function <- function(dep_var, weights){
+custom_variance_function <- function(dep_var, weights, probs = NULL){
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   rif <- (dep_var - weighted_mean)^2
   rif <- data.frame(rif, weights)
@@ -71,7 +71,7 @@ weights <- rep(1, 100)
 
 # custom function top 10\% percent income share
 # (see Essam-Nassah & Lambert, 2012, and Rios-Avila, 2020)
-custum_top_income_share_function <- function(dep_var, weights, probs=0.1){
+custom_top_income_share_function <- function(dep_var, weights, probs=0.1){
   probs <- 1-probs
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var,  weights = weights, probs = probs)
