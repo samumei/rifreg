@@ -4,7 +4,7 @@ Title: Estimate Recentered Influence Function Regression
 Version: 0.1.0
 Authors@R: 
     person("David", "Gallusser", , "david.gallusser@sgb.ch", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
     person("Samuel", "Meier", , "samuel.meier@sgb.ch", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Maintainer: David Gallusser <david.gallusser@sgb.ch>, Samuel Meier
