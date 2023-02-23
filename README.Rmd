@@ -20,17 +20,17 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-RIF regressions estimate the effects of small location shifts in continuous explanatory variables on a distributional statistic (e.g., quantile, variance or Gini coefficient) of an outcome variable as proposed by [Firpo, Fortin, and Lemieux (2009a)](https://doi.org/10.3982/ECTA6822). In the special case of quantiles, RIF regressions are 'unconditional quantile regressions' capturing the association between explanatory variables and quantiles of the marginal distribution of an outcome variable.
+Recentered influence function (RIF) regressions estimate the effects of small location shifts in continuous explanatory variables on a distributional statistic (e.g., quantile, variance or Gini coefficient) of an outcome variable as proposed by [Firpo, Fortin, and Lemieux (2009a)](https://doi.org/10.3982/ECTA6822). In the special case of quantiles, RIF regressions are 'unconditional quantile regressions' capturing the association between explanatory variables and quantiles of the marginal distribution of an outcome variable.
 
 ## Installation 
 
 You can either install the CRAN version of `rifreg`
-```{r, eval=FALSE}
+```{r }
 install.packages("rifreg")
 ```
 
 or the latest development version from GitHub:
-```{r, eval=FALSE}
+```{r }
 devtools::install_github("samumei/rifreg")
 ```
 
@@ -38,7 +38,7 @@ devtools::install_github("samumei/rifreg")
 
 ### Unconditional partial effects
 
-Firpo, Fortin, and Lemieux (2009a) propose recentred influence function (RIF) regressions to estimate unconditional partial effects (UPE), i.e., the effects of small locations shifts in a continuous explanatory variable $X$ on a distributional statistic $\nu=\nu(F_Y)$ of an outcome variable $Y$.
+Firpo, Fortin, and Lemieux (2009a) propose RIF regressions to estimate unconditional partial effects (UPE), i.e., the effects of small locations shifts in a continuous explanatory variable $X$ on a distributional statistic $\nu=\nu(F_Y)$ of an outcome variable $Y$.
 
 An influence function, as concept from robust statistics, informs about the extent a statistic of an empirical marginal distribution changes due to increasing the probability mass at value $y$ by a small amount. A recentred influence functions is defined as the influence function recentred around the original distributional statistic:
 $$\text{RIF}(y;\nu,F_Y)= \nu(F_Y)+ \text{IF}(y;\nu,F_Y)$$
@@ -58,20 +58,19 @@ if the conditional expectations of the RIF are linear in $X$ (see Firpo et al., 
 
 `rifreg` implements this approach. It first calculates the RIF of the outcome variable $Y$ and a distributional statistic of interest $\nu$. Then, it runs an OLS regression of the transformed outcome variable $Y$ on the explanatory variables $X$. 
 
-By default, the RIF of quantiles, the mean, the variance, the Gini coefficient, the interquantile range and the quantile ratio are available in `rifreg`. Moreover, it allows
-to calculate the RIF for additional statistics with user-written functions (see example below). [Cowell and Flachaire (2007)](https://doi.org/10.1016/j.jeconom.2007.01.001), [Essama-Nssah & Lambert (2012)](https://doi.org/10.1108/S1049-2585(2012)0000020009), and [Rios-Avila (2020)](https://doi.org/10.1177/1536867X20909690) derive the influence funtions for an array of distributional statistics.
+By default, the RIF of quantiles, the mean, the variance, the Gini coefficient, the interquantile range and the quantile ratio are available in `rifreg`. Moreover, the
+package allows to calculate the RIF for additional statistics with user-written functions (see example below). [Cowell and Flachaire (2007)](https://doi.org/10.1016/j.jeconom.2007.01.001), [Essama-Nssah & Lambert (2012)](https://doi.org/10.1108/S1049-2585(2012)0000020009), and [Rios-Avila (2020)](https://doi.org/10.1177/1536867X20909690) derive the influence funtions for an array of distributional statistics.
 
 For the sake of illustration, consider the RIF of a quantile $q_\tau = \inf_q \{q: F_Y(q) \geq \tau\}$. It is defined as
 $$\text{RIF}(y;q_\tau,F_Y) = q_\tau  + \frac{\tau-1\{y \leq q_\tau\}}{f_Y(q_\tau)}, $$
-where $1\{\}$ is an indicator function and $f_Y(q_\tau)$ is the density at the quantile of interest. Thus, calculating the RIF requires estimating the sample quantile and the kernel density. The regression in the second step essentially amounts to a linear probability model
-(see Firpo et al., 2009a: 958, 961).
+where $1\{\}$ is an indicator function and $f_Y(q_\tau)$ is the density at the quantile of interest. Thus, calculating the RIF requires estimating the sample quantile and the kernel density. The regression in the second step essentially amounts to a linear probability model (see Firpo et al., 2009a: 958, 961).
 
 
 ### Inference
 
 `rifreg` allows to bootstrap standard errors. Analytical standard errors can be nontrivial when the RIF introduces an additional estimation step. In particular, this is the case for quantiles where the density has to be estimated (see [Firpo, Fortin, and Lemieux, 2009b](https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_extensions_0.pdf)). 
 
-Per default, `rifreg` returns heteroscedasticity-consistent standard errors estimated by `sandwich::sandwich()` if the variance is not bootstrapped. Note, however, that these standard errors do not take the variance introduced by the RIF estimation step into account.
+Per default, `summary.rifreg` and `plot.rifreg`return heteroscedasticity-consistent standard errors estimated with `sandwich::sandwich()` if the variance is not bootstrapped. Note, however, that these standard errors do not take the variance introduced by the RIF estimation step into account.
 
 ## Example
 
@@ -94,14 +93,15 @@ fit_uqr <- rifreg(ffl_model,
   statistic = "quantiles",
   probs = 1:9 / 10
 )
+fit_uqr
 ```
 
-The`summary` method returns the estimated coefficients and the standard errors. Per default, `summary` returns heteroscedasticity-consistent standard errors estimated if the variance is not bootstrapped.
-```{r}
+The `summary` method returns the estimated coefficients and the standard errors. Per default, `summary` returns heteroscedasticity-consistent standard errors estimated if the variance is not bootstrapped.
+```{r, eval=FALSE}
 summary(fit_uqr)
 ```
 
-`rifreg` comes with a convenient plot function. It illustrates the estimated UQPE across the distribution. The confidence bands are based on the same standard errors as displayed by `summary`.
+`rifreg` comes with a convenient plot function. It illustrates the estimated UQPE across the distribution. The confidence bands are based on the same standard errors as returned by `summary`.
 ```{r}
 plot(fit_uqr, varselect = "unionyes")
 ```
@@ -121,6 +121,7 @@ fit_uqr <- rifreg(ffl_model,
   cores = 4,
   probs = 1:9 / 10
 )
+
 plot(fit_uqr,
   varselect = "unionyes",
   confidence_interval = 0.95
@@ -144,13 +145,12 @@ fit_d9d1 <- rifreg(ffl_model2,
   statistic = "interquantile_ratio",
   probs = c(0.9, 0.1)
 )
-fit_gini
-fit_d9d1
+cbind(fit_gini$estimates, fit_d9d1$estimates)
 ```
 
 ### User-written RIF functions
 
-Users may write their own RIF function. Custom RIF functions must specify a `dep_var` parameter for the outcome variable $Y$ and a `weights` for potential sample weights.  
+Users may write their own RIF function. Custom RIF functions must specify a `dep_var` parameter for the outcome variable $Y$, a `weights` for potential sample weights, and `probs`. If they are not needed, they must be set to `NULL` in the function definition (e.g. `probs = NULL`).
 
 The following example shows how to write the RIF for the top 10 percent income share and, then, to estimate the RIF regression using this custom function. The formula for this specific RIF can be found in Essam-Nssah & Lambert (2012) or Rios-Avila (2020).
 ```{r}
@@ -159,6 +159,7 @@ ffl_model2 <- wage ~ union + nonwhite + married + education + experience
 # custom RIF function for top 10% percent income share
 custom_top_inc_share <- function(dep_var,
                                  weights,
+                                 probs = NULL,
                                  top_share = 0.1) {
   top_share <- 1 - top_share
   weighted_mean <- weighted.mean(
@@ -195,9 +196,9 @@ fit_top_10 <- rifreg(ffl_model2,
 fit_top_10
 ```
 
-## Validation 
+## Replication of Firpo, Fortin, and Lemieux (2009a)
 
-To validate the functions and provide users with an additional example, we reproduced the RIF regression estimates in Firpo, Fortin, and Lemieux (2009a: 962-966). In their empirical example, Firpo, Fortin, and Lemieux estimate the impact of union status on log wages using a large sample of 266'956 male U.S. workers from 1983-1985. based on the Outgoing Rotation Group (ORG) supplement of the Current Population Survey. To reproduce the code below, make sure you download the [entire data set from the journal's website](https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_data%20and%20programs_0.zip).
+To validate the functions and provide users with an additional example, we replicate the RIF regression estimates in Firpo et al. (2009a: 962-966). In their empirical example, Firpo et al. estimate the impact of union status on log wages using a large sample of 266'956 male U.S. workers from 1983-1985 based on the Outgoing Rotation Group (ORG) supplement of the Current Population Survey. To reproduce the code below, make sure you download the [entire data set from the journal's website](https://www.econometricsociety.org/publications/econometrica/2009/05/01/unconditional-quantile-regressions/supp/6822_data%20and%20programs_0.zip).
 
 ### Data preparation
 
@@ -257,7 +258,6 @@ men8385$education <- dplyr::recode_factor(men8385$education,
   "5" = "Post-graduate"
 )
 
-
 # Save log wage as wage hourly wage in dollars
 men8385$wage <- exp(men8385$lwage)
 
@@ -295,16 +295,16 @@ sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience",
 men8385 <- men8385[, sel_vars]
 ```
 
-### RIF Regression
+### 'Unconditional quantile regressions'
 
-The model is specified as in Firpo, Fortin, and Lemieux (2007a), omitting weights, computing bootstrapped standard errors with 200 iterations and setting a fixed bandwidth of 0.06 for the kernel density estimation. We also compute a OLS model for comparison with the original results and to validate our data preparation. 
+The model is specified as in Firpo, Fortin, and Lemieux (2007a), omitting weights, computing bootstrapped standard errors with 200 iterations and setting a fixed bandwidth of 0.06 for the kernel density estimation. We also compute a OLS model for comparison with the original results. 
 
 ```{r}
 library(rifreg)
 
 set.seed(121095)
 ffl_model_2009 <- log(wage) ~ union + nonwhite + married + education + experience
-rifreg <- rifreg(
+ffl_uqr_fit <- rifreg(
   formula = ffl_model_2009,
   data = men8385,
   statistic = "quantiles",
@@ -315,7 +315,7 @@ rifreg <- rifreg(
   cores = 1
 )
 
-ols <- lm(
+ffl_ols_fit <- lm(
   formula = ffl_model_2009,
   data = men8385
 )
@@ -323,23 +323,23 @@ ols <- lm(
 
 ### Results
 
-```{r}
-estimates <- data.frame(rifreg$estimates[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
-standard_errors <- data.frame(rifreg$bootstrap_se[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
+```{r }
+estimates <- data.frame(ffl_uqr_fit$estimates[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
+standard_errors <- data.frame(ffl_uqr_fit$bootstrap_se[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
 results <- cbind(estimates, standard_errors)[, c(1, 4, 2, 5, 3, 6)]
-results$ols <- ols$coefficients[1:9]
+results$ols <- ffl_ols_fit$coefficients[1:9]
 names(results) <- c("Coefficient 0.1", "SE", "Coefficient 0.5", "SE", "Coefficient 0.9", "SE", "OLS")
 
 knitr::kable(results)
 ```
 
-Our results largely match those by Firpo, Fortin, and Lemieux (2009a: 962-966). The OLS results are identical as expected. The RIF regression results differ only in a few instances at the third decimal place from the original paper.
+Our results largely match those by Firpo, Fortin, and Lemieux (2009a: 964, Table I). The OLS results are identical as expected. The RIF regression results differ only in a few instances at the third decimal place from the original paper.
 
 ```{r, fig.show='hide'}
 rifreg_plot <- plot(rifreg, varselect = "unionyes")
 ```
 
-```{r}
+```{r }
 rifreg_plot +
   geom_hline(yintercept = ols$coefficients["unionyes"], linetype = "dashed") +
   geom_text(aes(x = 0.8, y = ols$coefficients["unionyes"] + 0.03, label = "OLS estimate"), color = "black") +

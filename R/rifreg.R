@@ -18,7 +18,7 @@
 #' @param custom_rif_function the RIF function to compute the RIF of the custom distributional statistic.
 #'                            Default is NULL. Only needs to be provided if \code{statistic = "custom"}.
 #'                            Every custom_rif_function needs the parameters \code{dep_var}, \code{weights} and \code{probs}.
-#'                            If they are not needed they must be set to NULL in the function definition (e.g. \code{probs = NULL}).
+#'                            If they are not needed, they must be set to NULL in the function definition (e.g. \code{probs = NULL}).
 #'                            A custom function must return a data frame containing at least a "rif" and "weights" column.
 #'                            See \code{examples} for further details.
 #' @param probs a vector of length 1 or more with probabilities of quantiles. Each quantile is indicated with a value between 0 and 1.

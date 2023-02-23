@@ -168,8 +168,9 @@ get_rif_mean <- function(dep_var) {
 #' get_rif_quantiles(dep_var, probs, weights = weights)
 #'
 get_rif_quantiles <- function(dep_var, weights, probs, ...) {
-  density <- stats::density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE), ...)
-  rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
+  # density <- stats::density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE), ...)
+  # rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
+  rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, ...)
   rif <- data.frame(rif, weights)
   names(rif) <- c(paste0("rif_quantile_", probs), "weights")
   return(rif)
@@ -180,11 +181,18 @@ get_rif_quantiles <- function(dep_var, weights, probs, ...) {
 #' Helper function to estimate the RIF values at a specific quantile.
 #'
 #' @param probs the specific quantile at which to estimate the RIF.
-#' @param density the kernel density estimation of \code{dep_var}.
-#'                For further information see \link[stats]{density}.
-get_rif_quantile <- function(dep_var, weights, probs, density) {
+#' @param ... further arguments passed on to \link[stats]{density}.
+# density the kernel density estimation of \code{dep_var}.
+# For further information see \link[stats]{density}.
+#get_rif_quantile <- function(dep_var, weights, probs, density) {
+get_rif_quantile <- function(dep_var, weights, probs, ...) {
   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
-  density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
+  #density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
+  density_at_quantile <- stats::density(x = dep_var,
+                                        weights = weights / sum(weights, na.rm = TRUE),
+                                        from = weighted_quantile,
+                                        to = weighted_quantile,
+                                        ...)$y[1]
   rif <- weighted_quantile + (probs - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
   return(rif)
 }
@@ -395,8 +403,9 @@ get_rif_interquantile_ratio <- function(dep_var, weights, probs, ...) {
   probs <- range(probs)
   weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
   iqratio <- weighted_quantile[2] / weighted_quantile[1]
-  density <- stats::density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE), ...)
-  density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
+  density <- stats::density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE), from = weighted_quantile[1], to = weighted_quantile[2], ...)
+  #density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
+  density_at_quantile <- density$y[c(1, length(density$y))]
   rif <- iqratio +
     (1 / weighted_quantile[1]) * ((probs[2] - as.numeric(dep_var <= weighted_quantile[2])) / density_at_quantile[2]) -
     iqratio * ((probs[1] - as.numeric(dep_var <= weighted_quantile[1])) / density_at_quantile[1])
