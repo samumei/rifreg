@@ -25,12 +25,12 @@ Recentered influence function (RIF) regressions estimate the effects of small lo
 ## Installation 
 
 You can either install the CRAN version of `rifreg`
-```{r }
+```{r, eval=FALSE}
 install.packages("rifreg")
 ```
 
 or the latest development version from GitHub:
-```{r }
+```{r , eval=FALSE}
 devtools::install_github("samumei/rifreg")
 ```
 
@@ -40,10 +40,10 @@ devtools::install_github("samumei/rifreg")
 
 Firpo, Fortin, and Lemieux (2009a) propose RIF regressions to estimate unconditional partial effects (UPE), i.e., the effects of small locations shifts in a continuous explanatory variable $X$ on a distributional statistic $\nu=\nu(F_Y)$ of an outcome variable $Y$.
 
-An influence function, as concept from robust statistics, informs about the extent a statistic of an empirical marginal distribution changes due to increasing the probability mass at value $y$ by a small amount. A recentred influence functions is defined as the influence function recentred around the original distributional statistic:
+An influence function, as concept from robust statistics, informs about the extent a statistic of an empirical marginal distribution changes due to increasing the probability mass at value $y$ by a small amount. A recentered influence functions is defined as the influence function recentered around the original distributional statistic:
 $$\text{RIF}(y;\nu,F_Y)= \nu(F_Y)+ \text{IF}(y;\nu,F_Y)$$
 
-The expected value of a recentred influence function equals the original distributional statistic. Firpo et al. apply the law of iterated expectations to reformulate the distributional statistic in terms of the conditional expecations of the explanatory variables:
+The expected value of a recentered influence function equals the original distributional statistic. Firpo et al. apply the law of iterated expectations to reformulate the distributional statistic in terms of the conditional expectations of the explanatory variables:
 $$\nu(F_Y) = \int \text{RIF}(y;\nu,F_Y) dF_Y=  \int E(\text{RIF}(Y;\nu,F_Y)|X=x) dF_X(x)$$
 
 This allows them to express the unconditional partial effects as average derivatives 
@@ -117,7 +117,7 @@ fit_uqr <- rifreg(ffl_model,
   weights = weights,
   statistic = "quantiles",
   bootstrap = TRUE,
-  bootstrap_iterations = 2, # 100
+  bootstrap_iterations = 100, 
   cores = 4,
   probs = 1:9 / 10
 )
@@ -311,7 +311,7 @@ ffl_uqr_fit <- rifreg(
   probs = seq(0.05, 0.95, 0.05),
   bw = 0.06,
   bootstrap = TRUE,
-  bootstrap_iterations = 3, # 200
+  bootstrap_iterations = 200, 
   cores = 1
 )
 
@@ -336,13 +336,13 @@ knitr::kable(results)
 Our results largely match those by Firpo, Fortin, and Lemieux (2009a: 964, Table I). The OLS results are identical as expected. The RIF regression results differ only in a few instances at the third decimal place from the original paper.
 
 ```{r, fig.show='hide'}
-rifreg_plot <- plot(rifreg, varselect = "unionyes")
+rifreg_plot <- plot(ffl_uqr_fit, varselect = "unionyes")
 ```
 
 ```{r }
 rifreg_plot +
-  geom_hline(yintercept = ols$coefficients["unionyes"], linetype = "dashed") +
-  geom_text(aes(x = 0.8, y = ols$coefficients["unionyes"] + 0.03, label = "OLS estimate"), color = "black") +
+  geom_hline(yintercept = ffl_ols_fit$coefficients["unionyes"], linetype = "dashed") +
+  geom_text(aes(x = 0.8, y = ffl_ols_fit$coefficients["unionyes"] + 0.03, label = "OLS estimate"), color = "black") +
   ylab("Effect of Union") +
   xlab("Quantiles") +
   labs(title = "Unconditional Quantile Regression in R") +
