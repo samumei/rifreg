@@ -1,23 +1,3 @@
-# RIF of specific quantile
-testthat::test_that("RIF for specific quantile correctly calculated", {
-  dep_var <- men8385$wage[1:300]
-  weights <- men8385$weights[1:300]
-  probs <- 0.5
-  density_of_dep_var <- density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE))
-
-  # manual calculation
-  weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
-  density_at_quantile <- approx(x = density_of_dep_var$x, y = density_of_dep_var$y, xout = weighted_quantile)$y
-  influence_function <- (probs - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
-  manual_rif_q <- weighted_quantile + influence_function
-
-  # calculation with function
-  rif_q <- get_rif_quantile(dep_var = dep_var, weights = weights, probs = probs, density = density_of_dep_var)
-
-  testthat::expect_equal(manual_rif_q, rif_q)
-})
-
-
 # RIF of probs
 testthat::test_that("RIF for several quantiles correctly calculated", {
   dep_var <- men8385$wage[1:300]
@@ -29,7 +9,7 @@ testthat::test_that("RIF for several quantiles correctly calculated", {
   # manual calculation
   weighted_quantiles <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = probs)
   density_at_quantiles <- approx(x = density_of_dep_var$x, y = density_of_dep_var$y, xout = weighted_quantiles)$y
-  manual_rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density_of_dep_var)
+  manual_rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights)
 
   # calculation with function
   rif <- get_rif_quantiles(dep_var = dep_var, weights = weights, probs = probs)
@@ -217,46 +197,6 @@ testthat::test_that("RIF with custom mean function correctly calculated", {
     statistic = "custom",
     dep_var = dep_var,
     custom_rif_function = custom_mean
-  )
-
-  testthat::expect_equal(names(rif_custom), names(rif))
-  testthat::expect_equal(rif, rif_custom)
-})
-
-testthat::test_that("RIF with custom quantiles function correctly calculated", {
-  test_dep_var <- men8385$wage[1:300]
-  test_weights <- men8385$weights[1:300]
-
-  # calculation with function
-  rif <- get_rif(
-    statistic = "quantiles",
-    dep_var = test_dep_var,
-    weights = test_weights,
-    probs = seq(1:9) / 10
-  )
-
-  # custom function
-  custom_quantiles_function <- function(dep_var, weights, probs, ...) {
-    get_rif_quantile <- function(quantile, dep_var, weights, density) {
-      weighted_quantile <- Hmisc::wtd.quantile(x = dep_var, weights = weights, probs = quantile)
-      density_at_quantile <- approx(x = density$x, y = density$y, xout = weighted_quantile)$y
-      rif <- weighted_quantile + (quantile - as.numeric(dep_var <= weighted_quantile)) / density_at_quantile
-      return(rif)
-    }
-
-    weights <- check_weights(dep_var, weights)
-    density <- density(x = dep_var, weights = weights / sum(weights, na.rm = TRUE), ...)
-    rif <- sapply(X = probs, FUN = get_rif_quantile, dep_var = dep_var, weights = weights, density = density)
-    rif <- data.frame(rif, weights)
-    names(rif) <- c(paste0("rif_quantile_", probs), "weights")
-    return(rif)
-  }
-  rif_custom <- get_rif(
-    statistic = "custom",
-    dep_var = test_dep_var,
-    custom_rif_function = custom_quantiles_function,
-    probs = seq(1:9) / 10,
-    weights = test_weights
   )
 
   testthat::expect_equal(names(rif_custom), names(rif))

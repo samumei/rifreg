@@ -7,7 +7,7 @@
 \usage{
 get_rif_quantiles(dep_var, weights, probs, ...)
 
-get_rif_quantile(dep_var, weights, probs, density)
+get_rif_quantile(dep_var, weights, probs, ...)
 }
 \arguments{
 \item{dep_var}{dependent variable of a distributional function. Discrete or continuous numeric vector.}
@@ -18,9 +18,6 @@ The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var
 \item{probs}{the specific quantile at which to estimate the RIF.}
 
 \item{...}{further arguments passed on to \link[stats]{density}.}
-
-\item{density}{the kernel density estimation of \code{dep_var}.
-For further information see \link[stats]{density}.}
 }
 \value{
 A data frame with the number of columns equaling the length of vector \code{probs} and an additional column containing the weights.
