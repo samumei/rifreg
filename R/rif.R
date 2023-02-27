@@ -252,6 +252,71 @@ integrate_generalized_lorenz_curve <- function(dep_var, weights) {
   return(integrated_lorenz_curve)
 }
 
+#' Weighted ECDF value
+#'
+#' Compute the values of ECDF for a vector \code{dep_var} (i.e. the
+#' empirical probability that \code{dep_var} take a value less or equal to each
+#' observation in \code{dep_var}).
+#'
+#' @param dep_var dependent variable of a distributional function. Discrete or continuous numeric vector.
+#' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
+#'
+#' @return the values of ECDF for a vector \code{dep_var}.
+#' @export
+#'
+#' @examples
+#'
+#' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
+#' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
+#' value_of_ecdf <-
+#'   compute_weighted_ecdf(
+#'     dep_var = dep_var,
+#'     weights = weights
+#'   )
+#'
+compute_weighted_ecdf <- function(dep_var, weights) {
+  dep_var_order <- order(dep_var)
+  dep_var_rank <- rank(dep_var, ties.method="max")
+  weights <- weights / sum(weights)
+  weighted_ecdf <- cumsum(weights[dep_var_order])
+  value_of_ecdf <- weighted_ecdf[dep_var_rank]
+  return(value_of_ecdf)
+}
+
+
+#' Generalized Lorenz ordinates
+#'
+#' Compute the generalized Lorenz ordinates of \code{dep_var} (e.g. the
+#' share of total income observations up to each value in \code{dep_var} amass)
+#'
+#' @param dep_var dependent variable of a distributional function. Discrete or continuous numeric vector.
+#' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
+#'                The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.
+#'
+#' @return thes generalized Lorenz ordinates for a vector \code{dep_var}.
+#' @export
+#'
+#' @examples
+#'
+#' dep_var <- c(1, 3, 9, 16, 3, 7, 4, 9)
+#' weights <- c(2, 1, 3, 4, 4, 1, 6, 3)
+#' generalized_Lorenz_ordinates <-
+#'   compute_generalized_Lorenz_ordinates(
+#'     dep_var = dep_var,
+#'     weights = weights
+#'   )
+#'
+compute_generalized_Lorenz_ordinates <- function(dep_var, weights) {
+  dep_var_order <- order(dep_var)
+  dep_var_rank <- rank(dep_var, ties.method="max")
+  weights <- weights / sum(weights)
+  generalized_Lorenz_ordinates <- cumsum(dep_var[dep_var_order] *  weights[dep_var_order])
+  generalized_Lorenz_ordinates <- generalized_Lorenz_ordinates[dep_var_rank]
+  return(generalized_Lorenz_ordinates)
+}
+
+
 #' Compute Gini coefficient
 #'
 #' Compute a weighted Gini coefficient by integrating the
@@ -313,11 +378,13 @@ compute_gini <- function(dep_var, weights) {
 get_rif_gini <- function(dep_var, weights) {
   gini_coef <- compute_gini(dep_var, weights)
   weighted_mean <- weighted.mean(x = dep_var, w = weights)
-  weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var <= x)])) / sum(weights)
-  generalized_lorenz_ordinates <- sapply(dep_var, function(x) {
-    sum(dep_var[which(dep_var <= x)]
-    * weights[which(dep_var <= x)])
-  }) / sum(weights)
+  weighted_ecdf <- compute_weighted_ecdf(dep_var = dep_var, weights = weights)
+  # weighted_ecdf <- sapply(dep_var, function(x) sum(weights[which(dep_var <= x)])) / sum(weights)
+  # generalized_lorenz_ordinates <- sapply(dep_var, function(x) {
+  #   sum(dep_var[which(dep_var <= x)]
+  #   * weights[which(dep_var <= x)])
+  # }) / sum(weights)
+  generalized_lorenz_ordinates <- compute_generalized_Lorenz_ordinates(dep_var = dep_var, weights = weights)
   integrated_generalized_lorenz_curve <- integrate_generalized_lorenz_curve(dep_var, weights)
   integrated_lorenz_curve <- integrated_generalized_lorenz_curve / weighted_mean
 
