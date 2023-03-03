@@ -1,36 +1,29 @@
 
-- <a href="#rifreg-estimate-recentered-influence-function-regressions"
-  id="toc-rifreg-estimate-recentered-influence-function-regressions"><code>rifreg</code>:
-  Estimate recentered influence function regressions</a>
-  - <a href="#overview" id="toc-overview">Overview</a>
-  - <a href="#installation" id="toc-installation">Installation</a>
-  - <a href="#background" id="toc-background">Background</a>
-    - <a href="#unconditional-partial-effects"
-      id="toc-unconditional-partial-effects">Unconditional partial effects</a>
-    - <a href="#estimation" id="toc-estimation">Estimation</a>
-    - <a href="#inference" id="toc-inference">Inference</a>
-  - <a href="#example" id="toc-example">Example</a>
-    - <a href="#unconditional-quantile-regressions"
-      id="toc-unconditional-quantile-regressions">Unconditional quantile
-      regressions</a>
-    - <a href="#bootstrapping-standard-errors"
-      id="toc-bootstrapping-standard-errors">Bootstrapping standard errors</a>
-    - <a href="#other-distributional-statistics"
-      id="toc-other-distributional-statistics">Other distributional
-      statistics</a>
-    - <a href="#user-written-rif-functions"
-      id="toc-user-written-rif-functions">User-written RIF functions</a>
-  - <a href="#replication-of-firpo-fortin-and-lemieux-2009a"
-    id="toc-replication-of-firpo-fortin-and-lemieux-2009a">Replication of
-    Firpo, Fortin, and Lemieux (2009a)</a>
-    - <a href="#data-preparation" id="toc-data-preparation">Data
-      preparation</a>
-    - <a href="#unconditional-quantile-regressions-1"
-      id="toc-unconditional-quantile-regressions-1">‘Unconditional quantile
-      regressions’</a>
-    - <a href="#results" id="toc-results">Results</a>
-  - <a href="#credits" id="toc-credits">Credits</a>
-  - <a href="#references" id="toc-references">References</a>
+-   [`rifreg`: Estimate recentered influence function
+    regressions](#rifreg-estimate-recentered-influence-function-regressions)
+    -   [Overview](#overview)
+    -   [Installation](#installation)
+    -   [Background](#background)
+        -   [Unconditional partial
+            effects](#unconditional-partial-effects)
+        -   [Estimation](#estimation)
+        -   [Inference](#inference)
+    -   [Example](#example)
+        -   [Unconditional quantile
+            regressions](#unconditional-quantile-regressions)
+        -   [Bootstrapping standard
+            errors](#bootstrapping-standard-errors)
+        -   [Other distributional
+            statistics](#other-distributional-statistics)
+        -   [User-written RIF functions](#user-written-rif-functions)
+    -   [Replication of Firpo, Fortin, and Lemieux
+        (2009a)](#replication-of-firpo-fortin-and-lemieux-2009a)
+        -   [Data preparation](#data-preparation)
+        -   [‘Unconditional quantile
+            regressions’](#unconditional-quantile-regressions-1)
+        -   [Results](#results)
+    -   [Credits](#credits)
+    -   [References](#references)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -142,7 +135,8 @@ al. (2009a).
 
 ``` r
 library(rifreg)
-#> Loading required package: ggplot2
+#> Lade nötiges Paket: ggplot2
+#> Warning: Paket 'ggplot2' wurde unter R Version 4.1.3 erstellt
 data("men8385")
 ```
 
@@ -166,59 +160,59 @@ fit_uqr <- rifreg(ffl_model,
 fit_uqr
 #> Rifreg coefficients:
 #>                        rif_quantile_0.1 rif_quantile_0.2 rif_quantile_0.3
-#> (Intercept)                 0.970857088      1.179109721      1.358386467
-#> unionyes                    0.198602743      0.298897702      0.386994339
-#> nonwhiteyes                -0.119114400     -0.169377662     -0.213310984
-#> marriedyes                  0.201798293      0.235994063      0.252969436
-#> educationElementary        -0.330658130     -0.458475630     -0.541317352
-#> educationHS dropout        -0.366434292     -0.314803541     -0.278251916
-#> educationSome College       0.049659609      0.110356109      0.151998138
-#> educationCollege            0.201144576      0.328957233      0.446340964
-#> educationPost-graduate      0.141083238      0.278262795      0.411585674
-#> experience0-4              -0.567399813     -0.675621784     -0.744535859
-#> experience5-9              -0.083794606     -0.159418282     -0.253447553
-#> experience10-14            -0.032102547     -0.076472362     -0.116601430
-#> experience15-19            -0.021649604     -0.036089249     -0.045319698
-#> experience25-29             0.004401242      0.003212986      0.008231836
-#> experience30-34            -0.004767943     -0.006481069      0.002965612
-#> experience35-39            -0.003914586      0.006038244      0.019524965
-#> experience>=40              0.064694355      0.057780569      0.034726270
+#> (Intercept)                0.9677792610      1.172213535      1.325780438
+#> unionyes                   0.1895711045      0.295708058      0.387279233
+#> nonwhiteyes               -0.1302511708     -0.184938936     -0.222993675
+#> marriedyes                 0.2026240066      0.245443996      0.279350762
+#> educationElementary       -0.3538349864     -0.477813514     -0.567215062
+#> educationHS dropout       -0.3439659659     -0.330587413     -0.298250126
+#> educationSome College      0.0548174446      0.115735854      0.159809840
+#> educationCollege           0.1947681874      0.337966305      0.460910464
+#> educationPost-graduate     0.1379931672      0.293259904      0.418461668
+#> experience0-4             -0.5594535441     -0.693356537     -0.745007226
+#> experience5-9             -0.0884216366     -0.165305983     -0.220432343
+#> experience10-14           -0.0342842679     -0.074728354     -0.105916205
+#> experience15-19           -0.0196581519     -0.025196360     -0.012289163
+#> experience25-29           -0.0001536202      0.011879493      0.022959778
+#> experience30-34           -0.0078147850     -0.015604532      0.005169821
+#> experience35-39           -0.0122061390      0.008904716      0.037273681
+#> experience>=40             0.0668346684      0.079740838      0.059595518
 #>                        rif_quantile_0.4 rif_quantile_0.5 rif_quantile_0.6
-#> (Intercept)                 1.576432103       1.74646597       1.90337416
-#> unionyes                    0.364913513       0.34030574       0.22422100
-#> nonwhiteyes                -0.199584659      -0.19077337      -0.15140862
-#> marriedyes                  0.194950211       0.15861935       0.11051797
-#> educationElementary        -0.516700583      -0.50630503      -0.37539155
-#> educationHS dropout        -0.231527526      -0.20853794      -0.14443228
-#> educationSome College       0.173841919       0.19289983       0.15746081
-#> educationCollege            0.457356514       0.49512703       0.42651001
-#> educationPost-graduate      0.461351523       0.53302843       0.48655626
-#> experience0-4              -0.687106540      -0.64823661      -0.47173107
-#> experience5-9              -0.307969066      -0.36149797      -0.29791375
-#> experience10-14            -0.152827202      -0.18921874      -0.16379394
-#> experience15-19            -0.071870567      -0.06551663      -0.04962905
-#> experience25-29             0.002968522       0.01863508       0.03043321
-#> experience30-34             0.012083234       0.03899880       0.04962817
-#> experience35-39             0.022326253       0.03524896       0.04742285
-#> experience>=40              0.001684911       0.01020244       0.00867607
+#> (Intercept)                 1.547879317       1.73140047       1.88762362
+#> unionyes                    0.376178021       0.32656124       0.21618201
+#> nonwhiteyes                -0.211524098      -0.20089992      -0.15081897
+#> marriedyes                  0.218579264       0.17922604       0.12516285
+#> educationElementary        -0.527971072      -0.52330591      -0.39214911
+#> educationHS dropout        -0.233202999      -0.21714277      -0.14751977
+#> educationSome College       0.188642574       0.18926091       0.16383750
+#> educationCollege            0.474357160       0.49065030       0.42622108
+#> educationPost-graduate      0.476018944       0.52000299       0.48451657
+#> experience0-4              -0.693878756      -0.63307290      -0.46205315
+#> experience5-9              -0.291032518      -0.32426725      -0.27624894
+#> experience10-14            -0.150302627      -0.18548369      -0.16165480
+#> experience15-19            -0.063367268      -0.05039387      -0.03136320
+#> experience25-29             0.011729605       0.04157812       0.05332638
+#> experience30-34             0.003230684       0.03808255       0.04933966
+#> experience35-39             0.023439785       0.03960192       0.05042873
+#> experience>=40              0.020878466       0.02103064       0.03816951
 #>                        rif_quantile_0.7 rif_quantile_0.8 rif_quantile_0.9
-#> (Intercept)                  2.08335156      2.243138267       2.50910141
-#> unionyes                     0.13231888      0.008239871      -0.15515221
-#> nonwhiteyes                 -0.12267681     -0.112884094      -0.11827633
-#> marriedyes                   0.07976414      0.057116207       0.05285737
-#> educationElementary         -0.32376628     -0.256429944      -0.26626430
-#> educationHS dropout         -0.12677063     -0.102227401      -0.08536648
-#> educationSome College        0.15809893      0.148460496       0.16684309
-#> educationCollege             0.44437130      0.454287435       0.60641514
-#> educationPost-graduate       0.54341643      0.616454232       0.89050987
-#> experience0-4               -0.43860774     -0.391417522      -0.45705327
-#> experience5-9               -0.31332993     -0.299200841      -0.36542130
-#> experience10-14             -0.19495274     -0.190724443      -0.24722551
-#> experience15-19             -0.07479452     -0.085321103      -0.11087371
-#> experience25-29              0.02868761      0.045826795       0.08953774
-#> experience30-34              0.04377733      0.078268103       0.07987727
-#> experience35-39              0.02694454      0.028296285       0.06769310
-#> experience>=40              -0.01456717     -0.015007184      -0.02721068
+#> (Intercept)                  2.06188618      2.227099388     2.5134402077
+#> unionyes                     0.11856052     -0.002668701    -0.1845993753
+#> nonwhiteyes                 -0.11452478     -0.111328873    -0.1179041562
+#> marriedyes                   0.10121558      0.080787039     0.0638341029
+#> educationElementary         -0.31280611     -0.239681227    -0.2631182933
+#> educationHS dropout         -0.12298166     -0.095285104    -0.0810231642
+#> educationSome College        0.16102176      0.148442066     0.1717646078
+#> educationCollege             0.44309979      0.452333786     0.6361150750
+#> educationPost-graduate       0.53248414      0.608167593     0.8634031947
+#> experience0-4               -0.41478063     -0.374038464    -0.4707231875
+#> experience5-9               -0.29282199     -0.293692808    -0.3803066361
+#> experience10-14             -0.19552918     -0.195891076    -0.2567293916
+#> experience15-19             -0.05541812     -0.068011449    -0.1172958311
+#> experience25-29              0.03431078      0.037563573     0.0765214464
+#> experience30-34              0.06282862      0.079719979     0.0951429489
+#> experience35-39              0.04234117      0.024843423     0.0710476353
+#> experience>=40              -0.01446069     -0.023883275    -0.0002511195
 ```
 
 The `summary` method returns the estimated coefficients and the standard
@@ -273,7 +267,7 @@ plot(fit_uqr,
 
 `rifreg` performs RIF regressions for other distributional statistics
 than quantiles. Per default, the “mean”, “variance”, “quantiles”,
-“gini”, “interquantile_range” and “interquantile_ratio” are available.
+“gini”, “interquantile\_range” and “interquantile\_ratio” are available.
 
 ``` r
 ffl_model2 <- wage ~ union + nonwhite + married + education + experience
@@ -289,24 +283,24 @@ fit_d9d1 <- rifreg(ffl_model2,
   probs = c(0.9, 0.1)
 )
 cbind(fit_gini$estimates, fit_d9d1$estimates)
-#>                           rif_gini rif_iq_ratio_0.9_0.1
-#> (Intercept)            -3.60225797            4.8851827
-#> unionyes               -0.98769909           -3.1983486
-#> nonwhiteyes             0.83273753            0.9804660
-#> marriedyes             -0.70975056           -2.3156881
-#> educationElementary     2.12101685            2.9971699
-#> educationHS dropout     0.97020642            4.2520301
-#> educationSome College  -0.85371897            0.1127903
-#> educationCollege       -2.49171458            0.1489916
-#> educationPost-graduate -2.92713536            2.1686951
-#> experience0-4           2.94517028            5.1423852
-#> experience5-9           1.63033635           -0.5625992
-#> experience10-14         0.93208423           -0.6913670
-#> experience15-19         0.37262020           -0.2184045
-#> experience25-29        -0.17086373            0.3417035
-#> experience30-34        -0.24904725            0.4147115
-#> experience35-39        -0.17830041            0.3498597
-#> experience>=40         -0.01665794           -0.9383281
+#>                             rif_gini rif_iq_ratio_0.9_0.1
+#> (Intercept)             3.421206e-01           4.94181575
+#> unionyes               -1.018427e-01          -3.32876900
+#> nonwhiteyes             1.584179e-02           1.18306521
+#> marriedyes             -4.032892e-02          -2.38355788
+#> educationElementary     4.962951e-02           3.47135861
+#> educationHS dropout     4.645365e-02           4.15915721
+#> educationSome College   7.404217e-03           0.05495204
+#> educationCollege        5.411113e-02           0.27436327
+#> educationPost-graduate  1.177852e-01           2.04326109
+#> experience0-4           4.309944e-02           5.25521727
+#> experience5-9          -3.926436e-02          -0.50972382
+#> experience10-14        -4.094298e-02          -0.69812905
+#> experience15-19        -1.736913e-02          -0.25813685
+#> experience25-29         1.517589e-02           0.36083915
+#> experience30-34         1.488841e-02           0.54174386
+#> experience35-39         5.190609e-03           0.50875385
+#> experience>=40          8.894634e-05          -0.88388009
 ```
 
 ### User-written RIF functions
@@ -364,23 +358,23 @@ fit_top_10 <- rifreg(ffl_model2,
 fit_top_10
 #> Rifreg coefficients:
 #>                        rif_top_income_share
-#> (Intercept)                     0.256731886
-#> unionyes                       -0.068997798
-#> nonwhiteyes                     0.007531907
-#> marriedyes                     -0.017344324
-#> educationElementary             0.024329590
-#> educationHS dropout             0.022054504
-#> educationSome College           0.002197374
-#> educationCollege                0.031589544
-#> educationPost-graduate          0.080400757
-#> experience0-4                   0.014372720
-#> experience5-9                  -0.018702959
-#> experience10-14                -0.026032457
-#> experience15-19                -0.013896898
-#> experience25-29                 0.007969714
-#> experience30-34                 0.008465597
-#> experience35-39                 0.005562271
-#> experience>=40                  0.002429636
+#> (Intercept)                    0.2603167792
+#> unionyes                      -0.0683100301
+#> nonwhiteyes                    0.0089816022
+#> marriedyes                    -0.0219216751
+#> educationElementary            0.0252425640
+#> educationHS dropout            0.0221077827
+#> educationSome College          0.0025577576
+#> educationCollege               0.0386916446
+#> educationPost-graduate         0.0804506915
+#> experience0-4                  0.0110458948
+#> experience5-9                 -0.0227483071
+#> experience10-14               -0.0286122339
+#> experience15-19               -0.0115646111
+#> experience25-29                0.0114751845
+#> experience30-34                0.0041189370
+#> experience35-39                0.0009313563
+#> experience>=40                 0.0111984967
 ```
 
 ## Replication of Firpo, Fortin, and Lemieux (2009a)
@@ -398,12 +392,13 @@ website](https://www.econometricsociety.org/publications/econometrica/2009/05/01
 
 ``` r
 library("dplyr")
+#> Warning: Paket 'dplyr' wurde unter R Version 4.1.3 erstellt
 #> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
+#> Attache Paket: 'dplyr'
+#> Die folgenden Objekte sind maskiert von 'package:stats':
 #> 
 #>     filter, lag
-#> The following objects are masked from 'package:base':
+#> Die folgenden Objekte sind maskiert von 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
 
@@ -413,7 +408,7 @@ library("dplyr")
 # men8385 <- readstata13::read.dta13(file = unzip("6822_data%20and%20programs_0.zip","men8385.dta"))
 
 ## Load data
-men8385 <- readstata13::read.dta13("men8385.dta")
+men8385 <- readstata13::read.dta13("data-raw/men8385.dta")
 
 # Save dummies as factor variables
 # nine potential experience categories (each of five years gap)
@@ -484,7 +479,7 @@ men8385 %>%
     min = min(experience_in_years, na.rm = TRUE),
     max = max(experience_in_years, na.rm = TRUE)
   )
-#> # A tibble: 9 × 3
+#> # A tibble: 9 x 3
 #>   experience   min   max
 #>   <fct>      <dbl> <dbl>
 #> 1 20-24         20    24
@@ -503,7 +498,7 @@ men8385 %>%
     min = min(education_in_years, na.rm = TRUE),
     max = max(education_in_years, na.rm = TRUE)
   )
-#> # A tibble: 6 × 3
+#> # A tibble: 6 x 3
 #>   education       min   max
 #>   <fct>         <dbl> <dbl>
 #> 1 High School      12    12
@@ -558,20 +553,20 @@ results <- cbind(estimates, standard_errors)[, c(1, 4, 2, 5, 3, 6)]
 results$ols <- ffl_ols_fit$coefficients[1:9]
 names(results) <- c("Coefficient 0.1", "SE", "Coefficient 0.5", "SE", "Coefficient 0.9", "SE", "OLS")
 
-knitr::kable(results)
+knitr::kable(results, digits = 3)
 ```
 
-|                        | Coefficient 0.1 |        SE | Coefficient 0.5 |        SE | Coefficient 0.9 |        SE |        OLS |
-|:-----------------------|----------------:|----------:|----------------:|----------:|----------------:|----------:|-----------:|
-| (Intercept)            |       0.9704165 | 0.0050124 |       1.7346767 | 0.0056697 |       2.5112831 | 0.0085605 |  1.7418195 |
-| unionyes               |       0.1950164 | 0.0026616 |       0.3361029 | 0.0037823 |      -0.1345583 | 0.0043157 |  0.1790582 |
-| nonwhiteyes            |      -0.1161961 | 0.0050775 |      -0.1635135 | 0.0043629 |      -0.0989621 | 0.0044194 | -0.1339497 |
-| marriedyes             |       0.1943921 | 0.0038844 |       0.1556403 | 0.0033141 |       0.0430328 | 0.0038816 |  0.1395608 |
-| educationElementary    |      -0.3063238 | 0.0075381 |      -0.4510738 | 0.0060972 |      -0.2396602 | 0.0045286 | -0.3512943 |
-| educationHS dropout    |      -0.3438799 | 0.0062425 |      -0.1942754 | 0.0040358 |      -0.0679424 | 0.0034208 | -0.1897010 |
-| educationSome College  |       0.0579543 | 0.0040457 |       0.1782772 | 0.0040114 |       0.1533879 | 0.0050320 |  0.1333362 |
-| educationCollege       |       0.1962486 | 0.0040961 |       0.4635776 | 0.0050486 |       0.5810668 | 0.0082048 |  0.4064842 |
-| educationPost-graduate |       0.1379375 | 0.0037447 |       0.5212637 | 0.0058163 |       0.8430019 | 0.0117381 |  0.4777400 |
+|                        | Coefficient 0.1 |    SE | Coefficient 0.5 |    SE | Coefficient 0.9 |    SE |    OLS |
+|:-----------------------|----------------:|------:|----------------:|------:|----------------:|------:|-------:|
+| (Intercept)            |           0.970 | 0.005 |           1.735 | 0.006 |           2.511 | 0.009 |  1.742 |
+| unionyes               |           0.195 | 0.003 |           0.336 | 0.004 |          -0.135 | 0.004 |  0.179 |
+| nonwhiteyes            |          -0.116 | 0.005 |          -0.164 | 0.004 |          -0.099 | 0.004 | -0.134 |
+| marriedyes             |           0.194 | 0.004 |           0.156 | 0.003 |           0.043 | 0.004 |  0.140 |
+| educationElementary    |          -0.306 | 0.008 |          -0.451 | 0.006 |          -0.240 | 0.005 | -0.351 |
+| educationHS dropout    |          -0.344 | 0.006 |          -0.194 | 0.004 |          -0.068 | 0.003 | -0.190 |
+| educationSome College  |           0.058 | 0.004 |           0.178 | 0.004 |           0.153 | 0.005 |  0.133 |
+| educationCollege       |           0.196 | 0.004 |           0.464 | 0.005 |           0.581 | 0.008 |  0.406 |
+| educationPost-graduate |           0.138 | 0.004 |           0.522 | 0.006 |           0.843 | 0.012 |  0.478 |
 
 Our results largely match those by Firpo, Fortin, and Lemieux (2009a:
 964, Table I). The OLS results are identical as expected. The RIF

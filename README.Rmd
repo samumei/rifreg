@@ -330,7 +330,7 @@ results <- cbind(estimates, standard_errors)[, c(1, 4, 2, 5, 3, 6)]
 results$ols <- ffl_ols_fit$coefficients[1:9]
 names(results) <- c("Coefficient 0.1", "SE", "Coefficient 0.5", "SE", "Coefficient 0.9", "SE", "OLS")
 
-knitr::kable(results)
+knitr::kable(results, digits = 3)
 ```
 
 Our results largely match those by Firpo, Fortin, and Lemieux (2009a: 964, Table I). The OLS results are identical as expected. The RIF regression results differ only in a few instances at the third decimal place from the original paper.
