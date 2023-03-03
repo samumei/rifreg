@@ -211,7 +211,7 @@ library("dplyr")
 # men8385 <- readstata13::read.dta13(file = unzip("6822_data%20and%20programs_0.zip","men8385.dta"))
 
 ## Load data
-men8385 <- readstata13::read.dta13("men8385.dta")
+men8385 <- readstata13::read.dta13("data-raw/men8385.dta")
 
 # Save dummies as factor variables
 # nine potential experience categories (each of five years gap)

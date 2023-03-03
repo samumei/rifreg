@@ -131,9 +131,9 @@ men8385 %>%
 sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age", "education_in_years", "experience_in_years")
 men8385 <- men8385[, sel_vars]
 
-# Save 20% sample of original data set
+# Save 10% sample of original data set
 set.seed(123)
-sel_obs <- sample(1:nrow(men8385), floor(nrow(men8385) / 5))
+sel_obs <- sample(1:nrow(men8385), floor(nrow(men8385) / 10))
 men8385 <- men8385[sel_obs, ]
 
 usethis::use_data(men8385, overwrite = TRUE)
