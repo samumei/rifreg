@@ -9,8 +9,7 @@ get_rif_gini(dep_var, weights)
 \arguments{
 \item{dep_var}{values of a non-negative continuous dependent variable}
 
-\item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
-The default (\code{NULL)} is equivalent to \code{weights = rep(1, length(dep_var))}.}
+\item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.}
 }
 \value{
 A data frame with one column containing the RIF of the Gini coefficient for each observation.
@@ -24,15 +23,19 @@ Gini coefficient.
 set.seed(123)
 dep_var <- rlnorm(100)
 weights <- rep(1, 100)
-get_rif_gini(dep_var, weights = weights)
+rif_gini <- get_rif_gini(dep_var = dep_var, weights = weights)
+rif_gini
+
+gini <- compute_gini(dep_var = dep_var, weights = weights)
+all.equal(gini, mean(rif_gini$rif_gini))
 
 }
 \references{
-Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2018. “Decomposing Wage Distributions Using Recentered
-Influence Function Regressions.” \emph{Econometrics} 6(2), 28.
-
 Cowell, Frank A., and Emmanuel Flachaire. 2007. "Income distribution and inequality measurement: The problem of extreme values."
 \emph{Journal of Econometrics}, 141(2), 1044-1072.
+
+Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2018. “Decomposing Wage Distributions Using Recentered
+Influence Function Regressions.” \emph{Econometrics} 6(2), 28.
 
 Monti, Anna Clara. 1991. "The study of the Gini concentration ratio by means of the influence function."  \emph{Statistica} 51(4),
 561–577.

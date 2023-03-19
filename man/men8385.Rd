@@ -5,7 +5,7 @@
 \alias{men8385}
 \title{Sample of male wage data from the CPS 1983-1985}
 \format{
-A data frame with 53,391 rows and 10 variables.
+A data frame with 26,695 rows and 10 variables.
 \describe{
   \item{wage}{Hourly wage in US dollars at constant prices}
   \item{union}{Union status indicator}
@@ -38,7 +38,7 @@ men8385
 A sample of the the Merged Outgoing Rotation Group of the
 Current Population Survey of 1983, 1984 and 1985 used by
 Firpo, Fortin & Lemieux (2009). The data contains a selection of 10 variables
-and a sample of 53,391 observations of male workers -- corresponding to a fifth of the
+and a sample of 26,695 observations of male workers -- corresponding to a tenth of the
 original 266,956 observations. See Lemieux (2006) for details on data selection and recoding.
 }
 \keyword{datasets}
