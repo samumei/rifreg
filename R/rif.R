@@ -421,13 +421,18 @@ get_rif_gini <- function(dep_var, weights) {
 #' get_rif_interquantile_range(dep_var, probs = c(0.1, 0.9), weights = weights)
 #'
 get_rif_interquantile_range <- function(dep_var, weights, probs, ...) {
+  if(length(probs) != 2) stop("If the interqunatile range is computed, exactly to quartiles must be indicated in \"probs\".")
   probs <- range(probs)
   rif_quantiles <- get_rif_quantiles(
     dep_var = dep_var,
     weights = weights,
     probs = probs, ...
   )
-  rif <- data.frame(rif_quantiles[, ncol(rif_quantiles)] - rif_quantiles[, 1], weights)
+  if(probs[1] > probs[2]) {
+    rif <- data.frame(rif_quantiles[, 1] - rif_quantiles[, 2], weights)
+  } else{
+    rif <- data.frame(rif_quantiles[, 2] - rif_quantiles[, 1], weights)
+  }
   names(rif) <- c(paste0("rif_iq_range_", max(probs), "_", min(probs)), "weights")
   return(rif)
 }
