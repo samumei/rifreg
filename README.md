@@ -1,33 +1,45 @@
 
--   [`rifreg`: Estimate recentered influence function
-    regressions](#rifreg-estimate-recentered-influence-function-regressions)
-    -   [Overview](#overview)
-    -   [Installation](#installation)
-    -   [Background](#background)
-        -   [Unconditional partial
-            effects](#unconditional-partial-effects)
-        -   [Estimation](#estimation)
-        -   [Inference](#inference)
-    -   [Example](#example)
-        -   [Unconditional quantile
-            regressions](#unconditional-quantile-regressions)
-        -   [Bootstrapping standard
-            errors](#bootstrapping-standard-errors)
-        -   [Other distributional
-            statistics](#other-distributional-statistics)
-        -   [User-written RIF functions](#user-written-rif-functions)
-    -   [Replication of Firpo, Fortin, and Lemieux
-        (2009a)](#replication-of-firpo-fortin-and-lemieux-2009a)
-        -   [Data preparation](#data-preparation)
-        -   [‘Unconditional quantile
-            regressions’](#unconditional-quantile-regressions-1)
-        -   [Results](#results)
-    -   [Credits](#credits)
-    -   [References](#references)
+- [`rifreg`: Estimate recentered influence function
+  regressions](#rifreg-estimate-recentered-influence-function-regressions)
+  - [Overview](#overview)
+  - [Installation](#installation)
+  - [Background](#background)
+    - [Unconditional partial effects](#unconditional-partial-effects)
+    - [Estimation](#estimation)
+    - [Inference](#inference)
+  - [Example](#example)
+    - [Unconditional quantile
+      regressions](#unconditional-quantile-regressions)
+    - [Bootstrapping standard errors](#bootstrapping-standard-errors)
+    - [Other distributional
+      statistics](#other-distributional-statistics)
+    - [User-written RIF functions](#user-written-rif-functions)
+  - [Replication of Firpo, Fortin, and Lemieux
+    (2009a)](#replication-of-firpo-fortin-and-lemieux-2009a)
+    - [Data preparation](#data-preparation)
+    - [‘Unconditional quantile
+      regressions’](#unconditional-quantile-regressions-1)
+    - [Results](#results)
+  - [Credits](#credits)
+  - [References](#references)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # `rifreg`: Estimate recentered influence function regressions
+
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/rifreg)](https://CRAN.R-project.org/package=rifreg)
+[![Codecov test
+coverage](https://codecov.io/gh/samumei/rifreg/branch/master/graph/badge.svg)](https://codecov.io/gh/username/reponame?branch=master)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![License: GPL (\>=
+3)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%203%29-blue.svg)](https://choosealicense.com/licenses/gpl-3.0/)
+
+<!-- badges: end -->
 
 ## Overview
 
@@ -102,7 +114,7 @@ below). [Cowell and Flachaire
 (2007)](https://doi.org/10.1016/j.jeconom.2007.01.001), [Essama-Nssah &
 Lambert (2012)](https://doi.org/10.1108/S1049-2585(2012)0000020009), and
 [Rios-Avila (2020)](https://doi.org/10.1177/1536867X20909690) derive the
-influence funtions for an array of distributional statistics.
+influence functions for an array of distributional statistics.
 
 For the sake of illustration, consider the RIF of a quantile
 $q_\tau = \inf_q \{q: F_Y(q) \geq \tau\}$. It is defined as
@@ -135,8 +147,7 @@ al. (2009a).
 
 ``` r
 library(rifreg)
-#> Lade nötiges Paket: ggplot2
-#> Warning: Paket 'ggplot2' wurde unter R Version 4.1.3 erstellt
+#> Loading required package: ggplot2
 data("men8385")
 ```
 
@@ -157,6 +168,32 @@ fit_uqr <- rifreg(ffl_model,
   statistic = "quantiles",
   probs = 1:9 / 10
 )
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
 fit_uqr
 #> Rifreg coefficients:
 #>                        rif_quantile_0.1 rif_quantile_0.2 rif_quantile_0.3
@@ -253,6 +290,32 @@ fit_uqr <- rifreg(ffl_model,
   cores = 4,
   probs = 1:9 / 10
 )
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
+
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
 #> Bootstrapping Standard Errors...
 
 plot(fit_uqr,
@@ -267,7 +330,7 @@ plot(fit_uqr,
 
 `rifreg` performs RIF regressions for other distributional statistics
 than quantiles. Per default, the “mean”, “variance”, “quantiles”,
-“gini”, “interquantile\_range” and “interquantile\_ratio” are available.
+“gini”, “interquantile_range” and “interquantile_ratio” are available.
 
 ``` r
 ffl_model2 <- wage ~ union + nonwhite + married + education + experience
@@ -282,6 +345,8 @@ fit_d9d1 <- rifreg(ffl_model2,
   statistic = "interquantile_ratio",
   probs = c(0.9, 0.1)
 )
+#> Warning in density.default(x = dep_var, weights = weights/sum(weights, na.rm =
+#> TRUE), : Selecting bandwidth *not* using 'weights'
 cbind(fit_gini$estimates, fit_d9d1$estimates)
 #>                             rif_gini rif_iq_ratio_0.9_0.1
 #> (Intercept)             3.421206e-01           4.94181575
@@ -392,13 +457,12 @@ website](https://www.econometricsociety.org/publications/econometrica/2009/05/01
 
 ``` r
 library("dplyr")
-#> Warning: Paket 'dplyr' wurde unter R Version 4.1.3 erstellt
 #> 
-#> Attache Paket: 'dplyr'
-#> Die folgenden Objekte sind maskiert von 'package:stats':
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
 #> 
 #>     filter, lag
-#> Die folgenden Objekte sind maskiert von 'package:base':
+#> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
 
@@ -479,7 +543,7 @@ men8385 %>%
     min = min(experience_in_years, na.rm = TRUE),
     max = max(experience_in_years, na.rm = TRUE)
   )
-#> # A tibble: 9 x 3
+#> # A tibble: 9 × 3
 #>   experience   min   max
 #>   <fct>      <dbl> <dbl>
 #> 1 20-24         20    24
@@ -498,7 +562,7 @@ men8385 %>%
     min = min(education_in_years, na.rm = TRUE),
     max = max(education_in_years, na.rm = TRUE)
   )
-#> # A tibble: 6 x 3
+#> # A tibble: 6 × 3
 #>   education       min   max
 #>   <fct>         <dbl> <dbl>
 #> 1 High School      12    12

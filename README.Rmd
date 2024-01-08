@@ -18,6 +18,15 @@ knitr::opts_chunk$set(
 
 # `rifreg`: Estimate recentered influence function regressions
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/rifreg)](https://CRAN.R-project.org/package=rifreg)
+[![Codecov test coverage](https://codecov.io/gh/samumei/rifreg/branch/master/graph/badge.svg)](https://codecov.io/gh/username/reponame?branch=master)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![License: GPL (>= 3)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%203%29-blue.svg)](https://choosealicense.com/licenses/gpl-3.0/)
+
+<!-- badges: end -->
+
 ## Overview
 
 Recentered influence function (RIF) regressions estimate the effects of small location shifts in continuous explanatory variables on a distributional statistic (e.g., quantile, variance or Gini coefficient) of an outcome variable as proposed by [Firpo, Fortin, and Lemieux (2009a)](https://doi.org/10.3982/ECTA6822). In the special case of quantiles, RIF regressions are 'unconditional quantile regressions' capturing the association between explanatory variables and quantiles of the marginal distribution of an outcome variable.
