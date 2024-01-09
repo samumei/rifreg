@@ -1,6 +1,6 @@
 
-- [`rifreg`: Estimate recentered influence function
-  regressions](#rifreg-estimate-recentered-influence-function-regressions)
+- [`rifreg`: Estimate Recentered Influence Function
+  Regressions](#rifreg-estimate-recentered-influence-function-regressions)
   - [Overview](#overview)
   - [Installation](#installation)
   - [Background](#background)
@@ -25,17 +25,17 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# `rifreg`: Estimate recentered influence function regressions
+# `rifreg`: Estimate Recentered Influence Function Regressions
 
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/rifreg)](https://CRAN.R-project.org/package=rifreg)
 [![Codecov test
 coverage](https://codecov.io/gh/samumei/rifreg/branch/master/graph/badge.svg)](https://codecov.io/gh/username/reponame?branch=master)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/rifreg)](https://CRAN.R-project.org/package=rifreg)
 [![License: GPL (\>=
 3)](https://img.shields.io/badge/License-GPL%20%28%3E%3D%203%29-blue.svg)](https://choosealicense.com/licenses/gpl-3.0/)
 
