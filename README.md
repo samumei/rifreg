@@ -1,27 +1,36 @@
 
-- [`rifreg`: Estimate Recentered Influence Function
-  Regressions](#rifreg-estimate-recentered-influence-function-regressions)
-  - [Overview](#overview)
-  - [Installation](#installation)
-  - [Background](#background)
-    - [Unconditional partial effects](#unconditional-partial-effects)
-    - [Estimation](#estimation)
-    - [Inference](#inference)
-  - [Example](#example)
-    - [Unconditional quantile
-      regressions](#unconditional-quantile-regressions)
-    - [Bootstrapping standard errors](#bootstrapping-standard-errors)
-    - [Other distributional
-      statistics](#other-distributional-statistics)
-    - [User-written RIF functions](#user-written-rif-functions)
-  - [Replication of Firpo, Fortin, and Lemieux
-    (2009a)](#replication-of-firpo-fortin-and-lemieux-2009a)
-    - [Data preparation](#data-preparation)
-    - [‘Unconditional quantile
-      regressions’](#unconditional-quantile-regressions-1)
-    - [Results](#results)
-  - [Credits](#credits)
-  - [References](#references)
+- <a href="#rifreg-estimate-recentered-influence-function-regressions"
+  id="toc-rifreg-estimate-recentered-influence-function-regressions"><code>rifreg</code>:
+  Estimate Recentered Influence Function Regressions</a>
+  - <a href="#overview" id="toc-overview">Overview</a>
+  - <a href="#installation" id="toc-installation">Installation</a>
+  - <a href="#background" id="toc-background">Background</a>
+    - <a href="#unconditional-partial-effects"
+      id="toc-unconditional-partial-effects">Unconditional partial effects</a>
+    - <a href="#estimation" id="toc-estimation">Estimation</a>
+    - <a href="#inference" id="toc-inference">Inference</a>
+  - <a href="#example" id="toc-example">Example</a>
+    - <a href="#unconditional-quantile-regressions"
+      id="toc-unconditional-quantile-regressions">Unconditional quantile
+      regressions</a>
+    - <a href="#bootstrapping-standard-errors"
+      id="toc-bootstrapping-standard-errors">Bootstrapping standard errors</a>
+    - <a href="#other-distributional-statistics"
+      id="toc-other-distributional-statistics">Other distributional
+      statistics</a>
+    - <a href="#user-written-rif-functions"
+      id="toc-user-written-rif-functions">User-written RIF functions</a>
+  - <a href="#replication-of-firpo-fortin-and-lemieux-2009a"
+    id="toc-replication-of-firpo-fortin-and-lemieux-2009a">Replication of
+    Firpo, Fortin, and Lemieux (2009a)</a>
+    - <a href="#data-preparation" id="toc-data-preparation">Data
+      preparation</a>
+    - <a href="#unconditional-quantile-regressions-1"
+      id="toc-unconditional-quantile-regressions-1">‘Unconditional quantile
+      regressions’</a>
+    - <a href="#results" id="toc-results">Results</a>
+  - <a href="#credits" id="toc-credits">Credits</a>
+  - <a href="#references" id="toc-references">References</a>
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -147,7 +156,8 @@ al. (2009a).
 
 ``` r
 library(rifreg)
-#> Loading required package: ggplot2
+#> Lade nötiges Paket: ggplot2
+#> Warning: Paket 'ggplot2' wurde unter R Version 4.3.2 erstellt
 data("men8385")
 ```
 
@@ -457,12 +467,13 @@ website](https://www.econometricsociety.org/publications/econometrica/2009/05/01
 
 ``` r
 library("dplyr")
+#> Warning: Paket 'dplyr' wurde unter R Version 4.3.2 erstellt
 #> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
+#> Attache Paket: 'dplyr'
+#> Die folgenden Objekte sind maskiert von 'package:stats':
 #> 
 #>     filter, lag
-#> The following objects are masked from 'package:base':
+#> Die folgenden Objekte sind maskiert von 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
 
@@ -573,7 +584,9 @@ men8385 %>%
 #> 6 Post-graduate    17    18
 
 # Select relevant variables
-sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age", "education_in_years", "experience_in_years")
+sel_vars <- c("wage", "union", "nonwhite", "married", 
+              "education", "experience", "weights", 
+              "age", "education_in_years", "experience_in_years")
 men8385 <- men8385[, sel_vars]
 ```
 
@@ -611,11 +624,22 @@ ffl_ols_fit <- lm(
 ### Results
 
 ``` r
-estimates <- data.frame(ffl_uqr_fit$estimates[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
-standard_errors <- data.frame(ffl_uqr_fit$bootstrap_se[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
+estimates <- data.frame(
+  ffl_uqr_fit$estimates[1:9, 
+                        c("rif_quantile_0.1", 
+                          "rif_quantile_0.5", 
+                          "rif_quantile_0.9")])
+standard_errors <- data.frame(
+  ffl_uqr_fit$bootstrap_se[1:9, 
+                           c("rif_quantile_0.1", 
+                             "rif_quantile_0.5", 
+                             "rif_quantile_0.9")])
 results <- cbind(estimates, standard_errors)[, c(1, 4, 2, 5, 3, 6)]
 results$ols <- ffl_ols_fit$coefficients[1:9]
-names(results) <- c("Coefficient 0.1", "SE", "Coefficient 0.5", "SE", "Coefficient 0.9", "SE", "OLS")
+names(results) <- c("Coefficient 0.1", "SE", 
+                    "Coefficient 0.5", "SE", 
+                    "Coefficient 0.9", "SE", 
+                    "OLS")
 
 knitr::kable(results, digits = 3)
 ```
@@ -643,12 +667,17 @@ rifreg_plot <- plot(ffl_uqr_fit, varselect = "unionyes")
 
 ``` r
 rifreg_plot +
-  geom_hline(yintercept = ffl_ols_fit$coefficients["unionyes"], linetype = "dashed") +
-  geom_text(aes(x = 0.8, y = ffl_ols_fit$coefficients["unionyes"] + 0.03, label = "OLS estimate"), color = "black") +
+  geom_hline(yintercept = ffl_ols_fit$coefficients["unionyes"], 
+             linetype = "dashed") +
+  geom_text(aes(x = 0.8, 
+                y = ffl_ols_fit$coefficients["unionyes"] + 0.03,
+                label = "OLS estimate"), 
+            color = "black") +
   ylab("Effect of Union") +
   xlab("Quantiles") +
   labs(title = "Unconditional Quantile Regression in R") +
-  theme(strip.background = element_blank(), strip.text.x = element_blank())
+  theme(strip.background = element_blank(), 
+        strip.text.x = element_blank())
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />

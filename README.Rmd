@@ -300,7 +300,9 @@ men8385 %>%
   )
 
 # Select relevant variables
-sel_vars <- c("wage", "union", "nonwhite", "married", "education", "experience", "weights", "age", "education_in_years", "experience_in_years")
+sel_vars <- c("wage", "union", "nonwhite", "married", 
+              "education", "experience", "weights", 
+              "age", "education_in_years", "experience_in_years")
 men8385 <- men8385[, sel_vars]
 ```
 
@@ -333,11 +335,22 @@ ffl_ols_fit <- lm(
 ### Results
 
 ```{r }
-estimates <- data.frame(ffl_uqr_fit$estimates[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
-standard_errors <- data.frame(ffl_uqr_fit$bootstrap_se[1:9, c("rif_quantile_0.1", "rif_quantile_0.5", "rif_quantile_0.9")])
+estimates <- data.frame(
+  ffl_uqr_fit$estimates[1:9, 
+                        c("rif_quantile_0.1", 
+                          "rif_quantile_0.5", 
+                          "rif_quantile_0.9")])
+standard_errors <- data.frame(
+  ffl_uqr_fit$bootstrap_se[1:9, 
+                           c("rif_quantile_0.1", 
+                             "rif_quantile_0.5", 
+                             "rif_quantile_0.9")])
 results <- cbind(estimates, standard_errors)[, c(1, 4, 2, 5, 3, 6)]
 results$ols <- ffl_ols_fit$coefficients[1:9]
-names(results) <- c("Coefficient 0.1", "SE", "Coefficient 0.5", "SE", "Coefficient 0.9", "SE", "OLS")
+names(results) <- c("Coefficient 0.1", "SE", 
+                    "Coefficient 0.5", "SE", 
+                    "Coefficient 0.9", "SE", 
+                    "OLS")
 
 knitr::kable(results, digits = 3)
 ```
@@ -350,12 +363,17 @@ rifreg_plot <- plot(ffl_uqr_fit, varselect = "unionyes")
 
 ```{r }
 rifreg_plot +
-  geom_hline(yintercept = ffl_ols_fit$coefficients["unionyes"], linetype = "dashed") +
-  geom_text(aes(x = 0.8, y = ffl_ols_fit$coefficients["unionyes"] + 0.03, label = "OLS estimate"), color = "black") +
+  geom_hline(yintercept = ffl_ols_fit$coefficients["unionyes"], 
+             linetype = "dashed") +
+  geom_text(aes(x = 0.8, 
+                y = ffl_ols_fit$coefficients["unionyes"] + 0.03,
+                label = "OLS estimate"), 
+            color = "black") +
   ylab("Effect of Union") +
   xlab("Quantiles") +
   labs(title = "Unconditional Quantile Regression in R") +
-  theme(strip.background = element_blank(), strip.text.x = element_blank())
+  theme(strip.background = element_blank(), 
+        strip.text.x = element_blank())
 ```
 
 Looking at the plots, we see that our plots correspond to those presented by Firpo, Fortin, and Lemieux (2009a: 965). The plot example illustrates, how the plot from the generic `rifreg::plot()` function can be further enhanced, for instance with a horizontal line indicating the OLS coefficient for comparison. 
