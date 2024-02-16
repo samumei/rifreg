@@ -3,12 +3,9 @@ Package: rifreg
 Title: Estimate Recentered Influence Function Regression
 Version: 0.1.0
 Authors@R: 
-    person("David", "Gallusser", , "david.gallusser@sgb.ch", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-    person("Samuel", "Meier", , "samuel.meier@sgb.ch", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Maintainer: David Gallusser <david.gallusser@sgb.ch>, Samuel Meier
-    <samuel.meier@sgb.ch>
+    person("David", "Gallusser", , "david.gallusser@sgb.ch", role = c("aut", "cre"))
+    person("Samuel", "Meier", , "samuel.meier+rifreg@immerda.ch", role = c("aut", "cre"))
+Maintainer: Samuel Meier <samuel.meier+rifreg@immerda.ch>
 Description: Provides functions to compute recentered influence functions
     (RIF) of a distributional variable at the mean, quantiles, variance,
     gini or any custom functional of interest. The package allows to
