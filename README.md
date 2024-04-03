@@ -1,36 +1,27 @@
 
-- <a href="#rifreg-estimate-recentered-influence-function-regressions"
-  id="toc-rifreg-estimate-recentered-influence-function-regressions"><code>rifreg</code>:
-  Estimate Recentered Influence Function Regressions</a>
-  - <a href="#overview" id="toc-overview">Overview</a>
-  - <a href="#installation" id="toc-installation">Installation</a>
-  - <a href="#background" id="toc-background">Background</a>
-    - <a href="#unconditional-partial-effects"
-      id="toc-unconditional-partial-effects">Unconditional partial effects</a>
-    - <a href="#estimation" id="toc-estimation">Estimation</a>
-    - <a href="#inference" id="toc-inference">Inference</a>
-  - <a href="#example" id="toc-example">Example</a>
-    - <a href="#unconditional-quantile-regressions"
-      id="toc-unconditional-quantile-regressions">Unconditional quantile
-      regressions</a>
-    - <a href="#bootstrapping-standard-errors"
-      id="toc-bootstrapping-standard-errors">Bootstrapping standard errors</a>
-    - <a href="#other-distributional-statistics"
-      id="toc-other-distributional-statistics">Other distributional
-      statistics</a>
-    - <a href="#user-written-rif-functions"
-      id="toc-user-written-rif-functions">User-written RIF functions</a>
-  - <a href="#replication-of-firpo-fortin-and-lemieux-2009a"
-    id="toc-replication-of-firpo-fortin-and-lemieux-2009a">Replication of
-    Firpo, Fortin, and Lemieux (2009a)</a>
-    - <a href="#data-preparation" id="toc-data-preparation">Data
-      preparation</a>
-    - <a href="#unconditional-quantile-regressions-1"
-      id="toc-unconditional-quantile-regressions-1">‘Unconditional quantile
-      regressions’</a>
-    - <a href="#results" id="toc-results">Results</a>
-  - <a href="#credits" id="toc-credits">Credits</a>
-  - <a href="#references" id="toc-references">References</a>
+- [`rifreg`: Estimate Recentered Influence Function
+  Regressions](#rifreg-estimate-recentered-influence-function-regressions)
+  - [Overview](#overview)
+  - [Installation](#installation)
+  - [Background](#background)
+    - [Unconditional partial effects](#unconditional-partial-effects)
+    - [Estimation](#estimation)
+    - [Inference](#inference)
+  - [Example](#example)
+    - [Unconditional quantile
+      regressions](#unconditional-quantile-regressions)
+    - [Bootstrapping standard errors](#bootstrapping-standard-errors)
+    - [Other distributional
+      statistics](#other-distributional-statistics)
+    - [User-written RIF functions](#user-written-rif-functions)
+  - [Replication of Firpo, Fortin, and Lemieux
+    (2009a)](#replication-of-firpo-fortin-and-lemieux-2009a)
+    - [Data preparation](#data-preparation)
+    - [‘Unconditional quantile
+      regressions’](#unconditional-quantile-regressions-1)
+    - [Results](#results)
+  - [Credits](#credits)
+  - [References](#references)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -40,7 +31,7 @@
 
 [![R-CMD-check](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/samumei/rifreg/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/samumei/rifreg/branch/master/graph/badge.svg)](https://codecov.io/gh/username/reponame?branch=master)
+coverage](https://codecov.io/gh/samumei/rifreg/branch/master/graph/badge.svg)](https://codecov.io/gh/samumei/rifreg/branch/master/graph/badge.svg)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![CRAN
@@ -156,8 +147,7 @@ al. (2009a).
 
 ``` r
 library(rifreg)
-#> Lade nötiges Paket: ggplot2
-#> Warning: Paket 'ggplot2' wurde unter R Version 4.3.2 erstellt
+#> Loading required package: ggplot2
 data("men8385")
 ```
 
@@ -467,13 +457,12 @@ website](https://www.econometricsociety.org/publications/econometrica/2009/05/01
 
 ``` r
 library("dplyr")
-#> Warning: Paket 'dplyr' wurde unter R Version 4.3.2 erstellt
 #> 
-#> Attache Paket: 'dplyr'
-#> Die folgenden Objekte sind maskiert von 'package:stats':
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
 #> 
 #>     filter, lag
-#> Die folgenden Objekte sind maskiert von 'package:base':
+#> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
 
