@@ -162,7 +162,7 @@ rifreg <- function(formula,
 
   # Calculate Bootstrap standard errors
   if (bootstrap) {
-    cat("Bootstrapping Standard Errors...\n")
+    message("Bootstrapping Standard Errors...\n")
     if (cores == 1) {
       bootstrap_estimates <- pbapply::pblapply(
         1:bootstrap_iterations,
