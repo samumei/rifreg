@@ -323,6 +323,8 @@ compute_generalized_lorenz_ordinates <- function(dep_var, weights) {
 #' @param dep_var values of a non-negative continuous variable
 #' @param weights numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.
 #'
+#' @return The numeric value indicating the weighted Gini coefficient of the the dependent variable.
+#'
 #' @references
 #' Firpo, Sergio P., Nicole M. Fortin, and Thomas Lemieux. 2018. “Decomposing Wage Distributions Using Recentered
 #' Influence Function Regressions.” \emph{Econometrics} 6(2), 28.

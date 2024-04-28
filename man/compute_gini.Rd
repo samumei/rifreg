@@ -11,6 +11,9 @@ compute_gini(dep_var, weights)
 
 \item{weights}{numeric vector of non-negative observation weights, hence of same length as \code{dep_var}.}
 }
+\value{
+The numeric value indicating the weighted Gini coefficient of the the dependent variable.
+}
 \description{
 Compute a weighted Gini coefficient by integrating the
 generalized Lorenz curve.
