@@ -96,9 +96,10 @@ $$\alpha(\nu) = \int \frac{d E(\text{RIF}(Y;\nu,F_Y)|X=x)}{dx} dF_X(x).$$
 
 Firpo et al. propose to approximate the conditional expectation of the
 RIF given the explanatory variables with a linear regression. The
-regression coefficients can be consistent estimates of the average
-derivatives $\widehat{\alpha}(\nu)$ if the conditional expectations of
-the RIF are linear in $X$ (see Firpo et al., 2009, [Rothe 2015:
+regression coefficients are consistent estimates of the average
+derivatives $\widehat{\alpha}(\nu)$ if the conditional expectation of
+the RIF is linear and additive in $X$ (see [Firpo et
+al. 2009a](https://doi.org/10.3982/ECTA6822), [Rothe 2015:
 328](https://doi.org/10.1080/07350015.2014.948959)).
 
 `rifreg` implements this approach. It first calculates the RIF of the
@@ -119,7 +120,7 @@ influence functions for an array of distributional statistics.
 For the sake of illustration, consider the RIF of a quantile
 $q_\tau = \inf_q \{q: F_Y(q) \geq \tau\}$. It is defined as
 $$\text{RIF}(y;q_\tau,F_Y) = q_\tau  + \frac{\tau-1\{y \leq q_\tau\}}{f_Y(q_\tau)}, $$
-where $1\{\}$ is an indicator function and $f_Y(q_\tau)$ is the density
+where $1\{\}$ is the indicator function and $f_Y(q_\tau)$ is the density
 at the quantile of interest. Thus, calculating the RIF requires
 estimating the sample quantile and the kernel density. The regression in
 the second step essentially amounts to a linear probability model (see
@@ -277,7 +278,7 @@ plot(fit_uqr, varselect = "unionyes")
 
 Setting `bootstrap=TRUE` bootstraps standard errors by resampling from
 all observations and reestimating both the RIF and the regression in
-every iteration. We can set number of `bootstrap_iterations` and the
+every iteration. We can set the number of `bootstrap_iterations` and the
 number of `cores`.
 
 ``` r
@@ -581,11 +582,11 @@ men8385 <- men8385[, sel_vars]
 
 ### ‘Unconditional quantile regressions’
 
-The model is specified as in Firpo, Fortin, and Lemieux (2007a),
-omitting weights, computing bootstrapped standard errors with 200
-iterations and setting a fixed bandwidth of 0.06 for the kernel density
-estimation. We also compute a OLS model for comparison with the original
-results.
+The model is specified as in [Firpo, Fortin, and Lemieux
+(2007a)](https://doi.org/10.1016/j.jeconom.2007.01.001), omitting
+weights, computing bootstrapped standard errors with 200 iterations and
+setting a fixed bandwidth of 0.06 for the kernel density estimation. We
+also compute a OLS model for comparison with the original results.
 
 ``` r
 library(rifreg)
@@ -707,10 +708,10 @@ Firpo, Sergio, Nicole M. Fortin, and Thomas Lemieux. 2009b. “Supplement
 to ‘Unconditional Quantile Regressions’.” *Econometrica Supplemental
 Material*, 77.
 
-Rios-Avila, Fernando (2020): “Recentered influence functions (RIFs) in
+Rios-Avila, Fernando. 2020. “Recentered influence functions (RIFs) in
 Stata: RIF regression and RIF decomposition.” *The Stata Journal* 20(1):
 51-94.
 
-Rothe, Christoph (2015): “Decomposing the Composition Effect. The Role
-of Covariates in Determining Between-Group Differences in Economic
+Rothe, Christoph. 2015. “Decomposing the Composition Effect. The Role of
+Covariates in Determining Between-Group Differences in Economic
 Outcomes.” *Journal of Business & Economic Statistics* 33(3): 323-337.

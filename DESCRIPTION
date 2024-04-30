@@ -10,7 +10,7 @@ Description: Provides functions to compute recentered influence functions
     (RIF) of a distributional variable at the mean, quantiles, variance,
     gini or any custom functional of interest. The package allows to
     regress the RIF on any number of covariates. Generic print, plot and
-    summary functions are also provided. Reference: Firpo, Sergio, Nicole M. Fortin, and Thomas Lemieux. (2009) <doi:10.3982/ECTA6822>. "Unconditional Quantile Regressions." .
+    summary functions are also provided. Reference: Firpo, Sergio, Nicole M. Fortin, and Thomas Lemieux. (2009) <doi:10.3982/ECTA6822>. "Unconditional Quantile Regressions.".
 License: GPL (>= 3)
 Depends:
     ggplot2,
