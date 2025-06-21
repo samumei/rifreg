@@ -35,7 +35,7 @@ test_that("Generic plot method generates a plot", {
   )
 
   rifreg_plot <- plot(rifreg_object)
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 test_that("Generic plot method generates a plot with SE", {
@@ -55,7 +55,7 @@ test_that("Generic plot method generates a plot with SE", {
   )
 
   rifreg_plot <- plot(rifreg_object)
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 
@@ -76,7 +76,7 @@ test_that("Generic plot method generates a plot with different alpha", {
   )
 
   rifreg_plot <- plot(rifreg_object, alpha = 0.1)
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 
@@ -97,7 +97,7 @@ test_that("Generic plot method generates a plot with specific variables", {
   )
 
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 test_that("Generic plot method generates a plot for single quantile", {
@@ -112,7 +112,7 @@ test_that("Generic plot method generates a plot for single quantile", {
   )
 
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 test_that("Generic plot method generates a plot for single quantile & bootstrap se", {
@@ -129,7 +129,7 @@ test_that("Generic plot method generates a plot for single quantile & bootstrap 
   )
 
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 test_that("Generic plot method generates a plot for RIF of variance", {
@@ -143,7 +143,7 @@ test_that("Generic plot method generates a plot for RIF of variance", {
   )
 
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 test_that("Generic plot method generates a plot for RIF of Gini", {
@@ -157,7 +157,7 @@ test_that("Generic plot method generates a plot for RIF of Gini", {
   )
 
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 test_that("Generic plot method generates a plot for RIF of interquantile range", {
@@ -172,7 +172,7 @@ test_that("Generic plot method generates a plot for RIF of interquantile range",
   )
 
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
 
 test_that("Generic plot method generates a plot for RIF of interquantile ratio", {
@@ -187,5 +187,5 @@ test_that("Generic plot method generates a plot for RIF of interquantile ratio",
   )
 
   rifreg_plot <- plot(rifreg_object, varselect = c("age", "unionyes"))
-  expect_equal(class(rifreg_plot), c("gg", "ggplot"))
+  expect_true(is_ggplot(rifreg_plot))
 })
